@@ -24,6 +24,8 @@ public class Grid : MonoBehaviour
     GameObject wall;
     Animator buildingAnimator;
 
+    public bool buildingMode = false;
+
     private void Start()
     {
         gridArray = new Tile[width, height];
@@ -54,11 +56,16 @@ public class Grid : MonoBehaviour
         {
             for (int y = 0; y < gridArray.GetLength(1); y++)
             {
-                if(Mathf.Abs(x - y) > 10)
+                
+                //if(!(x>40 && x<60 && y>40 && y <60))
+                if(x == 1 && y == 1)
                 {
-                    gridArray[x, y].Build(Instantiate(wall, new Vector3(x * cellSize + transform.position.x + offsetX + cellSize / 2.0f, 0.0f + transform.position.y, y * cellSize + transform.position.z + offsetZ + cellSize / 2.0f), Quaternion.identity ));
-                    Vector3 bldngSize = gridArray[x, y].Building.GetComponentInChildren<MeshRenderer>().bounds.size;
-                    gridArray[x, y].Building.transform.localScale = new Vector3(cellSize / bldngSize.x, cellSize / bldngSize.x, cellSize / bldngSize.x);
+                    gridArray[x, y].Build(Instantiate(
+                        wall, new Vector3(x * cellSize + transform.position.x + offsetX + cellSize / 2.0f, 
+                        0.0f + transform.position.y, y * cellSize + transform.position.z + offsetZ + cellSize / 2.0f),
+                        Quaternion.identity ));
+                    Vector3 bldngSize = gridArray[x, y].Building.GetComponentInChildren<MeshRenderer>().bounds.size * 2;
+                    gridArray[x, y].Building.transform.localScale = new Vector3(cellSize / bldngSize.x, cellSize / bldngSize.y, cellSize / bldngSize.z);
                 }
             }
         }
@@ -81,7 +88,6 @@ public class Grid : MonoBehaviour
             int indexY = Mathf.FloorToInt(point.z - offsetZ / cellSize);
             //print(indexX + " " + indexY);
 
-
             currentTile = gridArray[indexX, indexY];
         }
         else
@@ -93,12 +99,11 @@ public class Grid : MonoBehaviour
 
         if (currentTile != null)
         {
-                
             currentTileHighlight.transform.position = new Vector3(currentTile.x + cellSize/2.0f, 0.01f, currentTile.y + cellSize/2.0f);
             currentTileHighlight.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
         }
 
-        if (Input.GetMouseButtonDown(0) && currentTile != null)
+        if (Input.GetMouseButtonDown(0) && currentTile != null && buildingMode)
         {
             if (currentTile.Building == null)
             {
@@ -109,6 +114,9 @@ public class Grid : MonoBehaviour
                 Debug.Log("There is already a building here");
                 StartCoroutine(changeTileHighlightClr(0.5f, Color.red));
             }
+
+            buildingMode = false;
+
         }
 
 
