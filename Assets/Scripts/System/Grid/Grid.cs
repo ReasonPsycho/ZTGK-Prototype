@@ -32,7 +32,7 @@ public class Grid : MonoBehaviour
             for (int y = 0; y < gridArray.GetLength(1); y++)
             {
                 gridArray[x, y] = new Tile(x * cellSize + transform.position.x + offsetX, y * cellSize + transform.position.z + offsetZ);
-                gridArray[x, y].index = new Vector2Int(x, y);
+                gridArray[x, y].Index = new Vector2Int(x, y);
 
                 Vector3 from = new Vector3(x * cellSize + transform.position.x + offsetX, 0.0f + transform.position.y, y * cellSize + transform.position.z + offsetZ);
                 Debug.DrawLine(from, from + new Vector3(cellSize, 0, 0), Color.red, 100f);
@@ -100,7 +100,7 @@ public class Grid : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && currentTile != null)
         {
-            if (currentTile.building == null)
+            if (currentTile.Building == null)
             {
                 placeBuilding(Mathf.FloorToInt(currentTile.x / cellSize) + 50, Mathf.FloorToInt(currentTile.y / cellSize) + 50, building);
                 StartCoroutine(changeTileHighlightClr(0.5f, Color.green));
@@ -117,7 +117,7 @@ public class Grid : MonoBehaviour
 
     public bool placeBuilding(int x, int y, GameObject building)
     {
-        if (gridArray[x,y].building == null)
+        if (gridArray[x,y].Building == null)
         {
             gridArray[x, y].Build(Instantiate(
                 building,
@@ -128,9 +128,9 @@ public class Grid : MonoBehaviour
 
             //buildingAnimator.Play("Base Layer.Construction", 0, 0.0f);
             StartCoroutine(buildingConstructionCrtn(2.0f));
-            Vector3 bldngSize = gridArray[x, y].building.GetComponentsInChildren<MeshRenderer>()[1].bounds.size;
+            Vector3 bldngSize = gridArray[x, y].Building.GetComponentsInChildren<MeshRenderer>()[1].bounds.size;
             
-            gridArray[x, y].building.transform.localScale = new Vector3(cellSize / bldngSize.x, cellSize / bldngSize.x, cellSize / bldngSize.x);
+            gridArray[x, y].Building.transform.localScale = new Vector3(cellSize / bldngSize.x, cellSize / bldngSize.x, cellSize / bldngSize.x);
             return true;
         }
         return false;

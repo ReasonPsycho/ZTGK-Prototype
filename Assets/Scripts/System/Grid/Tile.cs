@@ -2,32 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tile
-{
+public class Tile {
     public float x;
     public float y;
-    public Vector2Int index;
-    public bool vacant = true;
+    public Vector2Int Index;
+    public bool Vacant = true;
 
-    public GameObject building = null;
-    public Building buildingHandler = null;
+    public GameObject Building;
+    public Building BuildingHandler;
 
     public bool Build(GameObject building) {
-        if ( !vacant ) return false;
-        vacant = false;
-        this.building = building;
+        if ( !Vacant ) return false;
+        Vacant = false;
+        this.Building = building;
+        BuildingHandler = building.GetComponent<Building>();
         return true;
     }
 
     public bool Destroy() {
-        if ( vacant ) return false;
-        vacant = true;
-        this.building = null;
+        if ( Vacant ) return false;
+        Vacant = true;
+        BuildingHandler.DestroyBuilding();
+        this.Building = null;
+        this.BuildingHandler = null;
         return true;
     }
 
-    public Tile(float x, float y)
-    {
+    public Tile(float x, float y) {
         this.x = x;
         this.y = y;
     }
