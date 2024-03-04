@@ -8,5 +8,8 @@ public class Building
     int width;
     int height;
 
+    public bool DestroyBuilding() {
+        return true;
+    }
 
 }
