@@ -21,6 +21,7 @@ public class Grid : MonoBehaviour
     private GameObject currentTileHighlight;
 
     GameObject building;
+    GameObject wall;
     Animator buildingAnimator;
 
     private void Start()
@@ -47,12 +48,28 @@ public class Grid : MonoBehaviour
         building = PrefabUtility.LoadPrefabContents("Assets/Prefabs/Building/Building.prefab") as GameObject;
         buildingAnimator = building.GetComponentInChildren<Animator>();
 
+        wall = PrefabUtility.LoadPrefabContents("Assets/Prefabs/Wall/Wall.prefab") as GameObject;
+
+        for (int x = 0; x < gridArray.GetLength(0); x++)
+        {
+            for (int y = 0; y < gridArray.GetLength(1); y++)
+            {
+                if(Mathf.Abs(x - y) > 10)
+                {
+                    gridArray[x, y].Build(Instantiate(wall, new Vector3(x * cellSize + transform.position.x + offsetX + cellSize / 2.0f, 0.0f + transform.position.y, y * cellSize + transform.position.z + offsetZ + cellSize / 2.0f), Quaternion.identity ));
+                    Vector3 bldngSize = gridArray[x, y].building.GetComponentInChildren<MeshRenderer>().bounds.size;
+                    gridArray[x, y].building.transform.localScale = new Vector3(cellSize / bldngSize.x, cellSize / bldngSize.x, cellSize / bldngSize.x);
+                }
+            }
+        }
+
     }
 
     private void Update()
     {
         
         //highlight the cell the mouse is over
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         RaycastHit hit;
