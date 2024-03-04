@@ -31,6 +31,8 @@ public class Grid : MonoBehaviour
             for (int y = 0; y < gridArray.GetLength(1); y++)
             {
                 gridArray[x, y] = new Tile(x * cellSize + transform.position.x + offsetX, y * cellSize + transform.position.z + offsetZ);
+                gridArray[x, y].index = new Vector2Int(x, y);
+
                 Vector3 from = new Vector3(x * cellSize + transform.position.x + offsetX, 0.0f + transform.position.y, y * cellSize + transform.position.z + offsetZ);
                 Debug.DrawLine(from, from + new Vector3(cellSize, 0, 0), Color.red, 100f);
 
@@ -100,11 +102,11 @@ public class Grid : MonoBehaviour
     {
         if (gridArray[x,y].building == null)
         {
-            gridArray[x, y].building = Instantiate(
+            gridArray[x, y].Build(Instantiate(
                 building,
                 new Vector3(x * cellSize + transform.position.x + offsetX + cellSize/2.0f, 0.0f + transform.position.y, y * cellSize + transform.position.z + offsetZ + cellSize/2.0f),
                 Quaternion.identity
-            );
+            ));
             //gridArray[x, y].building.GetComponentInChildren<Animator>().Play("Base Layer.Construction", 0, 0.0f);
 
             //buildingAnimator.Play("Base Layer.Construction", 0, 0.0f);
