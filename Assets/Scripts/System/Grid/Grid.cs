@@ -102,13 +102,16 @@ public class Grid : MonoBehaviour
         {
             gridArray[x, y].building = Instantiate(
                 building,
-                new Vector3(x * cellSize + transform.position.x + offsetX, 0.0f + transform.position.y, y * cellSize + transform.position.z + offsetZ),
+                new Vector3(x * cellSize + transform.position.x + offsetX + cellSize/2.0f, 0.0f + transform.position.y, y * cellSize + transform.position.z + offsetZ + cellSize/2.0f),
                 Quaternion.identity
             );
             //gridArray[x, y].building.GetComponentInChildren<Animator>().Play("Base Layer.Construction", 0, 0.0f);
 
             //buildingAnimator.Play("Base Layer.Construction", 0, 0.0f);
             StartCoroutine(buildingConstructionCrtn(2.0f));
+            Vector3 bldngSize = gridArray[x, y].building.GetComponentsInChildren<MeshRenderer>()[1].bounds.size;
+            
+            gridArray[x, y].building.transform.localScale = new Vector3(cellSize / bldngSize.x, cellSize / bldngSize.x, cellSize / bldngSize.x);
             return true;
         }
         return false;
@@ -127,7 +130,6 @@ public class Grid : MonoBehaviour
         for (int i = 0; i < 100; i++)
         {
             buildingAnimator.SetFloat("ConstructionProcantage", i/100.0f);
-            print(i);
             yield return new WaitForSeconds(time/100.0f);
         }
     }
