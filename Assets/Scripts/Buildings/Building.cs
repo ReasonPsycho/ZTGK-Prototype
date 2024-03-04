@@ -9,8 +9,4 @@ public class Building : MonoBehaviour
         return true;
     }
 
-    public bool DestroyBuilding() {
-        return true;
-    }
-
 }

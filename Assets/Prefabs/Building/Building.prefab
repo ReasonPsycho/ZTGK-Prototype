@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6728251902148509695}
   - component: {fileID: 6728251902148509694}
   - component: {fileID: 6728251902148509693}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Decoration
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 6728251903359822404}
   - component: {fileID: 6728251903359822459}
   - component: {fileID: 6728251903359822458}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -226,7 +226,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6728251903560051765}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Building
   m_TagString: Untagged
   m_Icon: {fileID: 0}

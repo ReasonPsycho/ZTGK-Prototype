@@ -57,8 +57,8 @@ public class Grid : MonoBehaviour
                 if(Mathf.Abs(x - y) > 10)
                 {
                     gridArray[x, y].Build(Instantiate(wall, new Vector3(x * cellSize + transform.position.x + offsetX + cellSize / 2.0f, 0.0f + transform.position.y, y * cellSize + transform.position.z + offsetZ + cellSize / 2.0f), Quaternion.identity ));
-                    Vector3 bldngSize = gridArray[x, y].building.GetComponentInChildren<MeshRenderer>().bounds.size;
-                    gridArray[x, y].building.transform.localScale = new Vector3(cellSize / bldngSize.x, cellSize / bldngSize.x, cellSize / bldngSize.x);
+                    Vector3 bldngSize = gridArray[x, y].Building.GetComponentInChildren<MeshRenderer>().bounds.size;
+                    gridArray[x, y].Building.transform.localScale = new Vector3(cellSize / bldngSize.x, cellSize / bldngSize.x, cellSize / bldngSize.x);
                 }
             }
         }
