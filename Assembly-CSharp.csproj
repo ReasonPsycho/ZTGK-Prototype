@@ -58,11 +58,11 @@
     <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Camera\CameraMovment.cs" />
-    <Compile Include="Assets\Scripts\System\Grid\Grid.cs" />
-    <Compile Include="Assets\Scripts\System\Grid\Testing.cs" />
-    <Compile Include="Assets\Scripts\Buildings\Building.cs" />
     <Compile Include="Assets\Scripts\System\Grid\Tile.cs" />
+    <Compile Include="Assets\Scripts\Camera\CameraMovment.cs" />
+    <Compile Include="Assets\Scripts\Buildings\Building.cs" />
+    <Compile Include="Assets\Scripts\System\Grid\Testing.cs" />
+    <Compile Include="Assets\Scripts\System\Grid\Grid.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />

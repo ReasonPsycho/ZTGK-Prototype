@@ -8,4 +8,5 @@ public class Building
     int width;
     int height;
 
+
 }
