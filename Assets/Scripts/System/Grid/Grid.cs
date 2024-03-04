@@ -50,22 +50,29 @@ public class Grid : MonoBehaviour
         building = PrefabUtility.LoadPrefabContents("Assets/Prefabs/Building/Building.prefab") as GameObject;
         buildingAnimator = building.GetComponentInChildren<Animator>();
 
-        wall = PrefabUtility.LoadPrefabContents("Assets/Prefabs/Wall/Wall.prefab") as GameObject;
+        wall = PrefabUtility.LoadPrefabContents("Assets/Prefabs/Wall/WallPre.prefab") as GameObject;
 
         for (int x = 0; x < gridArray.GetLength(0); x++)
         {
-            for (int y = 0; y < gridArray.GetLength(1); y++)
+            for (int z = 0; z < gridArray.GetLength(1); z++)
             {
                 
-                //if(!(x>40 && x<60 && y>40 && y <60))
-                if(x == 1 && y == 1)
+                //if(!(x>40 && x<60 && z>40 && z <60))
+                if(x == 1 && z == 1)
                 {
-                    gridArray[x, y].Build(Instantiate(
-                        wall, new Vector3(x * cellSize + transform.position.x + offsetX + cellSize / 2.0f, 
-                        0.0f + transform.position.y, y * cellSize + transform.position.z + offsetZ + cellSize / 2.0f),
+                    //gridArray[x, y].Build(Instantiate(
+                    //    wall, new Vector3(x * cellSize + transform.position.x + offsetX + cellSize / 2.0f, 
+                    //    0.0f + transform.position.y, y * cellSize + transform.position.z + offsetZ + cellSize / 2.0f),
+                    //    Quaternion.identity ));
+                    //Vector3 bldngSize = gridArray[x, y].Building.GetComponentInChildren<MeshRenderer>().bounds.size * 2;
+                    //gridArray[x, y].Building.transform.localScale = new Vector3(cellSize / bldngSize.x, cellSize / bldngSize.y, cellSize / bldngSize.z);
+
+                  
+                    gridArray[x, z].Build(Instantiate(wall, new Vector3(x * cellSize + transform.position.x + offsetX + cellSize / 2.0f,
+                        0.0f + transform.position.y, z * cellSize + transform.position.z + offsetZ + cellSize / 2.0f),
                         Quaternion.identity ));
-                    Vector3 bldngSize = gridArray[x, y].Building.GetComponentInChildren<MeshRenderer>().bounds.size * 2;
-                    gridArray[x, y].Building.transform.localScale = new Vector3(cellSize / bldngSize.x, cellSize / bldngSize.y, cellSize / bldngSize.z);
+                    print(gridArray);
+
                 }
             }
         }
