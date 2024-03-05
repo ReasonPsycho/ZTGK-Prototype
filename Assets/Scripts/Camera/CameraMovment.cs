@@ -14,6 +14,7 @@ public class CameraMovment : MonoBehaviour
     private RaycastHit hit;
     private Ray camRay;
     public float panSpeed = 5f;
+    public float scrollSpeed = 5f;
     public float panBorderThickness = 30f;
     public float rotationSpeed = 10f;
 
@@ -71,6 +72,12 @@ public class CameraMovment : MonoBehaviour
                 pos -= cameraTransform.right * (panSpeed * Time.deltaTime * boost);
             }
 
+            if (Mathf.Abs(Input.mouseScrollDelta.y) > 0.01f)
+            {
+                pos += cameraTransform.forward * (Input.mouseScrollDelta.y * (scrollSpeed * Time.deltaTime * boost));
+            }
+
+            
 
             if (Input.GetMouseButton((int)MouseButton.Middle))
             {
@@ -81,14 +88,11 @@ public class CameraMovment : MonoBehaviour
 
                     //Camera position
                     var dir = transform.position - hit.point; // find direction relative to point
-                    Quaternion
-                        q1 = Quaternion.AngleAxis(mouseX,
-                            Vector3.up); // rotate that direction according to rotation params
-                    Quaternion
-                        q2 = Quaternion.AngleAxis(mouseY,
-                            Vector3.right); // rotate that direction according to rotation params
 
-                    dir = q1 * q2 * dir; // apply rotation
+                    Vector3 eulerRotation = new Vector3( mouseY  * rotationSpeed * Time.deltaTime * boost,  mouseX  * rotationSpeed * Time.deltaTime* boost, mouseY  * rotationSpeed * Time.deltaTime* boost);
+                    Quaternion q1 = Quaternion.Euler(eulerRotation);
+                    dir = q1 * dir; // apply rotation
+
                     pos = hit.point + dir; // update position
                     transform.position = hit.point + dir; // update position 
 
@@ -104,28 +108,18 @@ public class CameraMovment : MonoBehaviour
 
                     //Camera rotation
 
-                    Vector3 relativePos = hit.point - camRay.origin - transform.position;
-
+                    Vector3 relativePos = hit.point - transform.position;
+                    
                     // the second argument, upwards, defaults to Vector3.up
                     Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
                     transform.rotation = rotation;
-
-
-                    float desiredRotationAngle =
-                        transform.eulerAngles.x + mouseY * Time.deltaTime * boost * rotationSpeed * 10;
-
-                    // if your rotation goes on in the other direction, invert the mouseX line to be -mouseX
-                    if (desiredRotationAngle >= 180) desiredRotationAngle -= 360; // convert to -180..+180 range
-                    desiredRotationAngle = Mathf.Clamp(desiredRotationAngle, minRotationX, maxRotationX);
-
-                    transform.rotation =
-                        Quaternion.Euler(desiredRotationAngle, transform.eulerAngles.y, transform.eulerAngles.z);
+                    
                 }
             }
 
             if (Input.GetMouseButtonDown((int)MouseButton.Middle)) //WHYYY Unity
             {
-                camRay = camera.ScreenPointToRay(Input.mousePosition);
+                camRay = camera.ScreenPointToRay(new Vector2(Screen.width/2,Screen.height/2));
                 hasHit = Physics.Raycast(camRay, out hit, 100f);
 
                 if (hasHit)
