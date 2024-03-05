@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Buildings;
 using UnityEngine;
 
 public class Tile {
@@ -10,17 +11,28 @@ public class Tile {
 
     public GameObject Building;
     public Building BuildingHandler;
-
+    public Grid grid;
+    
     public bool Build(GameObject building) {
         if ( !Vacant ) return false;
         Vacant = false;
         this.Building = building;
         BuildingHandler = building.GetComponent<Building>();
+        BuildingHandler.tile = this;
         return true;
     }
-
+    public bool Build(GameObject building,BuildingType buildingType) {
+        if ( !Vacant ) return false;
+        Vacant = false;
+        this.Building = building;
+        BuildingHandler = building.GetComponent<Building>();
+        BuildingHandler.tile = this;
+        BuildingHandler.buildingType = buildingType;
+        return true;
+    }
+    
     public bool Destroy() {
-        if ( Vacant ) return false;
+        if ( Vacant ) return false; 
         Vacant = true;
         BuildingHandler.DestroyBuilding();
         this.Building = null;
@@ -28,8 +40,9 @@ public class Tile {
         return true;
     }
 
-    public Tile(float x, float y) {
+    public Tile(float x, float y,Grid grid) {
         this.x = x;
         this.y = y;
+        this.grid = grid;
     }
 }

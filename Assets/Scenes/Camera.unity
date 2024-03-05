@@ -491,12 +491,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panSpeed: 20
+  scrollSpeed: 5
   panBorderThickness: 10
-  rotationSpeed: 30
+  rotationSpeed: 50
   minRotationX: 20
   maxRotationX: 45
   minY: 5
-  maxY: 15
+  maxY: 30
 --- !u!1 &1125372522
 GameObject:
   m_ObjectHideFlags: 0

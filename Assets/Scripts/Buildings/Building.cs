@@ -6,9 +6,10 @@ using UnityEngine;
 
 public class Building : MonoBehaviour {
     public BuildingType buildingType = BuildingType.ANY;
-
-    public bool DestroyBuilding()
+    public Tile tile; // Waaay easier just to hold a tile is on
+    virtual public bool DestroyBuilding()
     {
+        Destroy(gameObject);
         return true;
     }
 

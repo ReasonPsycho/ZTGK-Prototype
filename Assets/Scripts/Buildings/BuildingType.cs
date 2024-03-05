@@ -4,6 +4,7 @@
         WORKER_HOUSE,
         BARRACKS,
         WASHING_MACHINE,
-        TREASURY
+        TREASURY,
+        WALL
     }
 }
