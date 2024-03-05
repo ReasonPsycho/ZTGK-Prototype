@@ -10,7 +10,7 @@ public class Button : MonoBehaviour
     {
         if (isBuildingButton)
         {
-            GameObject.Find("Ground").GetComponent<Grid>().buildingMode = true;
+            GameObject.FindWithTag("Grid").GetComponent<Grid>().buildingMode = true;
         }
         else
         {

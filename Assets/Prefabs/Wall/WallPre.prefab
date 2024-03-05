@@ -47,7 +47,7 @@ MonoBehaviour:
   buildingType: 0
   x: 0
   z: 0
-  wallSidePrefab: {fileID: 0}
+  wallSidePrefab: {fileID: 4074098458107090196, guid: 3ffd2c8d70d83cd48a8499b0a5831148, type: 3}
   northSide: {fileID: 0}
   southSide: {fileID: 0}
   eastSide: {fileID: 0}
