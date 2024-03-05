@@ -33,8 +33,7 @@ public class Grid : MonoBehaviour
     {
       //  building = PrefabUtility.LoadPrefabContents("Assets/Prefabs/Building/Building.prefab") as GameObject; THIS WHY BAD!!
        // wall = PrefabUtility.LoadPrefabContents("Assets/Prefabs/Wall/WallPre.prefab") as GameObject;
-       // wallSide = PrefabUtility.LoadPrefabContents("Assets/Prefabs/Wall/WallSide.prefab") as GameObject;
-       // buildingAnimator = building.GetComponentInChildren<Animator>();
+       // wallSide = PrefabUtility.LoadPrefabContents("Assets/Prefabs/Wall/WallSide.prefab") as GameObject;/ buildingAnimator = building.GetComponentInChildren<Animator>();
         
         gridArray = new Tile[width, height];
         for (int x = 0; x < gridArray.GetLength(0); x++)
@@ -165,7 +164,7 @@ public class Grid : MonoBehaviour
                 building,
                 new Vector3(x * cellSize + transform.position.x + offsetX + cellSize / 2.0f,
                     0.0f + transform.position.y, y * cellSize + transform.position.z + offsetZ + cellSize / 2.0f),
-                Quaternion.identity
+                Quaternion.identity,transform
             ));
             //gridArray[x, y].building.GetComponentInChildren<Animator>().Play("Base Layer.Construction", 0, 0.0f);
 
