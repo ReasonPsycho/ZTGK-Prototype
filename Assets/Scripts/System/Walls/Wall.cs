@@ -25,12 +25,13 @@ public class Wall : Building
     private void Start()
     {
         buildingType = BuildingType.WALL;
+        wallSidePrefab = GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>().wallSide;
+
     }
 
 
     public GameObject SetWall()
     {
-        wallSidePrefab = tile.grid.wallSide;
 
         topSide = Instantiate(wallSidePrefab,
             new Vector3(transform.position.x, tile.grid.cellSize, transform.position.z), Quaternion.identity,
@@ -108,7 +109,6 @@ public class Wall : Building
             ((Wall)westNeighbour.BuildingHandler).SetWall();
         }
 
-        print("yea");
         Destroy(gameObject);
         return true;
     }
