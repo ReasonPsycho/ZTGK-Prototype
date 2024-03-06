@@ -50,7 +50,11 @@ public class Unit : MonoBehaviour
 
         if(prevTile != currentTile)
         {
-            grid.GetTile(prevTile.Index).Vacant = true;
+            if (prevTile.Building == null)
+            {
+                prevTile.Vacant = true;
+                //grid.GetTile(prevTile.Index).Vacant = true;
+            }
         }
 
         prevTile = currentTile;

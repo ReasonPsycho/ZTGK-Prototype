@@ -69,26 +69,30 @@ public class UnitAI : MonoBehaviour
 
     public Vector2Int FindNearestVacantTile(Vector2Int target)
     {
-        Vector2Int nearest = target;
-        float minDistance = float.MaxValue;
-        for (int x = 0; x < unit.grid.width; x++)
+        Vector2Int[] directions = new Vector2Int[] { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
+        Queue<Vector2Int> queue = new Queue<Vector2Int>();
+        queue.Enqueue(target);
+        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
+        visited.Add(target);
+        while (queue.Count > 0)
         {
-            for (int y = 0; y < unit.grid.height; y++)
+            Vector2Int current = queue.Dequeue();
+            if (unit.grid.GetTile(current).Vacant)
             {
-                if (unit.grid.GetTile(new Vector2Int(x, y)) == null) print(x + " " + y + " is null");
-                if (unit.grid.GetTile(new Vector2Int(x, y)).Vacant)
+                return current;
+            }
+            foreach (Vector2Int dir in directions)
+            {
+                Vector2Int next = current + dir;
+                if (unit.grid.GetTile(next) != null && !visited.Contains(next))
                 {
-                    float distance = Vector2Int.Distance(target, new Vector2Int(x, y));
-                    if (distance < minDistance)
-                    {
-                        minDistance = distance;
-                        nearest = new Vector2Int(x, y);
-                    }
+                    queue.Enqueue(next);
+                    visited.Add(next);
                 }
             }
         }
-        print("Nearest vacant tile is " + nearest);
-        return nearest;
+        return target;
+       
     }
 
     //ONLY USE THIS FUNCTION TO MOVE THE UNIT
