@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 public class UnitSelection : MonoBehaviour
@@ -7,54 +8,63 @@ public class UnitSelection : MonoBehaviour
     //private ArrayList selectedUnits = new ArrayList();
 
 
-    private Unit selectedUnit;
+    public Unit selectedUnit;
+    private Cursor cursor;
+
+
+    private void Start()
+    {
+        cursor = GameObject.Find("CursorAbstractObject").GetComponent<Cursor>();
+    }
 
     private void Update()
     {
-        if (selectedUnit == null)
+        //if the left mouse button is clicked
+        if (Input.GetMouseButtonDown(0))
         {
-            if (Input.GetMouseButtonDown(0))
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit))
             {
-                RaycastHit hit;
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out hit))
+                // when a unit is clicked
+                if (hit.collider.gameObject.GetComponentInParent<Unit>())
                 {
-                    if (hit.collider.gameObject.GetComponentInParent<Unit>())
+                    //if some unit is already selected
+                    if (selectedUnit != null)
                     {
-                        if (selectedUnit != null)
+                        //if it is the same unit, disselect it
+                        if (selectedUnit == hit.collider.gameObject.GetComponentInParent<Unit>())
                         {
                             selectedUnit.Deselect();
+                            selectedUnit = null;
+                            cursor.CursorMode = CursorMode.DEFAULT;
                         }
+                        //if it is a different unit, disselect the previous one and select the new one
+                        else
+                        {
+                            selectedUnit.Deselect();
+                            selectedUnit = hit.collider.gameObject.GetComponentInParent<Unit>();
+                            selectedUnit.Select();
+                            cursor.CursorMode = CursorMode.UNIT;
+                        }
+                    }
+                    //if no unit is selected, select the clicked unit
+                    else
+                    {
                         selectedUnit = hit.collider.gameObject.GetComponentInParent<Unit>();
                         selectedUnit.Select();
+                        cursor.CursorMode = CursorMode.UNIT;
                     }
-                    else
-                    {
-                        if (selectedUnit != null)
-                        {
-                            selectedUnit.Deselect();
-                        }
-                    }
+
                 }
-            }
-        }
-        else
-        {
-            if (Input.GetMouseButton(1))
-            {
-                RaycastHit hit;
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out hit))
+                //if the clicked object is not a unit
+                else
                 {
-                    if (hit.collider.gameObject.GetComponentInParent<Unit>())   
+                    if (selectedUnit != null)
                     {
-                        selectedUnit.GetComponent<UnitAI>().MoveTo(hit.collider.gameObject.GetComponentInParent<Unit>().gridPosition);
-                    }
-                    else
-                    {
-                        Vector3 target = hit.point;
-                        target.y = 0;
-                        selectedUnit.GetComponent<UnitAI>().MoveTo(selectedUnit.grid.WorldToGridPosition(target));
+                        selectedUnit.Deselect();
+                        selectedUnit = null;
+                        cursor.CursorMode = CursorMode.DEFAULT;
                     }
                 }
             }

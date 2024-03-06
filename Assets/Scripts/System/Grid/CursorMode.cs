@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum CursorMode
 {
+    DEFAULT,
     SELECT, 
     BUILD,
     UNIT

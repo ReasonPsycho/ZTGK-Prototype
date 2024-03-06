@@ -10,7 +10,7 @@ public class Button : MonoBehaviour
     {
         if (isBuildingButton)
         {
-            GameObject.FindWithTag("Grid").GetComponent<Grid>().buildingMode = true;
+            GameObject.Find("CursorAbstractObject").GetComponent<Cursor>().CursorMode = CursorMode.BUILD;
         }
         else
         {
