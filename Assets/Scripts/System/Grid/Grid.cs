@@ -56,7 +56,7 @@ public class Grid : MonoBehaviour
 
     public Tile GetTile(Vector2Int vector2Int)
     {
-        if (vector2Int.x > 0 && vector2Int.x < width && vector2Int.y > 0 && vector2Int.y < height)
+        if (vector2Int.x >= 0 && vector2Int.x < width && vector2Int.y >= 0 && vector2Int.y < height)
         {
             return gridArray[vector2Int.x, vector2Int.y];
         }

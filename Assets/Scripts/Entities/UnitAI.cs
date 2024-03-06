@@ -55,8 +55,51 @@ public class UnitAI : MonoBehaviour
         unit.state = UnitState.IDLE;
     }
     
+    public bool MoveIfVacant(Vector2Int target)
+    {
+        if (unit.grid.GetTile(target).Vacant)
+        {
+            MoveTo(target);
+            return true;
+        }
+        return false;
+    }
 
+   
 
+    public Vector2Int FindNearestVacantTile(Vector2Int target)
+    {
+        Vector2Int nearest = target;
+        float minDistance = float.MaxValue;
+        for (int x = 0; x < unit.grid.width; x++)
+        {
+            for (int y = 0; y < unit.grid.height; y++)
+            {
+                if (unit.grid.GetTile(new Vector2Int(x, y)) == null) print(x + " " + y + " is null");
+                if (unit.grid.GetTile(new Vector2Int(x, y)).Vacant)
+                {
+                    float distance = Vector2Int.Distance(target, new Vector2Int(x, y));
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        nearest = new Vector2Int(x, y);
+                    }
+                }
+            }
+        }
+        print("Nearest vacant tile is " + nearest);
+        return nearest;
+    }
+
+    //ONLY USE THIS FUNCTION TO MOVE THE UNIT
+    public void MoveUnit(Vector2Int target)
+    {
+        if (!MoveIfVacant(target))
+        {
+            print("Target is not vacant, looking for new Tile");
+            MoveIfVacant(FindNearestVacantTile(target));
+        }
+    }
 
     #endregion
 
