@@ -28,7 +28,6 @@ public class Grid : MonoBehaviour
     Animator buildingAnimator;
 
     public bool buildingMode = false;
-
     private void Start()
     {
       //  building = PrefabUtility.LoadPrefabContents("Assets/Prefabs/Building/Building.prefab") as GameObject; THIS WHY BAD!!
@@ -204,5 +203,21 @@ public class Grid : MonoBehaviour
             buildingAnimator.SetFloat("ConstructionProcantage", i / 100.0f);
             yield return new WaitForSeconds(time / 100.0f);
         }
+    }
+
+    public Vector3 GridToWorldPosition(int x, int y)
+    {
+        return new Vector3(x * cellSize + transform.position.x + offsetX + cellSize / 2.0f,
+                       0.0f + transform.position.y, y * cellSize + transform.position.z + offsetZ + cellSize / 2.0f);
+    }
+
+    public Vector3 GridToWorldPosition(Vector2Int position)
+    {
+        return GridToWorldPosition(position.x, position.y);
+    }
+
+    public Vector2Int WorldToGridPosition(Vector3 position)
+    {
+        return new Vector2Int(Mathf.FloorToInt(position.x / cellSize) + 50, Mathf.FloorToInt(position.z / cellSize) + 50);
     }
 }
