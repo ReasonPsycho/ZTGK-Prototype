@@ -44,15 +44,7 @@ public class Grid : MonoBehaviour
     {
 
     }
-
-    /*
-    void OnApplicationQuit()
-    {
-        PrefabUtility.UnloadPrefabContents(building);
-        PrefabUtility.UnloadPrefabContents(wall);
-        PrefabUtility.UnloadPrefabContents(wallSide);
-    }
-    */
+    
 
     public Tile GetTile(Vector2Int vector2Int)
     {
