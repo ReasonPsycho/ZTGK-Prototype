@@ -12,7 +12,10 @@ public class Unit : MonoBehaviour
 
     public Grid grid;
     public Vector2Int gridPosition;
+    public Tile currentTile;
+    private Tile prevTile;
     public float facingAngle;
+
 
     [Header("General")]
     public float MaxHealth = 100.0f;
@@ -33,6 +36,29 @@ public class Unit : MonoBehaviour
     //[Header("Equipment")]
     //TODO 
 
+    public void Start()
+    {
+        grid = GameObject.Find("Grid").GetComponent<Grid>();
+        health = MaxHealth;
+        prevTile = grid.GetTile(gridPosition);
+    }
+    private void Update()
+    {
+        gridPosition = grid.WorldToGridPosition(transform.position);
+        currentTile = grid.GetTile(gridPosition);
+        grid.GetTile(gridPosition).Vacant = false;
+
+        if(prevTile != currentTile)
+        {
+            if (prevTile.Building == null)
+            {
+                prevTile.Vacant = true;
+                //grid.GetTile(prevTile.Index).Vacant = true;
+            }
+        }
+
+        prevTile = currentTile;
+    }
 
     public void TakeDmg(float dmg)
     {
