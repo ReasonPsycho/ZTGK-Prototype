@@ -99,13 +99,15 @@ public class Cursor : MonoBehaviour
                 {
                     if (hit.collider.gameObject.GetComponentInParent<Unit>())
                     {
-                        selectedUnit.GetComponent<UnitAI>().MoveUnit(hit.collider.gameObject.GetComponentInParent<Unit>().gridPosition);
+                        selectedUnit.GetComponent<UnitAI>().target = hit.collider.gameObject.GetComponentInParent<Unit>().gridPosition;
+                        selectedUnit.GetComponent<UnitAI>().hasTarget = true;
                     }
                     else
                     {
                         Vector3 target = hit.point;
                         target.y = 0;
-                        selectedUnit.GetComponent<UnitAI>().MoveUnit(selectedUnit.grid.WorldToGridPosition(target));
+                        selectedUnit.GetComponent<UnitAI>().target = grid.WorldToGridPosition(target);
+                        selectedUnit.GetComponent<UnitAI>().hasTarget = true;
                     }
                 }
             }
