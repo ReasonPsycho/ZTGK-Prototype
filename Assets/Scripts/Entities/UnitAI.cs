@@ -7,10 +7,11 @@ public class UnitAI : MonoBehaviour
     private Unit unit;
 
     private ArrayList path;
-
+    private Coroutine moving;
     public Vector2Int target;
     public bool hasTarget = false;
     private bool isMoving = false;
+    private float t = 0f;
 
     private void Start()
     {
@@ -31,12 +32,21 @@ public class UnitAI : MonoBehaviour
             target = FindNearestVacantTile(target);
         }
 
-
+print(path.Count);
         if (path.Count != 0)
         {
             unit.state = UnitState.MOVING;
-
             MoveOnPath();
+        }
+        
+        else
+        {
+            if (moving != null)
+            {
+                StopCoroutine(moving);
+                moving = null;
+            }
+            StopAllCoroutines();
         }
 
 
@@ -44,7 +54,11 @@ public class UnitAI : MonoBehaviour
         {
             hasTarget = false;
             isMoving = false;
+            StopCoroutine(moving);
+            moving = null;
         }
+        
+        
 
     }
 
@@ -53,21 +67,34 @@ public class UnitAI : MonoBehaviour
 
     public void MoveUnit(Vector2Int target)
     {
-        StartCoroutine(MoveToCoroutine(target));
+        moving = StartCoroutine(MoveToCoroutine(target));
     }
 
     private IEnumerator MoveToCoroutine(Vector2Int target)
     {
         Vector3 targetPos = unit.grid.GridToWorldPosition(target);
         targetPos.y = transform.position.y;
-        while (Vector3.Distance(transform.position, targetPos) > 0.05f)
+        Vector3 startPos = unit.grid.GridToWorldPosition((Vector2Int)path[0]);
+        startPos.y = transform.position.y;
+
+        while (t < 1)
         {
+            unit.animator.SetFloat("motionTime",t);
+            t += Time.deltaTime * unit.tilesPerSecond;
+            print(t);
+            transform.position = Vector3.Lerp(startPos, targetPos, t);
+            
             Vector3 dir = targetPos - transform.position;
             dir.y = 0; // Keep the direction in the XZ plane
-            transform.position += dir.normalized * unit.movementSpeed * Time.deltaTime;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), unit.rotationSpeed * Time.deltaTime);
+            if (Vector3.Distance(Vector3.zero, dir) > 0.01f)
+            {
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), t *5);
+            }
+            //transform.rotation = Quaternion.Slerp(transform.rotation, tra, unit.rotationSpeed * Time.deltaTime);
             yield return null;
-        }
+        }  
+        
+        t = 0f;
         isMoving = false;
     }
 
@@ -121,8 +148,10 @@ public class UnitAI : MonoBehaviour
             isMoving = false;
         if (Vector3.Distance(transform.position, unit.grid.GridToWorldPosition(nextTile)) < 0.05f)
         {
+            print("CALLLED");
             path.RemoveAt(0);
             isMoving = false;
+            t = 0;
         }
         MoveUnit(nextTile);
     }

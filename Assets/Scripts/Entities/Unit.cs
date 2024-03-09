@@ -4,51 +4,51 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-
     public UnitState state = UnitState.IDLE;
 
 
     public bool IsSelected = false;
 
     public Grid grid;
+    public Animator animator;
     public Vector2Int gridPosition;
     public Tile currentTile;
     private Tile prevTile;
     public float facingAngle;
 
 
-    [Header("General")]
-    public float MaxHealth = 100.0f;
+    [Header("General")] public float MaxHealth = 100.0f;
     private float health;
-    public float reachRange = 1.0f;   // How close to the target we need to be to interact with it - e.g. mine, attack, etc.
 
-    [Header("Movement")]
-    public float movementSpeed = 3.0f;
+    public float
+        reachRange = 1.0f; // How close to the target we need to be to interact with it - e.g. mine, attack, etc.
+
+    [Header("Movement")] public float tilesPerSecond = 3.0f;
     public float rotationSpeed = 3.0f;
 
 
-    [Header("Mining")]
-    public float miningSpeed = 1.0f;
+    [Header("Mining")] public float miningSpeed = 1.0f;
 
-    [Header("Combat")]
-    public float attackSpeed = 1.0f;
+    [Header("Combat")] public float attackSpeed = 1.0f;
 
     //[Header("Equipment")]
     //TODO 
 
     public void Start()
     {
+        animator = transform.GetChild(0).GetComponent<Animator>();
         grid = GameObject.Find("Grid").GetComponent<Grid>();
         health = MaxHealth;
         prevTile = grid.GetTile(gridPosition);
     }
+
     private void Update()
     {
         gridPosition = grid.WorldToGridPosition(transform.position);
         currentTile = grid.GetTile(gridPosition);
         grid.GetTile(gridPosition).Vacant = false;
 
-        if(prevTile != currentTile)
+        if (prevTile != currentTile)
         {
             if (prevTile.Building == null)
             {
@@ -58,6 +58,23 @@ public class Unit : MonoBehaviour
         }
 
         prevTile = currentTile;
+
+
+        if (state == UnitState.MOVING)
+        {
+            animator.SetBool("IsWalking", true);
+            animator.SetBool("IsWorking", false);
+        }
+        else if (state == UnitState.MINING)
+        {
+            animator.SetBool("IsWorking", true);
+            animator.SetBool("IsWalking", false);
+        }
+        else
+        {
+            animator.SetBool("IsWorking", false);
+            animator.SetBool("IsWalking", false);
+        }
     }
 
     public void TakeDmg(float dmg)
