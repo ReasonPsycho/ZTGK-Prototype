@@ -20,7 +20,7 @@ public class Unit : MonoBehaviour
     [Header("General")]
     public float MaxHealth = 100.0f;
     private float health;
-    public float reachRange = 1.0f;   // How close to the target we need to be to interact with it - e.g. mine, attack, etc.
+    public float reachRange = 1.5f;   // How close to the target we need to be to interact with it - e.g. mine, attack, etc.
 
     [Header("Movement")]
     public float movementSpeed = 3.0f;
@@ -36,14 +36,22 @@ public class Unit : MonoBehaviour
     //[Header("Equipment")]
     //TODO 
 
+    private bool firstUpdate = true;
+
     public void Start()
     {
-        grid = GameObject.Find("Grid").GetComponent<Grid>();
+       
         health = MaxHealth;
         prevTile = grid.GetTile(gridPosition);
     }
     private void Update()
     {
+        if (firstUpdate)
+        {
+            grid = GameObject.Find("Grid").GetComponent<Grid>();
+            firstUpdate = false;
+        }
+
         gridPosition = grid.WorldToGridPosition(transform.position);
         currentTile = grid.GetTile(gridPosition);
         grid.GetTile(gridPosition).Vacant = false;
