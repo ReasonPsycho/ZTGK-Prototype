@@ -6,13 +6,21 @@ public class UnitAI : MonoBehaviour
 {
     private Unit unit;
 
+
+    [Header("PathFinding")]
     private ArrayList path;
     private Coroutine moving;
     public Vector2Int target;
+    public Vector2Int movementTarget;
+    public Vector2Int miningTarget;
     public bool hasTarget = false;
+
     private bool isMoving = false;
     private float t = 0f;
 
+
+    public bool isGoingToMine = false;
+    private bool isMining = false;
     private void Start()
     {
 
@@ -24,12 +32,13 @@ public class UnitAI : MonoBehaviour
     {
         if (hasTarget)
         {
-            FindPathToTarget(target);
+            path.Clear();
+            path = FindPathToTarget(movementTarget);
         }
 
-        if (hasTarget && path == null)
+        if (hasTarget && path.Count < 1)
         {
-            target = FindNearestVacantTile(target);
+            movementTarget = FindNearestVacantTile(movementTarget);
         }
 
 print(path.Count);
@@ -50,12 +59,23 @@ print(path.Count);
         }
 
 
-        if (hasTarget && Vector3.Distance(transform.position, unit.grid.GridToWorldPosition(target)) < 0.05f)
+        if (hasTarget && Vector3.Distance(transform.position, unit.grid.GridToWorldPosition(movementTarget)) < 0.05f)
         {
             hasTarget = false;
             isMoving = false;
-            StopCoroutine(moving);
-            moving = null;
+            if (moving != null)
+            {
+                StopCoroutine(moving);
+                moving = null;
+            }
+         
+            unit.state = UnitState.IDLE;
+        }
+
+        if (isGoingToMine)
+        {
+            Mine(miningTarget);
+    
         }
         
         
@@ -157,10 +177,9 @@ print(path.Count);
     }
 
 
-    public void FindPathToTarget(Vector2Int target)
+    public ArrayList FindPathToTarget(Vector2Int target)
     {
-        // Clear the previous path
-        path.Clear();
+        ArrayList result = new ArrayList();
 
         // Get the current unit position
         Vector2Int startPosition = unit.grid.WorldToGridPosition(transform.position);
@@ -173,9 +192,10 @@ print(path.Count);
         {
             foreach (Vector2Int waypoint in waypoints)
             {
-                path.Add(waypoint);
+                result.Add(waypoint);
             }
         }
+        return result;
     }
 
 
@@ -289,7 +309,32 @@ print(path.Count);
     #endregion
 
     #region Mining
+    public void Mine(Vector2Int target)
+    {
+        if (Vector3.Distance(unit.grid.GridToWorldPosition(target), transform.position) <= unit.reachRange)
+        {
+           
+            if (!isMining)
+            {
+                StartCoroutine(MineCoroutine(target));
+            }
+        }
+    }
 
+    public IEnumerator MineCoroutine(Vector2Int target)
+    {
+        isMining = true;
+
+        float miningTime = unit.grid.GetTile(target).Building.GetComponent<Mineable>().miningTime / unit.miningSpeed ;
+        while (miningTime > 0)
+        {
+            miningTime -= Time.deltaTime;
+            yield return null;
+        }
+        unit.grid.GetTile(target).Destroy();
+        isGoingToMine = false;
+        isMining = false;
+    }
     #endregion
 
     #region Combat

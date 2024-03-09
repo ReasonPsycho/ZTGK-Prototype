@@ -97,20 +97,31 @@ public class Cursor : MonoBehaviour
             {
                 if (Physics.Raycast(ray, out hit))
                 {
-                    if (hit.collider.gameObject.GetComponentInParent<Unit>())
+                    //MINING
+                    if (hit.collider.gameObject.GetComponentInParent<Mineable>())
                     {
-                        selectedUnit.GetComponent<UnitAI>().target = hit.collider.gameObject.GetComponentInParent<Unit>().gridPosition;
+                        selectedUnit.GetComponent<UnitAI>().movementTarget = grid.WorldToGridPosition(hit.collider.transform.position);
+                        selectedUnit.GetComponent<UnitAI>().miningTarget = grid.WorldToGridPosition(hit.collider.transform.position);
+                        selectedUnit.GetComponent<UnitAI>().hasTarget = true;
+                        selectedUnit.GetComponent<UnitAI>().isGoingToMine = true;
+                    }
+
+
+                    else if (hit.collider.gameObject.GetComponentInParent<Unit>())
+                    {
+                        selectedUnit.GetComponent<UnitAI>().movementTarget = hit.collider.gameObject.GetComponentInParent<Unit>().gridPosition;
                         selectedUnit.GetComponent<UnitAI>().hasTarget = true;
                     }
                     else
                     {
                         Vector3 target = hit.point;
                         target.y = 0;
-                        selectedUnit.GetComponent<UnitAI>().target = grid.WorldToGridPosition(target);
+                        selectedUnit.GetComponent<UnitAI>().movementTarget = grid.WorldToGridPosition(target);
                         selectedUnit.GetComponent<UnitAI>().hasTarget = true;
                     }
                 }
             }
+
 
         }
     }

@@ -13,10 +13,12 @@ public class ConstructionManager : MonoBehaviour
     public Grid grid;
 
     Animator buildingAnimator;
+    
 
     private void Start()
     {
-      
+        wall = Resources.Load<GameObject>("WallPre");
+
         grid = GameObject.Find("Grid").GetComponent<Grid>();
  
         for (int x = 0; x < grid.gridArray.GetLength(0); x++)

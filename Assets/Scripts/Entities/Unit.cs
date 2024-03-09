@@ -34,6 +34,8 @@ public class Unit : MonoBehaviour
     //[Header("Equipment")]
     //TODO 
 
+    private bool firstUpdate = true;
+
     public void Start()
     {
         animator = transform.GetChild(0).GetComponent<Animator>();
@@ -44,6 +46,12 @@ public class Unit : MonoBehaviour
 
     private void Update()
     {
+        if (firstUpdate)
+        {
+            grid = GameObject.Find("Grid").GetComponent<Grid>();
+            firstUpdate = false;
+        }
+
         gridPosition = grid.WorldToGridPosition(transform.position);
         currentTile = grid.GetTile(gridPosition);
         grid.GetTile(gridPosition).Vacant = false;

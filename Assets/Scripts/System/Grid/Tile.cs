@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Buildings;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 public class Tile {
@@ -27,7 +28,7 @@ public class Tile {
         this.Building = building;
         BuildingHandler = building.GetComponent<Building>();
         BuildingHandler.tile = this;
-        BuildingHandler.buildingType = buildingType;
+        BuildingHandler.buildingType = buildingType; 
         return true;
     }
     
