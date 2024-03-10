@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class UnitAI : MonoBehaviour
 {
-    private Unit unit;
+    protected Unit unit;
 
 
     [Header("PathFinding")]
-    private ArrayList path;
+    protected ArrayList path;
     private Coroutine moving;
     public Vector2Int target;
     public Vector2Int movementTarget;
@@ -21,7 +21,7 @@ public class UnitAI : MonoBehaviour
 
     public bool isGoingToMine = false;
     private bool isMining = false;
-    private void Start()
+    protected void Start()
     {
 
         unit = GetComponentInParent<Unit>();

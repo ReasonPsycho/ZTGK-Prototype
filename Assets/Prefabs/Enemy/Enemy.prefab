@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2185536167140960823}
   m_Layer: 0
   m_Name: Body
-  m_TagString: PlayerUnit
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 948c6f504a6ed884a90c61a53bb66eca, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -230,9 +230,10 @@ GameObject:
   - component: {fileID: 2185536167748927808}
   - component: {fileID: 4491057444260848202}
   - component: {fileID: 3321118542130583961}
+  - component: {fileID: 5870469139649258654}
   m_Layer: 0
-  m_Name: Worker
-  m_TagString: PlayerUnit
+  m_Name: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -266,7 +267,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  type: 0
+  type: 1
   IsSelected: 0
   grid: {fileID: 0}
   animator: {fileID: 0}
@@ -295,6 +296,18 @@ MonoBehaviour:
   miningTarget: {x: 0, y: 0}
   hasTarget: 0
   isGoingToMine: 0
+--- !u!114 &5870469139649258654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2185536167748927809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b84852d06d75a0647bcf446e56063138, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2185536168161089339
 GameObject:
   m_ObjectHideFlags: 0
