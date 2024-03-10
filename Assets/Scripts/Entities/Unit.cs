@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using GameItems;
+using GameItems.ConcreteItems;
 using UnityEngine;
 
 public class Unit : MonoBehaviour, ISelectable
@@ -66,6 +67,9 @@ public class Unit : MonoBehaviour, ISelectable
         prevTile = grid.GetTile(gridPosition);
         material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
         orgColor = material.color;
+
+        Equip(new GIMop(), 1,true);
+        Equip(new GILanceMop(), 2,true);
     }
 
 
@@ -174,7 +178,7 @@ public class Unit : MonoBehaviour, ISelectable
 
     #endregion
 
-    #region Eq
+    #region Equipment
 
     /// <summary>
     /// Try equip item to specified slot, any by default.

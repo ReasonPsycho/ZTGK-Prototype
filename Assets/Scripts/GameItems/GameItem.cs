@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace GameItems {
     public abstract class GameItem {
         public string Name = "";
         public string Description = "";
-        public Image icon;
+        public Sprite icon;
 
         // taczka
         // public bool Mixable;

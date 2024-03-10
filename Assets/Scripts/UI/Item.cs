@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -10,15 +11,18 @@ public class Item : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
     public GameObject inventoryGrid;
     public GameObject Item1;
     public GameObject Item2;
-    public GameObject Details;
     private Vector2 startPos;
 
+    public string description;
+    public GameObject descriptionGameObject;
+    
+    
     void Start()
     {
         inventoryGrid = GameObject.Find("Inventory Grid");
         Item1 = GameObject.Find("Item 1");
         Item2 = GameObject.Find("Item 2");
-        Details = GameObject.Find("Details");
+
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -102,11 +106,12 @@ public class Item : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        throw new System.NotImplementedException();
+        descriptionGameObject.SetActive(true);
+        descriptionGameObject.GetComponent<TextMeshProUGUI>().text = description;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        throw new System.NotImplementedException();
+        descriptionGameObject.SetActive(false);
     }
 }

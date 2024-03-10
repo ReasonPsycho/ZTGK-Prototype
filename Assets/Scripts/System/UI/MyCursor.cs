@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 
 public class MyCursor : MonoBehaviour
 {
-    [FormerlySerializedAs("myCursorMode")] [FormerlySerializedAs("cursorMode")] [SerializeField] private MY_CURSOR_MODE myMyCursorMode = MY_CURSOR_MODE.DEFAULT;
+    [FormerlySerializedAs("myCursorMode")] [FormerlySerializedAs("cursorMode")] [SerializeField]
+    private MY_CURSOR_MODE myMyCursorMode = MY_CURSOR_MODE.DEFAULT;
 
     public Tile currentTile;
     private GameObject currentTileHighlight;
@@ -18,7 +20,11 @@ public class MyCursor : MonoBehaviour
     private Unit selectedUnit;
 
     private ISelectable hovered;
-    private ISelectable selected;
+    public ISelectable selected;
+
+
+    public GameObject Inventory;
+    public GameObject Equipment;
 
     public Texture2D unitCursor;
     public Texture2D buildingCursor;
@@ -43,6 +49,7 @@ public class MyCursor : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, 1000.0f))
             {
+                
                 ISelectable selectable = hit.transform.GetComponentInParent<ISelectable>();
 
                 if (selectable != null)
@@ -62,7 +69,7 @@ public class MyCursor : MonoBehaviour
                         hovered = selectable;
                     }
 
-                    if (Input.GetMouseButtonDown(0))
+                    if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
                     {
                         if (selectable != selected)
                         {
@@ -95,7 +102,6 @@ public class MyCursor : MonoBehaviour
 
             if (Input.GetMouseButtonDown(1) && selected != null && hovered != null)
             {
-
                 if (selected != hovered)
                 {
                     switch (myMyCursorMode)
@@ -125,7 +131,8 @@ public class MyCursor : MonoBehaviour
                                     {
                                         Vector3 target = hit.point;
                                         target.y = 0;
-                                        selectedUnit.GetComponent<UnitAI>().movementTarget = grid.WorldToGridPosition(target);
+                                        selectedUnit.GetComponent<UnitAI>().movementTarget =
+                                            grid.WorldToGridPosition(target);
                                         selectedUnit.GetComponent<UnitAI>().hasTarget = true;
                                     }
 
@@ -135,44 +142,52 @@ public class MyCursor : MonoBehaviour
                                     //IDK
                                     break;
                             }
+
                             break;
                         case (MY_CURSOR_MODE.BUILD):
                             Building building = ((MonoBehaviour)(hovered)).GetComponent<Building>();
                             if (building != null)
                             {
                                 currentTile = building.tile;
-                                if (currentTile.Building == null || currentTile.BuildingHandler.buildingType == BuildingType.FLOOR)
+                                if (currentTile.Building == null ||
+                                    currentTile.BuildingHandler.buildingType == BuildingType.FLOOR)
                                 {
-
-                                    constructionManager.placeBuilding(Mathf.FloorToInt(currentTile.x / grid.cellSize) + 50,
-                                        Mathf.FloorToInt(currentTile.y / grid.cellSize) + 50, constructionManager.building);
+                                    constructionManager.placeBuilding(
+                                        Mathf.FloorToInt(currentTile.x / grid.cellSize) + 50,
+                                        Mathf.FloorToInt(currentTile.y / grid.cellSize) + 50,
+                                        constructionManager.building);
                                 }
                                 else
                                 {
                                     Debug.Log("There is already a building here");
                                 }
                             }
-                          
+
                             break;
                     }
-                    
                 }
-              
             }
         }
 
         switch (myMyCursorMode)
         {
             case MY_CURSOR_MODE.UNIT:
-          //      Cursor.SetCursor(unitCursor, Vector2.zero, CursorMode.Auto);
+                //      Cursor.SetCursor(unitCursor, Vector2.zero, CursorMode.Auto);
+                Inventory.SetActive(true);
+                Equipment.SetActive(true);
                 break;
             case MY_CURSOR_MODE.BUILD:
                 Cursor.SetCursor(buildingCursor, Vector2.zero, CursorMode.Auto);
+                Inventory.SetActive(false);
+                Equipment.SetActive(false);
                 break;
             default:
                 Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                Inventory.SetActive(false);
+                Equipment.SetActive(false);
                 break;
         }
+        
         
     }
 

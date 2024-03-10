@@ -1,9 +1,12 @@
-﻿namespace GameItems.ConcreteItems {
+﻿using UnityEngine;
+
+namespace GameItems.ConcreteItems {
     public class GITidePodLauncher : GameItem {
         public GITidePodLauncher() {
             Name = "Tide Pod Launcher";
             Description =
                 "High-tech piece of equipment, allowing to launch highly explosive TidePods from afar to wreak havoc upon The Dust.";
+            icon = Resources.Load<Sprite>("axe-icon");
 
             AttackProperties = new GameItemAttackProperties() {
                 TargettingRange = 5,

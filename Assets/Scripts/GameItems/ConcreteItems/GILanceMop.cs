@@ -1,8 +1,11 @@
-﻿namespace GameItems.ConcreteItems {
+﻿using UnityEngine;
+
+namespace GameItems.ConcreteItems {
     public class GILanceMop : GameItem {
         public GILanceMop() {
             Name = "Lance Mop";
             Description = "Standard mop on a long stick. Originally intended for use by cavalry soldiers, but in these trying times, we will use anything.";
+            icon = Resources.Load<Sprite>("axe-icon");
 
             AttackProperties = new GameItemAttackProperties() {
                 TargettingRange = 2,

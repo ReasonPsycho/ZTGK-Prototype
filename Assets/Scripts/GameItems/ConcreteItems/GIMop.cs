@@ -1,9 +1,11 @@
-﻿namespace GameItems.ConcreteItems {
+﻿using UnityEngine;
+
+namespace GameItems.ConcreteItems {
     public class GIMop : GameItem {
         public GIMop() {
             Name = "Mop";
             Description = "Basic cleaning utility, equipped to every soldier sponge upon their enlistment.";
-
+            icon = Resources.Load<Sprite>("axe-icon");
             AttackProperties = new GameItemAttackProperties {
                 TargettingRange = 1,
                 EffectiveArea = GameItemAttackProperties.Area.SINGLE_UNIT,
