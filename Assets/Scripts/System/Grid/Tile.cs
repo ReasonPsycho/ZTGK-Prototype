@@ -16,19 +16,25 @@ public class Tile {
     
     public bool Build(GameObject building) {
         if ( !Vacant ) return false;
-        Vacant = false;
         this.Building = building;
         BuildingHandler = building.GetComponent<Building>();
         BuildingHandler.tile = this;
+        if(  BuildingHandler.buildingType != BuildingType.FLOOR)
+        {
+            Vacant = false;
+        }
         return true;
     }
     public bool Build(GameObject building,BuildingType buildingType) {
         if ( !Vacant ) return false;
-        Vacant = false;
         this.Building = building;
         BuildingHandler = building.GetComponent<Building>();
         BuildingHandler.tile = this;
         BuildingHandler.buildingType = buildingType; 
+        if( buildingType != BuildingType.FLOOR)
+        {
+            Vacant = false;
+        }
         return true;
     }
     

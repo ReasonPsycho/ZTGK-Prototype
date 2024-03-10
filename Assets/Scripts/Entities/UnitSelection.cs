@@ -9,16 +9,17 @@ public class UnitSelection : MonoBehaviour
 
 
     public Unit selectedUnit;
-    private Cursor cursor;
+    private MyCursor _myCursor;
 
 
     private void Start()
     {
-        cursor = GameObject.Find("CursorAbstractObject").GetComponent<Cursor>();
+        _myCursor = GameObject.Find("CursorAbstractObject").GetComponent<MyCursor>();
     }
 
     private void Update()
     {
+        /*
         //if the left mouse button is clicked
         if (Input.GetMouseButtonDown(0))
         {
@@ -70,6 +71,6 @@ public class UnitSelection : MonoBehaviour
             }
         }
 
+*/
     }
-
 }

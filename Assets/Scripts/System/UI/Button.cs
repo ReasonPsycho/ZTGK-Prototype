@@ -10,7 +10,7 @@ public class Button : MonoBehaviour
     {
         if (isBuildingButton)
         {
-            GameObject.Find("CursorAbstractObject").GetComponent<Cursor>().CursorMode = CursorMode.BUILD;
+            GameObject.Find("CursorAbstractObject").GetComponent<MyCursor>().MyCursorMode = MY_CURSOR_MODE.BUILD;
         }
         else
         {

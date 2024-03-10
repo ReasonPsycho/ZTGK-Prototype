@@ -3,12 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Unit : MonoBehaviour , ISelectable
+public class Unit : MonoBehaviour, ISelectable
 {
     public UnitState state = UnitState.IDLE;
-
-
-    public bool IsSelected = false;
 
     public Grid grid;
     public Animator animator;
@@ -17,9 +14,20 @@ public class Unit : MonoBehaviour , ISelectable
     private Tile prevTile;
     public float facingAngle;
 
+    #region ISelectable
+
+    public SELECTION_TYPE SelectionType
+    {
+        get { return SELECTION_TYPE.UNIT; }
+    }
+
     private Color orgColor;
     private Material material;
-    private bool hovered = false;
+    private bool isHovered = false;
+    private bool isSelected = false;
+
+    #endregion
+
 
     [Header("General")] public float MaxHealth = 100.0f;
     private float health;
@@ -47,9 +55,10 @@ public class Unit : MonoBehaviour , ISelectable
         health = MaxHealth;
         prevTile = grid.GetTile(gridPosition);
         material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
+        orgColor = material.color;
     }
 
-    
+
     private void Update()
     {
         if (firstUpdate)
@@ -114,50 +123,44 @@ public class Unit : MonoBehaviour , ISelectable
         Destroy(gameObject);
     }
 
-    //change clr to show selection
-    private void OnDrawGizmos()
-    {
-        if (IsSelected)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, 1.0f);
-        }
-    }
+    #region ISelectable
 
-    public void Select()
+    public void OnHoverEnter()
     {
-        IsSelected = true;
-    }
-
-    public void Deselect()
-    {
-        IsSelected = false;
-    }
-    
-    public  void OnHoverEnter()
-    {
-        if (!hovered)
+        if (!isHovered)
         {
-            orgColor = material.color;
             material.color = Color.cyan;
-            hovered = true;
+            isHovered = true;
+        }
+    }
+
+    public void OnHoverExit()
+    {
+        if (!isSelected)
+        {
+            material.color = orgColor;
         }
 
-    }
-    
-    public  void OnHoverExit()
-    {
-        material.color = orgColor;
-        hovered = false;
+        isHovered = false;
     }
 
     public virtual void OnSelect()
     {
-        throw new NotImplementedException("This method is not implemented yet.");    
+        if (!isSelected)
+        {
+            material.color = Color.blue;
+        }
+
+        isSelected = true;
+        
     }
 
     public virtual void OnDeselect()
     {
-        throw new NotImplementedException("This method is not implemented yet.");    
+        material.color = orgColor;
+        isHovered = false;
+        isSelected = false;
     }
+
+    #endregion
 }

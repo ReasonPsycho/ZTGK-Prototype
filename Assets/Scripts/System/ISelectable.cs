@@ -2,9 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public enum SELECTION_TYPE
+{
+    BUILDING,
+    UNIT
+};
+
 public interface ISelectable
 {
-    // Start is called before the first frame update
+    SELECTION_TYPE SelectionType { get;}    
     void OnHoverEnter();
 
     void OnHoverExit();

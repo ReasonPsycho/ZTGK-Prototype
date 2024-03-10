@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CursorMode
+public enum MY_CURSOR_MODE
 {
     DEFAULT,
     SELECT, 

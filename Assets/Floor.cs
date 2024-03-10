@@ -5,30 +5,61 @@ using UnityEngine;
 
 public class Floor : Building
 {
+    #region ISelectable
+
     private Color orgColor;
     private Material material;
-    private bool hovered = false;
+    private bool isHovered = false;
+    private bool isSelected = false;
+
+    #endregion
+
     public void Start()
     {
         material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
+        orgColor = material.color;
     }
+
+    #region ISelectable
 
     public override void OnHoverEnter()
     {
-        if (!hovered)
+        if (!isHovered)
         {
-            orgColor = material.color;
             material.color = Color.cyan;
-            hovered = true;
+            isHovered = true;
         }
-
     }
-    
+
     public override void OnHoverExit()
     {
-        material.color = orgColor;
-        hovered = false;
+        if (!isSelected)
+        {
+            material.color = orgColor;
+        }
 
+        isHovered = false;
     }
+
+    public override void OnSelect()
+    {
+        if (!isSelected)
+        {
+            material.color = Color.blue;
+        }
+
+        isSelected = true;
+        
+    }
+
+    public override void OnDeselect()
+    {
+        material.color = orgColor;
+        isHovered = false;
+        isSelected = false;
+    }
+
+    #endregion
+
     // Start is called before the first frame update
 }

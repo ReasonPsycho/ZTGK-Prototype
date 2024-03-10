@@ -73,6 +73,14 @@ public class ConstructionManager : MonoBehaviour
     public bool placeBuilding(int x, int y, GameObject building)
     {
 
+        if (grid.gridArray[x, y].BuildingHandler != null)
+        {
+            if(grid.gridArray[x, y].BuildingHandler.buildingType == BuildingType.FLOOR)
+            {
+                grid.gridArray[x, y].BuildingHandler.DestroyBuilding();
+            }
+        }
+
         if (grid.gridArray[x, y].Building == null)
         {
             grid.gridArray[x, y].Build(Instantiate(

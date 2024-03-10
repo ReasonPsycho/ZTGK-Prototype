@@ -13,9 +13,14 @@ public class Wall : Building
 
     //  NORTH -> Z+ | SOUTH -> Z- | EAST -> X+ | WEST -> X- | TOP -> Y+
 
-    public Material newMaterial;
+    #region ISelectable
+
     private Color orgColor;
-    bool hovered = false;
+    private Material material;
+    private bool isHovered = false;
+    private bool isSelected = false;
+
+    #endregion
 
     public GameObject wallSidePrefab;
 
@@ -76,8 +81,10 @@ public class Wall : Building
                     transform.position.z - tile.grid.cellSize / 2.0f), Quaternion.Euler(-90, 0, 0), this.transform);
         }
 
-        newMaterial = new Material(Shader.Find("Standard"));
-        newMaterial.name = "Wall side material";
+        material = new Material(Shader.Find("Standard"));
+        material.name = "Wall side material";
+        orgColor = material.color;
+
         ApplyNewMaterial();
         return this.gameObject;
     }
@@ -88,9 +95,9 @@ public class Wall : Building
         {
             if (childRenderer != null)
             {
-                if (newMaterial != null)
+                if (material != null)
                 {
-                    childRenderer.material = newMaterial;
+                    childRenderer.material = material;
                 }
                 else
                 {
@@ -137,19 +144,44 @@ public class Wall : Building
     }
 
 
+    #region ISelectable
+
     public override void OnHoverEnter()
     {
-        if (!hovered)
+        if (!isHovered)
         {
-            orgColor = newMaterial.color;
-            newMaterial.color = Color.cyan;
-            hovered = true;
+            material.color = Color.cyan;
+            isHovered = true;
         }
     }
 
     public override void OnHoverExit()
     {
-        hovered = false;
-        newMaterial.color = orgColor;
+        if (!isSelected)
+        {
+            material.color = orgColor;
+        }
+
+        isHovered = false;
     }
+
+    public override void OnSelect()
+    {
+        if (!isSelected)
+        {
+            material.color = Color.blue;
+        }
+
+        isSelected = true;
+    }
+
+    public override void OnDeselect()
+    {
+        material.color = orgColor;
+        isSelected = false;
+        isSelected = false;
+
+    }
+
+    #endregion
 }
