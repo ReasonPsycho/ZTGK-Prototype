@@ -9,6 +9,7 @@ public class ConstructionManager : MonoBehaviour
     public GameObject building;
     public GameObject wall;
     public GameObject wallSide;
+    public GameObject floor;
 
     public Grid grid;
 
@@ -33,6 +34,15 @@ public class ConstructionManager : MonoBehaviour
                             0.0f + transform.position.y,
                             z * grid.cellSize + transform.position.z + grid.offsetZ + grid.cellSize / 2.0f),
                         Quaternion.identity, grid.transform), BuildingType.WALL);
+
+                }
+                else
+                {
+                    grid.gridArray[x, z].Build(Instantiate(floor,
+                        new Vector3(x * grid.cellSize + transform.position.x + grid.offsetX + grid.cellSize / 2.0f,
+                            0.0f + transform.position.y,
+                            z * grid.cellSize + transform.position.z + grid.offsetZ + grid.cellSize / 2.0f),
+                        Quaternion.identity, grid.transform), BuildingType.FLOOR);
 
                 }
             }

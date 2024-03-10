@@ -13,6 +13,10 @@ public class Wall : Building
 
     //  NORTH -> Z+ | SOUTH -> Z- | EAST -> X+ | WEST -> X- | TOP -> Y+
 
+    public Material newMaterial;
+    private Color orgColor;
+    bool hovered = false;
+
     public GameObject wallSidePrefab;
 
     public GameObject northSide; // rot. X 90
@@ -22,17 +26,15 @@ public class Wall : Building
     public GameObject topSide; // rot.  0
 
 
-    private void Start()
+    public void Start()
     {
         buildingType = BuildingType.WALL;
         wallSidePrefab = GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>().wallSide;
-
     }
 
 
     public GameObject SetWall()
     {
-
         topSide = Instantiate(wallSidePrefab,
             new Vector3(transform.position.x, tile.grid.cellSize, transform.position.z), Quaternion.identity,
             this.transform); //instantiates the top side of the wall as a child of the wall object
@@ -50,7 +52,7 @@ public class Wall : Building
                     transform.position.z), Quaternion.Euler(0, 0, -90), this.transform);
         }
 
-        if (southNeighbour == null ||southNeighbour.Vacant || southNeighbour.BuildingHandler == null ||
+        if (southNeighbour == null || southNeighbour.Vacant || southNeighbour.BuildingHandler == null ||
             southNeighbour.BuildingHandler.buildingType != BuildingType.WALL)
         {
             southSide = Instantiate(wallSidePrefab,
@@ -58,7 +60,7 @@ public class Wall : Building
                     transform.position.z), Quaternion.Euler(0, 0, 90), this.transform);
         }
 
-        if (eastNeighbour == null ||eastNeighbour.Vacant || eastNeighbour.BuildingHandler == null ||
+        if (eastNeighbour == null || eastNeighbour.Vacant || eastNeighbour.BuildingHandler == null ||
             eastNeighbour.BuildingHandler.buildingType != BuildingType.WALL)
         {
             eastSide = Instantiate(wallSidePrefab,
@@ -66,7 +68,7 @@ public class Wall : Building
                     transform.position.z + tile.grid.cellSize / 2.0f), Quaternion.Euler(90, 0, 0), this.transform);
         }
 
-        if (westNeighbour == null ||westNeighbour.Vacant || westNeighbour.BuildingHandler == null ||
+        if (westNeighbour == null || westNeighbour.Vacant || westNeighbour.BuildingHandler == null ||
             westNeighbour.BuildingHandler.buildingType != BuildingType.WALL)
         {
             westSide = Instantiate(wallSidePrefab,
@@ -74,7 +76,28 @@ public class Wall : Building
                     transform.position.z - tile.grid.cellSize / 2.0f), Quaternion.Euler(-90, 0, 0), this.transform);
         }
 
+        newMaterial = new Material(Shader.Find("Standard"));
+        newMaterial.name = "Wall side material";
+        ApplyNewMaterial();
         return this.gameObject;
+    }
+
+    public void ApplyNewMaterial()
+    {
+        foreach (MeshRenderer childRenderer in transform.GetComponentsInChildren<MeshRenderer>())
+        {
+            if (childRenderer != null)
+            {
+                if (newMaterial != null)
+                {
+                    childRenderer.material = newMaterial;
+                }
+                else
+                {
+                    Debug.LogError("newMaterial is not initialized.");
+                }
+            }
+        }
     }
 
 
@@ -111,5 +134,22 @@ public class Wall : Building
 
         Destroy(gameObject);
         return true;
+    }
+
+
+    public override void OnHoverEnter()
+    {
+        if (!hovered)
+        {
+            orgColor = newMaterial.color;
+            newMaterial.color = Color.cyan;
+            hovered = true;
+        }
+    }
+
+    public override void OnHoverExit()
+    {
+        hovered = false;
+        newMaterial.color = orgColor;
     }
 }

@@ -41,7 +41,6 @@ public class UnitAI : MonoBehaviour
             movementTarget = FindNearestVacantTile(movementTarget);
         }
 
-print(path.Count);
         if (path.Count != 0)
         {
             unit.state = UnitState.MOVING;

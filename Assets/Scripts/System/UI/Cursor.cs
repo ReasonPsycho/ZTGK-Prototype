@@ -17,15 +17,14 @@ public class Cursor : MonoBehaviour
     private UnitSelection unitSelection;
     private Unit selectedUnit;
 
+    private ISelectable selected;
+    
     private void Start()
     {
         constructionManager = GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>();
 
         grid = constructionManager.grid;
-        currentTileHighlight = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        currentTileHighlight.transform.position = new Vector3(100, 100, 100);
-        currentTileHighlight.GetComponent<Renderer>().material.color = Color.cyan;
-        currentTileHighlight.layer = 2;
+
         unitSelection = GameObject.Find("CursorAbstractObject").GetComponent<UnitSelection>();
     }
 
@@ -41,6 +40,25 @@ public class Cursor : MonoBehaviour
 
             RaycastHit hit;
 
+            
+            if (Physics.Raycast(ray, out hit, 1000.0f))
+            {
+                ISelectable selectable = hit.transform.GetComponentInParent<ISelectable>();
+                
+                if (selectable != null) {
+                    selectable.OnHoverEnter();
+                }
+
+                if (selectable != selected)
+                {
+                    if (selected != null)
+                    {
+                        selected.OnHoverExit();
+                    }
+                    selected = selectable;
+                }
+            }
+            
             if (Physics.Raycast(ray, out hit, 1000.0f))
             {
                 Vector3 point = hit.point - transform.position;
@@ -53,16 +71,8 @@ public class Cursor : MonoBehaviour
             else
             {
                 currentTile = null;
-                currentTileHighlight.transform.position = new Vector3(100, 100, 100);
             }
-
-
-            if (currentTile != null)
-            {
-                currentTileHighlight.transform.position = new Vector3(currentTile.x + grid.cellSize / 2.0f, hit.point.y + 0.01f,
-                    currentTile.y + grid.cellSize / 2.0f);
-                currentTileHighlight.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-            }
+            
 
             //BUILDING
             if (Input.GetMouseButtonDown(0) && currentTile != null && cursorMode == CursorMode.BUILD)
@@ -72,12 +82,10 @@ public class Cursor : MonoBehaviour
 
                     constructionManager.placeBuilding(Mathf.FloorToInt(currentTile.x / grid.cellSize) + 50,
                         Mathf.FloorToInt(currentTile.y / grid.cellSize) + 50, constructionManager.building);
-                    StartCoroutine(changeTileHighlightClr(0.5f, Color.green));
                 }
                 else
                 {
                     Debug.Log("There is already a building here");
-                    StartCoroutine(changeTileHighlightClr(0.5f, Color.red));
                 }
 
             }
@@ -126,12 +134,6 @@ public class Cursor : MonoBehaviour
         }
     }
 
-    public IEnumerator changeTileHighlightClr(float seconds, Color color)
-    {
-        currentTileHighlight.GetComponent<Renderer>().material.color = color;
-        yield return new WaitForSeconds(seconds);
-        currentTileHighlight.GetComponent<Renderer>().material.color = Color.cyan;
-    }
 
     public CursorMode CursorMode
     {

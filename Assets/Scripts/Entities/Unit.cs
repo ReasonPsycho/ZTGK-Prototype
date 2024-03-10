@@ -1,8 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Unit : MonoBehaviour
+public class Unit : MonoBehaviour , ISelectable
 {
     public UnitState state = UnitState.IDLE;
 
@@ -16,6 +17,9 @@ public class Unit : MonoBehaviour
     private Tile prevTile;
     public float facingAngle;
 
+    private Color orgColor;
+    private Material material;
+    private bool hovered = false;
 
     [Header("General")] public float MaxHealth = 100.0f;
     private float health;
@@ -42,8 +46,10 @@ public class Unit : MonoBehaviour
         grid = GameObject.Find("Grid").GetComponent<Grid>();
         health = MaxHealth;
         prevTile = grid.GetTile(gridPosition);
+        material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
     }
 
+    
     private void Update()
     {
         if (firstUpdate)
@@ -126,5 +132,32 @@ public class Unit : MonoBehaviour
     public void Deselect()
     {
         IsSelected = false;
+    }
+    
+    public  void OnHoverEnter()
+    {
+        if (!hovered)
+        {
+            orgColor = material.color;
+            material.color = Color.cyan;
+            hovered = true;
+        }
+
+    }
+    
+    public  void OnHoverExit()
+    {
+        material.color = orgColor;
+        hovered = false;
+    }
+
+    public virtual void OnSelect()
+    {
+        throw new NotImplementedException("This method is not implemented yet.");    
+    }
+
+    public virtual void OnDeselect()
+    {
+        throw new NotImplementedException("This method is not implemented yet.");    
     }
 }

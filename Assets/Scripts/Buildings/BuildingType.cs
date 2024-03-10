@@ -5,6 +5,7 @@
         BARRACKS,
         WASHING_MACHINE,
         TREASURY,
-        WALL
+        WALL,
+        FLOOR
     }
 }
