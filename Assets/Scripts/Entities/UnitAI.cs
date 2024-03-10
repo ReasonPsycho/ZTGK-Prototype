@@ -99,7 +99,6 @@ public class UnitAI : MonoBehaviour
         {
             unit.animator.SetFloat("motionTime",t);
             t += Time.deltaTime * unit.tilesPerSecond;
-            print(t);
             transform.position = Vector3.Lerp(startPos, targetPos, t);
             
             Vector3 dir = targetPos - transform.position;
