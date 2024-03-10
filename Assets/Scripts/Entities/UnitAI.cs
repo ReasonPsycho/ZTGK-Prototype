@@ -16,7 +16,6 @@ public class UnitAI : MonoBehaviour
     public bool hasTarget = false;
 
     private bool isMoving = false;
-    private float t = 0f;
 
 
     public bool isGoingToMine = false;
@@ -95,7 +94,7 @@ public class UnitAI : MonoBehaviour
         targetPos.y = transform.position.y;
         Vector3 startPos = unit.grid.GridToWorldPosition((Vector2Int)path[0]);
         startPos.y = transform.position.y;
-
+        float t = 0;
         while (t < 1)
         {
             unit.animator.SetFloat("motionTime",t);
@@ -113,7 +112,6 @@ public class UnitAI : MonoBehaviour
             yield return null;
         }  
         
-        t = 0f;
         isMoving = false;
     }
 
@@ -170,7 +168,6 @@ public class UnitAI : MonoBehaviour
             print("CALLLED");
             path.RemoveAt(0);
             isMoving = false;
-            t = 0;
         }
         MoveUnit(nextTile);
     }
