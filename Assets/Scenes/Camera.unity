@@ -2552,6 +2552,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 4491057444260848202, guid: 9e0e7e51cab94ed4a9a64f39f2861aef, type: 3}
+      propertyPath: tilesPerSecond
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9e0e7e51cab94ed4a9a64f39f2861aef, type: 3}
 --- !u!1 &1341939165
@@ -2876,7 +2880,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4491057444260848202, guid: 1b7680bea7a53bf408452725e6f06fe9, type: 3}
       propertyPath: rotationSpeed
-      value: 3
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4491057444260848202, guid: 1b7680bea7a53bf408452725e6f06fe9, type: 3}
+      propertyPath: tilesPerSecond
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b7680bea7a53bf408452725e6f06fe9, type: 3}

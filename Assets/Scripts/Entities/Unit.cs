@@ -6,7 +6,9 @@ using UnityEngine;
 public class Unit : MonoBehaviour, ISelectable
 {
     public UnitState state = UnitState.IDLE;
-    
+
+    public UnitType type;
+
     public bool IsSelected = false;
 
     public Grid grid;
@@ -75,7 +77,7 @@ public class Unit : MonoBehaviour, ISelectable
 
         if (prevTile != currentTile)
         {
-            if (prevTile.Building == null)
+            if (prevTile.BuildingHandler.buildingType == Buildings.BuildingType.FLOOR || prevTile.Building == null)
             {
                 prevTile.Vacant = true;
                 //grid.GetTile(prevTile.Index).Vacant = true;
