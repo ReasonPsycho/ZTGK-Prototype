@@ -6,12 +6,8 @@ using UnityEngine;
 public class Unit : MonoBehaviour, ISelectable
 {
     public UnitState state = UnitState.IDLE;
-<<<<<<< Updated upstream
-=======
-    public UnitType type;
-
+    
     public bool IsSelected = false;
->>>>>>> Stashed changes
 
     public Grid grid;
     public Animator animator;
