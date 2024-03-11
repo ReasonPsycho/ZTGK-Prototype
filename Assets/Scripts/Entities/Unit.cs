@@ -200,6 +200,8 @@ public class Unit : MonoBehaviour, ISelectable
     /// </returns>
     /// <returns></returns>
     public (bool, GameItem) Equip(GameItem item, int slotMask = 0b11, bool force = false) {
+        if (item == null) return (false, null);
+        
         if ( (slotMask & 0b01) != 0 && Item1 != null ) {
             Item1 = item;
             Apply(Item1);
@@ -261,6 +263,8 @@ public class Unit : MonoBehaviour, ISelectable
     /// </summary>
     /// <param name="item">Item to apply.</param>
     public void Apply(GameItem item) {
+        if (item == null) return;
+
         MaxHealth += item.HealthBuff;
         FlatDamageBuff += item.FlatDamageBuff;
         PercentDamageBuff += item.PercentDamageBuff;
@@ -272,6 +276,8 @@ public class Unit : MonoBehaviour, ISelectable
     /// </summary>
     /// <param name="item">Item to unapply.</param>
     public void Unapply(GameItem item) {
+        if (item == null) return;
+
         MaxHealth -= item.HealthBuff;
         FlatDamageBuff -= item.FlatDamageBuff;
         PercentDamageBuff -= item.PercentDamageBuff;
