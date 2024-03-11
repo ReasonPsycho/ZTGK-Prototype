@@ -10,7 +10,9 @@ public class Button : MonoBehaviour
     {
         if (isBuildingButton)
         {
-            GameObject.Find("CursorAbstractObject").GetComponent<MyCursor>().MyCursorMode = MY_CURSOR_MODE.BUILD;
+            var cursor = GameObject.Find("CursorAbstractObject").GetComponent<MyCursor>();
+                cursor.MyCursorMode = MY_CURSOR_MODE.BUILD;
+                cursor.buildingPrefab = buildingPrefab;
             GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>().building = buildingPrefab;
         }
         else

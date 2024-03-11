@@ -1,6 +1,7 @@
 using Buildings;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -29,20 +30,34 @@ public class ConstructionManager : MonoBehaviour
                 if (!(x > 40 && x < 60 && z > 40 && z < 60))
                 //if (x == 1 && z == 1)
                 {
-                    grid.gridArray[x, z].Build(Instantiate(wall,
-                        new Vector3(x * grid.cellSize + transform.position.x + grid.offsetX + grid.cellSize / 2.0f,
-                            0.0f + transform.position.y,
-                            z * grid.cellSize + transform.position.z + grid.offsetZ + grid.cellSize / 2.0f),
-                        Quaternion.identity, grid.transform), BuildingType.WALL);
+                    placeBuilding(
+                        grid,
+                        new List<Tile> {grid.gridArray[ x, z ]},
+                        wall,
+                        BuildingType.WALL
+                    );
+
+                    // grid.gridArray[x, z].Build(Instantiate(wall,
+                    //     new Vector3(x * grid.cellSize + transform.position.x + grid.offsetX + grid.cellSize / 2.0f,
+                    //         0.0f + transform.position.y,
+                    //         z * grid.cellSize + transform.position.z + grid.offsetZ + grid.cellSize / 2.0f),
+                    //     Quaternion.identity, grid.transform), BuildingType.WALL);
 
                 }
                 else
                 {
-                    grid.gridArray[x, z].Build(Instantiate(floor,
-                        new Vector3(x * grid.cellSize + transform.position.x + grid.offsetX + grid.cellSize / 2.0f,
-                            0.0f + transform.position.y,
-                            z * grid.cellSize + transform.position.z + grid.offsetZ + grid.cellSize / 2.0f),
-                        Quaternion.identity, grid.transform), BuildingType.FLOOR);
+                    placeBuilding(
+                        grid,
+                        new List<Tile> {grid.gridArray[ x, z ]},
+                        floor,
+                        BuildingType.FLOOR
+                    );
+
+                    // grid.gridArray[x, z].Build(Instantiate(floor,
+                    //     new Vector3(x * grid.cellSize + transform.position.x + grid.offsetX + grid.cellSize / 2.0f,
+                    //         0.0f + transform.position.y,
+                    //         z * grid.cellSize + transform.position.z + grid.offsetZ + grid.cellSize / 2.0f),
+                    //     Quaternion.identity, grid.transform), BuildingType.FLOOR);
 
                 }
             }
@@ -70,6 +85,42 @@ public class ConstructionManager : MonoBehaviour
         }
     }
 
+    public bool placeBuilding(Grid parentGrid, IEnumerable<Tile> tiles, GameObject buildingPrefab, BuildingType type = BuildingType.ANY) {
+        foreach (var tile in tiles) {
+            if ( !tile.Vacant ) return false;
+        }
+
+        float avgX = 0;
+        float avgZ = 0;
+        foreach (var tile in tiles) {
+            if ( tile.BuildingHandler != null && tile.BuildingHandler.buildingType == BuildingType.FLOOR )
+                tile.Destroy();
+
+            avgX += tile.x;
+            avgZ += tile.y;
+        }
+
+        avgX /= tiles.Count();
+        avgZ /= tiles.Count();
+
+        var obj = Instantiate(
+            buildingPrefab,
+            new Vector3(
+                avgX,
+                0.0f + transform.position.y,
+                avgZ),
+            Quaternion.identity,
+            parentGrid.transform
+        );
+
+        foreach (var tile in tiles) {
+            tile.Build(obj, type);
+        }
+
+        return true;
+    }
+
+    /*
     public bool placeBuilding(int x, int y, GameObject building)
     {
 
@@ -100,4 +151,5 @@ public class ConstructionManager : MonoBehaviour
 
         return false;
     }
+    */
 }

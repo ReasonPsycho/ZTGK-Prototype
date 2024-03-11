@@ -1,8 +1,7 @@
 ﻿namespace Buildings {
     public enum BuildingType {
         ANY,
-        WORKER_HOUSE,
-        BARRACKS,
+        SHOP,
         WASHING_MACHINE,
         TREASURY,
         WALL,

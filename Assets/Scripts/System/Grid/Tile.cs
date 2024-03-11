@@ -18,18 +18,18 @@ public class Tile {
         if ( !Vacant ) return false;
         this.Building = building;
         BuildingHandler = building.GetComponent<Building>();
-        BuildingHandler.tile = this;
+        BuildingHandler.tiles.Add(this);
         if(  BuildingHandler.buildingType != BuildingType.FLOOR)
         {
             Vacant = false;
         }
         return true;
     }
-    public bool Build(GameObject building,BuildingType buildingType) {
+    public bool Build(GameObject building, BuildingType buildingType) {
         if ( !Vacant ) return false;
         this.Building = building;
         BuildingHandler = building.GetComponent<Building>();
-        BuildingHandler.tile = this;
+        BuildingHandler.tiles.Add(this);
         BuildingHandler.buildingType = buildingType; 
         if( buildingType != BuildingType.FLOOR)
         {
