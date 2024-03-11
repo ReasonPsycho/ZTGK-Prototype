@@ -16,7 +16,6 @@ public class Wall : Building
     #region ISelectable
 
     private Color orgColor;
-    private Material material;
     private bool isHovered = false;
     private bool isSelected = false;
 

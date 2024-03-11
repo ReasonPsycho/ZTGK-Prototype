@@ -6,10 +6,23 @@ using UnityEngine;
 
 public class Building : MonoBehaviour, ISelectable
 {
+    #region ISelectable
+
+    private Color orgColor;
+    protected Material material;
+    private bool isHovered = false;
+    private bool isSelected = false;
+
+    #endregion
+
     public BuildingType buildingType = BuildingType.ANY;
     public List<Tile> tiles = new();
     public virtual Vector2Int Size { get; } = new(2, 2);
 
+    private void Start() {
+        material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
+        orgColor = material.color;
+    }
 
     virtual public bool DestroyBuilding()
     {
@@ -36,22 +49,38 @@ public class Building : MonoBehaviour, ISelectable
 
     public virtual void OnHoverEnter()
     {
-        throw new NotImplementedException("This method is not implemented yet.");
+        if (!isHovered)
+        {
+            material.color = Color.cyan;
+            isHovered = true;
+        }
+
     }
 
     public virtual void OnHoverExit()
     {
-        throw new NotImplementedException("This method is not implemented yet.");
-    }
+        if (!isSelected)
+        {
+            material.color = orgColor;
+        }
+
+        isHovered = false;    }
 
     public virtual void OnSelect()
     {
-        throw new NotImplementedException("This method is not implemented yet.");
-    }
+        if (!isSelected)
+        {
+            material.color = Color.blue;
+        }
+
+        isSelected = true;    }
 
     public virtual void OnDeselect()
     {
-        throw new NotImplementedException("This method is not implemented yet.");
+        material.color = orgColor;
+        isHovered = false;
+        isSelected = false;
+
     }
 
     #endregion

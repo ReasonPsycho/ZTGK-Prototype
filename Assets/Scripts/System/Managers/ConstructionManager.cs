@@ -1,6 +1,7 @@
 using Buildings;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -84,7 +85,7 @@ public class ConstructionManager : MonoBehaviour
         }
     }
 
-    public bool placeBuilding(Grid parentGrid, List<Tile> tiles, GameObject buildingPrefab, BuildingType type = BuildingType.ANY) {
+    public bool placeBuilding(Grid parentGrid, IEnumerable<Tile> tiles, GameObject buildingPrefab, BuildingType type = BuildingType.ANY) {
         foreach (var tile in tiles) {
             if ( !tile.Vacant ) return false;
         }
@@ -99,8 +100,8 @@ public class ConstructionManager : MonoBehaviour
             avgZ += tile.y;
         }
 
-        avgX /= tiles.Count;
-        avgZ /= tiles.Count;
+        avgX /= tiles.Count();
+        avgZ /= tiles.Count();
 
         var obj = Instantiate(
             buildingPrefab,

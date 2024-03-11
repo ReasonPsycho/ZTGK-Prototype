@@ -24,6 +24,7 @@ public class MyCursor : MonoBehaviour {
     public ISelectable selected;
 
     public List<ISelectable> hoveredList = new();
+    // public List<Tile> buildList = new();
     public GameObject buildingPrefab;
 
 
@@ -195,6 +196,12 @@ public class MyCursor : MonoBehaviour {
 
                             break;
                         case (MY_CURSOR_MODE.BUILD):
+                            if ( buildingPrefab != null ) {
+                                constructionManager.placeBuilding(
+                                    grid, hoveredList.Select(selectable => ((Building) selectable).tiles[0]), buildingPrefab, BuildingType.SHOP
+                                );
+                            }
+
                         //    Building building = ((MonoBehaviour) (hoveredList[0])).GetComponent<Building>();
                     //        if ( building != null ) {
                     ////            currentTile = building.tiles[ 0 ];
