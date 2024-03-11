@@ -38,8 +38,9 @@ public class Wall : Building
     }
 
 
-    public GameObject SetWall()
-    {
+    public GameObject SetWall() {
+        var tile = tiles[ 0 ];
+        
         topSide = Instantiate(wallSidePrefab,
             new Vector3(transform.position.x, tile.grid.cellSize, transform.position.z), Quaternion.identity,
             this.transform); //instantiates the top side of the wall as a child of the wall object
@@ -108,8 +109,9 @@ public class Wall : Building
     }
 
 
-    public override bool DestroyBuilding()
-    {
+    public override bool DestroyBuilding() {
+        var tile = tiles[ 0 ];
+
         Tile northNeighbour = tile.grid.GetTile(new Vector2Int(tile.Index.x + 1, tile.Index.y));
         Tile southNeighbour = tile.grid.GetTile(new Vector2Int(tile.Index.x - 1, tile.Index.y));
         Tile eastNeighbour = tile.grid.GetTile(new Vector2Int(tile.Index.x, tile.Index.y + 1));

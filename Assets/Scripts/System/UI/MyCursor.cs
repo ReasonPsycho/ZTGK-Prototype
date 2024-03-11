@@ -148,7 +148,7 @@ public class MyCursor : MonoBehaviour
                             Building building = ((MonoBehaviour)(hovered)).GetComponent<Building>();
                             if (building != null)
                             {
-                                currentTile = building.tile;
+                                currentTile = building.tiles[0];
                                 if (currentTile.Building == null ||
                                     currentTile.BuildingHandler.buildingType == BuildingType.FLOOR)
                                 {

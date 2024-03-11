@@ -7,13 +7,17 @@ using UnityEngine;
 public class Building : MonoBehaviour, ISelectable
 {
     public BuildingType buildingType = BuildingType.ANY;
-    public Tile tile; // Waaay easier just to hold a tile is on
+    public List<Tile> tiles;
+    public virtual Vector2Int Size { get; } = Vector2Int.one;
+
 
     virtual public bool DestroyBuilding()
     {
         Destroy(gameObject);
-        tile.Building = null; //TODO ensure this cleans memory
-        tile.BuildingHandler = null;
+        foreach (var tile in tiles) {
+            tile.Building = null; //TODO ensure this cleans memory
+            tile.BuildingHandler = null;
+        }
         return true;
     }
 

@@ -70,6 +70,38 @@ public class ConstructionManager : MonoBehaviour
         }
     }
 
+    public bool placeBuilding(List<Tile> tiles, GameObject buildingPrefab) {
+        foreach (var tile in tiles) {
+            if ( !tile.Vacant ) return false;
+        }
+
+        float avgX = 0;
+        float avgY = 0;
+        foreach (var tile in tiles) {
+            if ( tile.BuildingHandler.buildingType == BuildingType.FLOOR )
+                tile.BuildingHandler.DestroyBuilding();
+
+            avgX += tile.x;
+            avgY += tile.y;
+        }
+
+        avgX /= tiles.Count;
+        avgY /= tiles.Count;
+
+        var obj = Instantiate(
+            buildingPrefab,
+            new Vector3(avgX, 0.0f + transform.position.y, avgY),
+            Quaternion.identity,
+            transform
+        );
+
+        foreach (var tile in tiles) {
+            tile.Build(obj);
+        }
+
+        return true;
+    }
+
     public bool placeBuilding(int x, int y, GameObject building)
     {
 
