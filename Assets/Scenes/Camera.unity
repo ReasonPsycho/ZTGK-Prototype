@@ -1521,6 +1521,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBuildingButton: 1
+  buildingPrefab: {fileID: 0}
 --- !u!114 &912335467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2457,6 +2458,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 2185536167748927809, guid: 9e0e7e51cab94ed4a9a64f39f2861aef, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4491057444260848202, guid: 9e0e7e51cab94ed4a9a64f39f2861aef, type: 3}
       propertyPath: tilesPerSecond
       value: 2
@@ -2512,6 +2517,11 @@ MonoBehaviour:
   wallSide: {fileID: 4074098458107090196, guid: 3ffd2c8d70d83cd48a8499b0a5831148, type: 3}
   floor: {fileID: 5846320558581305305, guid: e2756ed87e5c7dd4c9dc6bc775088d1f, type: 3}
   grid: {fileID: 1930105229}
+--- !u!1 &1479368216 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2134136363448686330, guid: 26d7eafe62b14226830e9915dc41956a, type: 3}
+  m_PrefabInstance: {fileID: 1747488772056969647}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1498931936
 GameObject:
   m_ObjectHideFlags: 0
@@ -4171,6 +4181,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: BuildingButton
       objectReference: {fileID: 0}
+    - target: {fileID: 3257912946640963835, guid: 26d7eafe62b14226830e9915dc41956a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1479368216}
+    - target: {fileID: 3257912946640963835, guid: 26d7eafe62b14226830e9915dc41956a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8594189103262865232, guid: 26d7eafe62b14226830e9915dc41956a, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -4804,6 +4822,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBuildingButton: 1
+  buildingPrefab: {fileID: 0}
 --- !u!224 &7999768096744433407 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8594189103262865232, guid: 26d7eafe62b14226830e9915dc41956a, type: 3}

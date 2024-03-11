@@ -83,12 +83,14 @@ public class ConstructionManager : MonoBehaviour
 
         if (grid.gridArray[x, y].Building == null)
         {
-            grid.gridArray[x, y].Build(Instantiate(
-            building,
-            new Vector3(x * grid.cellSize + transform.position.x + grid.offsetX + grid.cellSize / 2.0f,
-            0.0f + transform.position.y, y * grid.cellSize + transform.position.z + grid.offsetZ + grid.cellSize / 2.0f),
-                Quaternion.identity, transform
-            ));
+
+            GameObject gameObject = Instantiate(building,
+                               new Vector3(x * grid.cellSize + transform.position.x + grid.offsetX + grid.cellSize / 2.0f,
+                                                  0.0f + transform.position.y, y * grid.cellSize + transform.position.z + grid.offsetZ + grid.cellSize / 2.0f),
+                                              Quaternion.identity, transform);
+            grid.gridArray[x, y].Build(gameObject);
+
+
             StartCoroutine(buildingConstructionCrtn(2.0f));
             Vector3 bldngSize = grid.gridArray[x, y].Building.GetComponentsInChildren<MeshRenderer>()[1].bounds.size;
             grid.gridArray[x, y].Building.transform.localScale = new Vector3(grid.cellSize / bldngSize.x, grid.cellSize / bldngSize.x,
