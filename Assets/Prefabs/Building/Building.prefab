@@ -239,7 +239,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6728251903560051765}
-  - component: {fileID: 4742572570623602000}
+  - component: {fileID: -2916760343499544174}
   m_Layer: 2
   m_Name: Building
   m_TagString: Untagged
@@ -263,7 +263,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4742572570623602000
+--- !u!114 &-2916760343499544174
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -275,4 +275,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf521ed6ba1c5064b8e2841bac349db3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingType: 0
+  buildingType: 1

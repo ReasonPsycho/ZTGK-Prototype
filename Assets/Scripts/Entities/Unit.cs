@@ -65,6 +65,7 @@ public class Unit : MonoBehaviour, ISelectable
         grid = GameObject.Find("Grid").GetComponent<Grid>();
         health = MaxHealth;
         prevTile = grid.GetTile(gridPosition);
+        
         material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
         orgColor = material.color;
 
@@ -75,6 +76,9 @@ public class Unit : MonoBehaviour, ISelectable
 
     private void Update()
     {
+
+       
+        
         if (firstUpdate)
         {
             grid = GameObject.Find("Grid").GetComponent<Grid>();
@@ -83,10 +87,13 @@ public class Unit : MonoBehaviour, ISelectable
 
         gridPosition = grid.WorldToGridPosition(transform.position);
         currentTile = grid.GetTile(gridPosition);
+        //print(prevTile.x + "  "+ prevTile.y);
+       // print(currentTile.x +"  " + prevTile.y);
         grid.GetTile(gridPosition).Vacant = false;
 
         if (prevTile != currentTile)
         {
+            //print("Tile changed");
             if (prevTile.BuildingHandler.buildingType == Buildings.BuildingType.FLOOR || prevTile.Building == null)
             {
                 prevTile.Vacant = true;
