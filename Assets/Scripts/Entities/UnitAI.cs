@@ -13,6 +13,8 @@ public class UnitAI : MonoBehaviour
     public Vector2Int target;
     public Vector2Int movementTarget;
     public Vector2Int miningTarget;
+    public GameObject combatTarget;
+
     public bool hasTarget = false;
 
     private bool isMoving = false;
@@ -20,6 +22,10 @@ public class UnitAI : MonoBehaviour
 
     public bool isGoingToMine = false;
     private bool isMining = false;
+
+    [SerializeField] private int pathLength;
+
+    protected bool isAttackOnCooldown = false;
     protected void Start()
     {
 
@@ -29,6 +35,7 @@ public class UnitAI : MonoBehaviour
 
     private void Update()
     {
+        pathLength = path.Count;
         if (hasTarget)
         {
             path.Clear();
@@ -45,7 +52,7 @@ public class UnitAI : MonoBehaviour
             unit.state = UnitState.MOVING;
             MoveOnPath();
         }
-        
+
         else
         {
             if (moving != null)
@@ -53,7 +60,7 @@ public class UnitAI : MonoBehaviour
                 StopCoroutine(moving);
                 moving = null;
             }
-            StopAllCoroutines();
+            //StopAllCoroutines();
         }
 
 
@@ -66,17 +73,33 @@ public class UnitAI : MonoBehaviour
                 StopCoroutine(moving);
                 moving = null;
             }
-         
+
             unit.state = UnitState.IDLE;
         }
 
         if (isGoingToMine)
         {
             Mine(miningTarget);
-    
+
         }
-        
-        
+
+
+        if (unit.type == UnitType.ALLY)
+        {
+            if (!unit.IsSelected)
+            {
+                combatTarget = FindClosestEnemy(5.0f);
+            }
+            if (combatTarget != null)
+            {
+                Attack(combatTarget);
+            }
+            else
+            {
+                hasTarget = false;
+                unit.state = UnitState.IDLE;
+            }
+        }
 
     }
 
@@ -97,20 +120,20 @@ public class UnitAI : MonoBehaviour
         float t = 0;
         while (t < 1)
         {
-            unit.animator.SetFloat("motionTime",t);
+            unit.animator.SetFloat("motionTime", t);
             t += Time.deltaTime * unit.tilesPerSecond;
             transform.position = Vector3.Lerp(startPos, targetPos, t);
-            
+
             Vector3 dir = targetPos - transform.position;
             dir.y = 0; // Keep the direction in the XZ plane
             if (Vector3.Distance(Vector3.zero, dir) > 0.01f)
             {
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), t *5);
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), t * 5);
             }
             //transform.rotation = Quaternion.Slerp(transform.rotation, tra, unit.rotationSpeed * Time.deltaTime);
             yield return null;
-        }  
-        
+        }
+
         isMoving = false;
     }
 
@@ -135,7 +158,7 @@ public class UnitAI : MonoBehaviour
         while (queue.Count > 0)
         {
             Vector2Int current = queue.Dequeue();
-            if (unit.grid.GetTile(current).Vacant)
+            if (unit.grid.GetTile(current).Vacant || current == unit.grid.WorldToGridPosition(transform.position))
             {
                 return current;
             }
@@ -163,8 +186,7 @@ public class UnitAI : MonoBehaviour
         else
             isMoving = false;
         if (Vector3.Distance(transform.position, unit.grid.GridToWorldPosition(nextTile)) < 0.05f)
-        {
-            print("CALLLED");
+        {;
             path.RemoveAt(0);
             isMoving = false;
         }
@@ -279,7 +301,7 @@ public class UnitAI : MonoBehaviour
         neighbors.Add(new Vector2Int(current.x - 1, current.y)); // Left
         neighbors.Add(new Vector2Int(current.x, current.y + 1)); // Up
         neighbors.Add(new Vector2Int(current.x, current.y - 1)); // Down
-        
+
 
         if (unit.grid.GetTile(new Vector2Int(current.x + 1, current.y)).Vacant && unit.grid.GetTile(new Vector2Int(current.x, current.y + 1)).Vacant)
             neighbors.Add(new Vector2Int(current.x + 1, current.y + 1)); // Top Right
@@ -308,7 +330,7 @@ public class UnitAI : MonoBehaviour
     {
         if (Vector3.Distance(unit.grid.GridToWorldPosition(target), transform.position) <= unit.reachRange)
         {
-           
+
             if (!isMining)
             {
                 StartCoroutine(MineCoroutine(target));
@@ -320,7 +342,7 @@ public class UnitAI : MonoBehaviour
     {
         isMining = true;
 
-        float miningTime = unit.grid.GetTile(target).Building.GetComponent<Mineable>().miningTime / unit.miningSpeed ;
+        float miningTime = unit.grid.GetTile(target).Building.GetComponent<Mineable>().miningTime / unit.miningSpeed;
         while (miningTime > 0)
         {
             miningTime -= Time.deltaTime;
@@ -333,6 +355,62 @@ public class UnitAI : MonoBehaviour
     #endregion
 
     #region Combat
+
+    public void Attack(GameObject target)
+    {
+        hasTarget = true;
+        if (Vector3.Distance(target.transform.position, transform.position) <= unit.reachRange)
+        {
+            TurnTo(unit.grid.WorldToGridPosition(target.transform.position));
+            unit.state = UnitState.ATTACKING;
+            if (!isAttackOnCooldown)
+            {
+                StartCoroutine(attackCrt(target));
+                
+            }
+        }
+        else
+        {
+            movementTarget = unit.grid.WorldToGridPosition(target.transform.position);
+            
+        }
+    }
+
+    public GameObject FindClosestEnemy(float range)
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+        foreach (GameObject enemy in enemies)
+        {
+            EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+            if (enemyAI != null && enemyAI.state != EnemyState.ASLEEP)
+            {
+                float diff = Vector3.Distance(enemy.transform.position, position);
+                if(diff > range)
+                {
+                    continue;
+                }
+
+                if (diff < distance)
+                {
+                    closest = enemy;
+                    distance = diff;
+                }
+            }
+        }
+        return closest;
+    }
+
+
+    public IEnumerator attackCrt(GameObject target)
+    {
+        target.GetComponent<Unit>().TakeDmg(unit.attackDamage + unit.attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff);
+        isAttackOnCooldown = true;
+        yield return new WaitForSeconds(1.0f / unit.attackSpeed);
+        isAttackOnCooldown = false;
+    }
 
     #endregion
 

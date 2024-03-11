@@ -134,6 +134,7 @@ public class MyCursor : MonoBehaviour
                                         selectedUnit.GetComponent<UnitAI>().movementTarget =
                                             grid.WorldToGridPosition(target);
                                         selectedUnit.GetComponent<UnitAI>().hasTarget = true;
+                                        selectedUnit.GetComponent<UnitAI>().combatTarget = null;
                                     }
 
                                     break;
