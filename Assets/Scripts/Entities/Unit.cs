@@ -94,7 +94,7 @@ public class Unit : MonoBehaviour, ISelectable
         if (prevTile != currentTile)
         {
             //print("Tile changed");
-            if (prevTile.BuildingHandler.buildingType == Buildings.BuildingType.FLOOR || prevTile.Building == null)
+            if ( prevTile.Building == null || prevTile.BuildingHandler.buildingType == Buildings.BuildingType.FLOOR )
             {
                 prevTile.Vacant = true;
                 //grid.GetTile(prevTile.Index).Vacant = true;

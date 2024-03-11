@@ -25,7 +25,7 @@ public class Tile {
         }
         return true;
     }
-    public bool Build(GameObject building,BuildingType buildingType) {
+    public bool Build(GameObject building, BuildingType buildingType) {
         if ( !Vacant ) return false;
         this.Building = building;
         BuildingHandler = building.GetComponent<Building>();
