@@ -54,9 +54,11 @@ public class MyCursor : MonoBehaviour {
                 if ( selectable != null ) {
                     if ( myMyCursorMode == MY_CURSOR_MODE.BUILD ) {
                         var building = buildingPrefab.GetComponent<Building>();
-                        var hitTile = grid.GetTile(grid.WorldToGridPosition(hit.transform.position));
+                        var hitTile = grid.GetTile(grid.WorldToGridPosition(hit.point));
                         List<List<Tile>> sortedRows = new();
                         List<Tile> highlightTiles = new();
+
+
 
                         //todo check for grid edges or built tiles
                         for (int y = hitTile.Index.y - building.Size.y;
@@ -72,20 +74,20 @@ public class MyCursor : MonoBehaviour {
 
                             sortedRow.Sort((tile, tile1) => {
                                 var dist = Vector2.Distance(new Vector2(tile.x, tile.y),
-                                    new Vector2(hitTile.x, hitTile.y));
+                                    new Vector2(hit.point.x, hit.point.y));
                                 var dist1 = Vector2.Distance(new Vector2(tile1.x, tile1.y),
-                                    new Vector2(hitTile.x, hitTile.y));
+                                    new Vector2(hit.point.x, hit.point.y));
 
                                 return (int) (dist - dist1);
                             });
-                            sortedRows.Add(sortedRow.GetRange(0, 3));
+                            sortedRows.Add(sortedRow.GetRange(0, building.Size.x));
                         }
 
                         sortedRows.Sort((row, row1) => {
                             var dist = Vector2.Distance(new Vector2(row[ 0 ].x, row[ 0 ].y),
-                                new Vector2(hitTile.x, hitTile.y));
+                                new Vector2(hit.point.x, hit.point.y));
                             var dist1 = Vector2.Distance(new Vector2(row1[ 0 ].x, row1[ 0 ].y),
-                                new Vector2(hitTile.x, hitTile.y));
+                                new Vector2(hit.point.x, hit.point.y));
 
                             return (int) (dist - dist1);
                         });
@@ -94,33 +96,40 @@ public class MyCursor : MonoBehaviour {
                             highlightTiles.AddRange(sortedRows[ i ]);
                         }
 
-                        hoveredList.AddRange(highlightTiles.Select(tile => tile.Building.GetComponent<ISelectable>()));
-                    } else {
-                        if ( selectable != selected ) {
-                            selectable.OnHoverEnter();
-                            selected.OnHoverExit();
+                        // hoveredList.AddRange(highlightTiles.Select(tile => tile.Building.GetComponent<ISelectable>()));
+
+                        foreach (var currentHover in hoveredList) {
+                            currentHover.OnHoverExit();
                         }
 
-                        if ( !hoveredList.Contains(selectable) ) {
-                            if ( hoveredList.Count != 0 ) {
-                                foreach (var elem in hoveredList) {
-                                    elem.OnHoverExit();
-                                }
+                        hoveredList.Clear();
 
-                                hoveredList.Clear();
-                            }
+                        foreach (var currentTile in highlightTiles) {
 
-                            hoveredList.Add(selectable);
+                            currentTile.BuildingHandler.OnHoverEnter();
+                            hoveredList.Add(   currentTile.BuildingHandler);
                         }
-                        // if (selectable != hovered)
-                        // {
-                        //     if (hovered != null)
-                        //     {
-                        //         hovered.OnHoverExit();
-                        //     }
-                        //
-                        //     hovered = selectable;
-                        // }
+
+
+                    } else
+                    {
+                         if (selectable != hovered)
+                         {
+                             if (hovered != null)
+                             {
+                                 hovered.OnHoverExit();
+                             }
+
+                             hovered = selectable;
+
+                         }
+
+                         if ( selectable != selected) {
+                             selectable.OnHoverEnter();
+                             if ( selected != null ) {
+                                 selected.OnHoverExit();
+                             }
+                         }
                     }
 
                     if ( Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() ) {
@@ -141,7 +150,7 @@ public class MyCursor : MonoBehaviour {
                                     break;
 
                                 case (SELECTION_TYPE.BUILDING):
-                                    myMyCursorMode = MY_CURSOR_MODE.BUILD;
+                                   // myMyCursorMode = MY_CURSOR_MODE.BUILD;
                                     break;
                             }
                         }
@@ -186,19 +195,19 @@ public class MyCursor : MonoBehaviour {
 
                             break;
                         case (MY_CURSOR_MODE.BUILD):
-                            Building building = ((MonoBehaviour) (hoveredList[0])).GetComponent<Building>();
-                            if ( building != null ) {
-                                currentTile = building.tiles[ 0 ];
-                                if ( currentTile.Building == null ||
-                                     currentTile.BuildingHandler.buildingType == BuildingType.FLOOR ) {
-                                    constructionManager.placeBuilding(
-                                        Mathf.FloorToInt(currentTile.x / grid.cellSize) + 50,
-                                        Mathf.FloorToInt(currentTile.y / grid.cellSize) + 50,
-                                        constructionManager.building);
-                                } else {
-                                    Debug.Log("There is already a building here");
-                                }
-                            }
+                        //    Building building = ((MonoBehaviour) (hoveredList[0])).GetComponent<Building>();
+                    //        if ( building != null ) {
+                    ////            currentTile = building.tiles[ 0 ];
+                     //           if ( currentTile.Building == null ||
+                     //                currentTile.BuildingHandler.buildingType == BuildingType.FLOOR ) {
+                      //              constructionManager.placeBuilding(
+                       //                 Mathf.FloorToInt(currentTile.x / grid.cellSize) + 50,
+                      //                  Mathf.FloorToInt(currentTile.y / grid.cellSize) + 50,
+                       //                 constructionManager.building);
+                       //         } else {
+                       //             Debug.Log("There is already a building here");
+                       //         }
+                     //       }
 
                             break;
                     }

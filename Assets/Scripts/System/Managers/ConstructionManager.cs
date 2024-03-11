@@ -29,14 +29,10 @@ public class ConstructionManager : MonoBehaviour
                 if (!(x > 40 && x < 60 && z > 40 && z < 60))
                 //if (x == 1 && z == 1)
                 {
-                    placeBuilding(new List<Tile> {grid.gridArray[ x, z ]},
-                        Instantiate(
-                            wall,
-                            new Vector3(x * grid.cellSize + transform.position.x + grid.offsetX + grid.cellSize / 2.0f,
-                                0.0f + transform.position.y,
-                                z * grid.cellSize + transform.position.z + grid.offsetZ + grid.cellSize / 2.0f),
-                            Quaternion.identity,
-                            grid.transform),
+                    placeBuilding(
+                        grid,
+                        new List<Tile> {grid.gridArray[ x, z ]},
+                        wall,
                         BuildingType.WALL
                     );
 
@@ -49,14 +45,10 @@ public class ConstructionManager : MonoBehaviour
                 }
                 else
                 {
-                    placeBuilding(new List<Tile> {grid.gridArray[ x, z ]},
-                        Instantiate(
-                            wall,
-                            new Vector3(x * grid.cellSize + transform.position.x + grid.offsetX + grid.cellSize / 2.0f,
-                                0.0f + transform.position.y,
-                                z * grid.cellSize + transform.position.z + grid.offsetZ + grid.cellSize / 2.0f),
-                            Quaternion.identity,
-                            grid.transform),
+                    placeBuilding(
+                        grid,
+                        new List<Tile> {grid.gridArray[ x, z ]},
+                        floor,
                         BuildingType.FLOOR
                     );
 
@@ -92,29 +84,32 @@ public class ConstructionManager : MonoBehaviour
         }
     }
 
-    public bool placeBuilding(List<Tile> tiles, GameObject buildingPrefab, BuildingType type = BuildingType.ANY) {
+    public bool placeBuilding(Grid parentGrid, List<Tile> tiles, GameObject buildingPrefab, BuildingType type = BuildingType.ANY) {
         foreach (var tile in tiles) {
             if ( !tile.Vacant ) return false;
         }
 
         float avgX = 0;
-        float avgY = 0;
+        float avgZ = 0;
         foreach (var tile in tiles) {
             if ( tile.BuildingHandler != null && tile.BuildingHandler.buildingType == BuildingType.FLOOR )
                 tile.Destroy();
 
             avgX += tile.x;
-            avgY += tile.y;
+            avgZ += tile.y;
         }
 
         avgX /= tiles.Count;
-        avgY /= tiles.Count;
+        avgZ /= tiles.Count;
 
         var obj = Instantiate(
             buildingPrefab,
-            new Vector3(avgX, transform.position.y, avgY),
+            new Vector3(
+                avgX,
+                0.0f + transform.position.y,
+                avgZ),
             Quaternion.identity,
-            transform
+            parentGrid.transform
         );
 
         foreach (var tile in tiles) {
@@ -124,6 +119,7 @@ public class ConstructionManager : MonoBehaviour
         return true;
     }
 
+    /*
     public bool placeBuilding(int x, int y, GameObject building)
     {
 
@@ -154,4 +150,5 @@ public class ConstructionManager : MonoBehaviour
 
         return false;
     }
+    */
 }
