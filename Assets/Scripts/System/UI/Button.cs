@@ -13,6 +13,10 @@ public class Button : MonoBehaviour
             var cursor = GameObject.Find("CursorAbstractObject").GetComponent<MyCursor>();
                 cursor.MyCursorMode = MY_CURSOR_MODE.BUILD;
                 cursor.buildingPrefab = buildingPrefab;
+                foreach (var hover in cursor.hoveredList) {
+                    hover.OnHoverExit();
+                }
+                cursor.hoveredList.Clear();
             GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>().building = buildingPrefab;
         }
         else

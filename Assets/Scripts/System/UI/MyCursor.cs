@@ -146,6 +146,10 @@ public class MyCursor : MonoBehaviour {
                             switch (selectable.SelectionType) {
                                 case (SELECTION_TYPE.UNIT):
                                     myMyCursorMode = MY_CURSOR_MODE.UNIT;
+                                    foreach (var hover in hoveredList) {
+                                        hover.OnHoverExit();
+                                    }
+                                    hoveredList.Clear();
                                     selectedUnit = (Unit) selectable;
                                     Cursor.SetCursor(unitCursor, Vector2.zero, CursorMode.Auto);
                                     break;
