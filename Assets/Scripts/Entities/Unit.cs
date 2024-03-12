@@ -20,6 +20,9 @@ public class Unit : MonoBehaviour, ISelectable
     private Tile prevTile;
     public float facingAngle;
 
+
+    private bool isFlashing = false;
+
     #region ISelectable
 
     public SELECTION_TYPE SelectionType
@@ -36,7 +39,7 @@ public class Unit : MonoBehaviour, ISelectable
 
 
     [Header("General")] public float MaxHealth = 100.0f;
-    private float health;
+    [SerializeField]private float health;
 
     public float
         reachRange = 1.0f; // How close to the target we need to be to interact with it - e.g. mine, attack, etc.
@@ -47,7 +50,9 @@ public class Unit : MonoBehaviour, ISelectable
 
     [Header("Mining")] public float miningSpeed = 1.0f;
 
-    [Header("Combat")] public float attackSpeed = 1.0f;
+    [Header("Combat")] 
+    public float attackSpeed = 1.0f;
+    public float attackDamage = 10.0f;
 
     [Header("Equipment")]
     public GameItem Item1;
@@ -123,11 +128,25 @@ public class Unit : MonoBehaviour, ISelectable
 
     public void TakeDmg(float dmg)
     {
+        if(!isFlashing)
+        {
+            StartCoroutine(flashRedOnDmgTaken());
+        }
         health -= dmg;
         if (health <= 0)
         {
             Die();
         }
+    }
+
+    private IEnumerator flashRedOnDmgTaken()
+    { 
+        Color orgColor = material.color;
+        material.color = Color.red;
+        isFlashing = true;
+        yield return new WaitForSeconds(0.1f);
+        material.color = orgColor;
+        isFlashing = false;
     }
 
     public void Heal(float hp)
