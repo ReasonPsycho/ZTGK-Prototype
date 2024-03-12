@@ -57,6 +57,8 @@ public class Unit : MonoBehaviour, ISelectable
     [Header("Equipment")]
     public GameItem Item1;
     public GameItem Item2;
+    public GameObject ItemGameObject1;
+    public GameObject ItemGameObject2;
     // Accumulators to avoid checking both items every attack. Modified on Apply/Unapply, Equip/Unequip.
     public float FlatDamageBuff = 0;
     public float PercentDamageBuff = 0;
@@ -73,9 +75,8 @@ public class Unit : MonoBehaviour, ISelectable
         
         material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
         orgColor = material.color;
-
-        Equip(new GIMop(), 1,true);
-        Equip(new GILanceMop(), 2,true);
+        ItemGameObject1 = transform.Find("Body/Item1").gameObject;
+        ItemGameObject2 = transform.Find("Body/Item2").gameObject;
     }
 
 
@@ -212,41 +213,47 @@ public class Unit : MonoBehaviour, ISelectable
     /// Does not use Unequip.
     /// </summary>
     /// <param name="item">Item to equip</param>
-    /// <param name="slotMask">Slot to fill. 1 for Item1, 2 for Item2, 3 for any.</param>
+    /// <param name="slot">Slot to fill. 1 for Item1, 2 for Item2.</param>
     /// <param name="force">If true, remove the previously equipped item. If true and slotMask is Any and both slots are filled, Item1 will be unequipped.</param>
     /// <returns>
     /// Tuple of boolean marking success or failure and GameItem that was unequipped in force mode, null otherwise.
     /// </returns>
     /// <returns></returns>
-    public (bool, GameItem) Equip(GameItem item, int slotMask = 0b11, bool force = false) {
+    public (bool, GameItem) Equip(GameItem item, int slot = 1, bool force = false) {
         if (item == null) return (false, null);
         
-        if ( (slotMask & 0b01) != 0 && Item1 != null ) {
+        if ( slot == 1 && Item1 == null ) {
             Item1 = item;
             Apply(Item1);
+            ItemGameObject1.SetActive(true);
             return (true, null);
         }
 
-        if ( (slotMask & 0b10) != 0 && Item2 != null ) {
+        if ( slot == 2 && Item2 == null ) {
             Item2 = item;
             Apply(Item2);
+            ItemGameObject2.SetActive(true);
             return (true, null);
         }
 
         if ( force ) {
-            if ( (slotMask & 0b01) != 0 ) {
+            if ( slot == 1 ) {
                 var ret = Item1;
                 Item1 = item;
                 Unapply(ret);
                 Apply(item);
+                ItemGameObject2.SetActive(false);
+                ItemGameObject1.SetActive(true);
                 return (true, ret);
             }
 
-            if ( (slotMask & 0b10) != 0 ) {
+            if (  slot == 2) {
                 var ret = Item2;
                 Item2 = item;
                 Unapply(ret);
                 Apply(item);
+                ItemGameObject1.SetActive(false);
+                ItemGameObject2.SetActive(true);
                 return (true, ret);
             }
         }
@@ -265,12 +272,14 @@ public class Unit : MonoBehaviour, ISelectable
         if ( (slotMask & 0b01) != 0 && Item1 != null ) {
             ret.Add(Item1);
             Unapply(Item1);
+            ItemGameObject1.SetActive(false);
             Item1 = null;
         }
 
         if ( (slotMask & 0b10) != 0 && Item2 != null ) {
             ret.Add(Item2);
             Unapply(Item2);
+            ItemGameObject2.SetActive(false);
             Item2 = null;
         }
 

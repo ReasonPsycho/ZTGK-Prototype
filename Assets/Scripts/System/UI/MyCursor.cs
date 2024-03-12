@@ -256,21 +256,6 @@ public class MyCursor : MonoBehaviour
                                 buildingPrefab, BuildingType.SHOP
                             );
                         }
-
-                        //    Building building = ((MonoBehaviour) (hoveredList[0])).GetComponent<Building>();
-                        //        if ( building != null ) {
-                        ////            currentTile = building.tiles[ 0 ];
-                        //           if ( currentTile.Building == null ||
-                        //                currentTile.BuildingHandler.buildingType == BuildingType.FLOOR ) {
-                        //              constructionManager.placeBuilding(
-                        //                 Mathf.FloorToInt(currentTile.x / grid.cellSize) + 50,
-                        //                  Mathf.FloorToInt(currentTile.y / grid.cellSize) + 50,
-                        //                 constructionManager.building);
-                        //         } else {
-                        //             Debug.Log("There is already a building here");
-                        //         }
-                        //       }
-
                         break;
                 }
             }
@@ -296,7 +281,18 @@ public class MyCursor : MonoBehaviour
         }
     }
 
-
+    public  Unit GetFirstSelectedUnit()
+    {
+        if (ListOfSelected.Count != 0 && ListOfSelected[0].SelectionType == SELECTION_TYPE.UNIT)
+        {
+            return (Unit)ListOfSelected[0];
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
     public MY_CURSOR_MODE MyCursorMode
     {
         get => myMyCursorMode;
