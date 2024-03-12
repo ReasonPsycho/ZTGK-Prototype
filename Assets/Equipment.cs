@@ -20,7 +20,7 @@ public class Equipment : MonoBehaviour
 
     private void OnEnable()
     {
-        Unit selectedUnit = (Unit)myCursor.selected;
+        Unit selectedUnit = (Unit)myCursor.ListOfSelected[0];
         if (selectedUnit.Item1 != null)
         {
             GameObject tmp = Instantiate(ItemPrefab, Item1.transform);

@@ -19,12 +19,10 @@ public class MyCursor : MonoBehaviour
     private Grid grid;
     private ConstructionManager constructionManager;
 
-    private Unit selectedUnit;
 
-    private ISelectable hovered;
-    public ISelectable selected;
+    public List<ISelectable> ListOfSelected = new();
 
-    public List<ISelectable> hoveredList = new();
+    public List<ISelectable> ListOfHovered = new();
 
     // public List<Tile> buildList = new();
     public GameObject buildingPrefab;
@@ -36,6 +34,7 @@ public class MyCursor : MonoBehaviour
     public Texture2D unitCursor;
     public Texture2D buildingCursor;
 
+    private ISelectable startOfDrag;
     private void Start()
     {
         constructionManager = GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>();
@@ -49,6 +48,7 @@ public class MyCursor : MonoBehaviour
         Vector3 mousePos = Input.mousePosition;
         if (mousePos.x >= 0 && mousePos.x <= Screen.width && mousePos.y >= 0 && mousePos.y <= Screen.height)
         {
+            
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             RaycastHit hit;
@@ -111,34 +111,39 @@ public class MyCursor : MonoBehaviour
 
                         // hoveredList.AddRange(highlightTiles.Select(tile => tile.Building.GetComponent<ISelectable>()));
 
-                        foreach (var currentHover in hoveredList)
+                        foreach (var currentHover in ListOfHovered)
                         {
                             currentHover.OnHoverExit();
                         }
 
-                        hoveredList.Clear();
+                        ListOfHovered.Clear();
 
                         foreach (var currentTile in highlightTiles)
                         {
                             currentTile.BuildingHandler.OnHoverEnter();
-                            hoveredList.Add(currentTile.BuildingHandler);
+                            ListOfHovered.Add(currentTile.BuildingHandler);
                         }
                     }
                     else
                     {
-                        if (hoveredList != null)
+                        if (ListOfHovered != null)
                         {
-                            if (selectable != selected)
+                            if (!ListOfSelected.Contains(selectable))
                             {
-                                if (hoveredList.Count > 0 && selectable != hoveredList[0])
+                                if (ListOfHovered.Count > 0)
                                 {
-                                    hoveredList[0].OnHoverExit();
-                                    hoveredList[0] = selectable;
+                                    if (selectable != ListOfHovered[0])
+                                    {
+                                        ListOfHovered[0].OnHoverExit();
+                                    }
+
+                                    ListOfHovered[0] = selectable;
+                                    ListOfHovered[0].OnHoverEnter();
                                 }
                                 else
                                 {
-                                    hoveredList.Add(selectable);
-                                    hoveredList[0].OnHoverEnter();
+                                    ListOfHovered.Add(selectable);
+                                    ListOfHovered[0].OnHoverEnter();
                                 }
                             }
                         }
@@ -146,42 +151,52 @@ public class MyCursor : MonoBehaviour
 
                     if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
                     {
-                        if (selectable != selected)
+                        if (ListOfSelected.Count != 0 && ListOfSelected[0] != null)
                         {
-                            if (selected != null)
+                            if (!Input.GetKey(KeyCode.LeftShift))
                             {
-                                selected.OnDeselect();
+                                foreach (var s in ListOfSelected)
+                                {
+                                    s.OnDeselect();
+                                }
+
+                                ListOfSelected.Clear();
+                                ListOfSelected.Add(selectable);
+                                selectable.OnSelect();
                             }
-
-                            selected = selectable;
-                            selectable.OnSelect();
-
-
-                            switch (selectable.SelectionType)
+                            else
                             {
-                                case (SELECTION_TYPE.UNIT):
+                                selectable.OnSelect();
+                                ListOfSelected.Add(selectable);
+                            }
+                        }
+                        else
+                        {
+                            selectable.OnSelect();
+                            ListOfSelected.Add(selectable);
+                        }
 
-                                    if (myMyCursorMode == MY_CURSOR_MODE.BUILD)
+                        switch (selectable.SelectionType)
+                        {
+                            case (SELECTION_TYPE.UNIT):
+
+                                if (myMyCursorMode == MY_CURSOR_MODE.BUILD)
+                                {
+                                    foreach (var currentHovered in ListOfHovered)
                                     {
-                                        foreach (var currentHovered in hoveredList)
-                                        {
-                                            currentHovered.OnHoverExit();
-                                        }
-
-                                        hoveredList.Clear();
+                                        currentHovered.OnHoverExit();
                                     }
 
-                                    myMyCursorMode = MY_CURSOR_MODE.UNIT;
+                                    ListOfHovered.Clear();
+                                }
 
+                                myMyCursorMode = MY_CURSOR_MODE.UNIT;
+                                Cursor.SetCursor(unitCursor, Vector2.zero, CursorMode.Auto);
+                                break;
 
-                                    selectedUnit = (Unit)selectable;
-                                    Cursor.SetCursor(unitCursor, Vector2.zero, CursorMode.Auto);
-                                    break;
-
-                                case (SELECTION_TYPE.BUILDING):
-                                    // myMyCursorMode = MY_CURSOR_MODE.BUILD;
-                                    break;
-                            }
+                            case (SELECTION_TYPE.BUILDING):
+                                // myMyCursorMode = MY_CURSOR_MODE.BUILD;
+                                break;
                         }
                     }
                 }
@@ -189,79 +204,74 @@ public class MyCursor : MonoBehaviour
 
 
             // if (Input.GetMouseButtonDown(1) && selected != null && hovered != null)
-            if (Input.GetMouseButtonDown(1) && selected != null && hoveredList.Count != 0)
+            if (Input.GetMouseButtonDown(1) && ListOfSelected != null && ListOfHovered.Count != 0 &&
+                ListOfSelected.Count != 0)
             {
                 // if (selected != hovered)
-                if (!hoveredList.Contains(selected))
+
+                switch (myMyCursorMode)
                 {
-                    switch (myMyCursorMode)
-                    {
-                        case (MY_CURSOR_MODE.UNIT):
-                            switch (selected.SelectionType)
+                    case (MY_CURSOR_MODE.UNIT):
+                        foreach (var selected in ListOfSelected)
+                        {
+                            if (selected.SelectionType == SELECTION_TYPE.UNIT)
                             {
-                                case (SELECTION_TYPE.UNIT):
-
-                                    if (((MonoBehaviour)(hoveredList[0])).gameObject.GetComponentInParent<Unit>())
-                                    {
-                                        selectedUnit.GetComponent<UnitAI>().movementTarget =
-                                            hit.collider.gameObject.GetComponentInParent<Unit>().gridPosition;
-                                        selectedUnit.GetComponent<UnitAI>().hasTarget = true;
-                                    }
-                                    else
-                                    if (((MonoBehaviour)(hoveredList[0])).gameObject.GetComponentInParent<Mineable>())
-                                    {
-                                        Vector3 target = hit.point;
-                                        selectedUnit.GetComponent<UnitAI>().movementTarget =
-                                            grid.WorldToGridPosition(target);
-                                        selectedUnit.GetComponent<UnitAI>().miningTarget =
-                                            ((Wall)hoveredList[0]).tiles[0].Index;
-                                        selectedUnit.GetComponent<UnitAI>().hasTarget = true;
-                                        selectedUnit.GetComponent<UnitAI>().isGoingToMine = true;
-                                    }
-                                    else
-                                    {
-                                        Vector3 target = hit.point;
-                                        target.y = 0;
-                                        selectedUnit.GetComponent<UnitAI>().movementTarget =
-                                            grid.WorldToGridPosition(target);
-                                        selectedUnit.GetComponent<UnitAI>().hasTarget = true;
-                                        selectedUnit.GetComponent<UnitAI>().combatTarget = null;
-                                    }
-
-                                    break;
-
-                                case (SELECTION_TYPE.BUILDING):
-                                
-
-                                    break;
+                                UnitAI selectedUnit = ((Unit)selected).GetComponent<UnitAI>();
+                                    
+                                if (((MonoBehaviour)(ListOfHovered[0])).gameObject.GetComponentInParent<Unit>())
+                                {
+                                    selectedUnit.GetComponent<UnitAI>().movementTarget =
+                                        hit.collider.gameObject.GetComponentInParent<Unit>().gridPosition;
+                                    selectedUnit.GetComponent<UnitAI>().hasTarget = true;
+                                }
+                                else if (((MonoBehaviour)(ListOfHovered[0])).gameObject
+                                         .GetComponentInParent<Mineable>())
+                                {
+                                    Vector3 target = hit.point;
+                                    selectedUnit.GetComponent<UnitAI>().movementTarget =
+                                        grid.WorldToGridPosition(target);
+                                    selectedUnit.GetComponent<UnitAI>().miningTarget =
+                                        ((Wall)ListOfHovered[0]).tiles[0].Index;
+                                    selectedUnit.GetComponent<UnitAI>().hasTarget = true;
+                                    selectedUnit.GetComponent<UnitAI>().isGoingToMine = true;
+                                }
+                                else
+                                {
+                                    Vector3 target = hit.point;
+                                    target.y = 0;
+                                    selectedUnit.GetComponent<UnitAI>().movementTarget =
+                                        grid.WorldToGridPosition(target);
+                                    selectedUnit.GetComponent<UnitAI>().hasTarget = true;
+                                    selectedUnit.GetComponent<UnitAI>().combatTarget = null;
+                                }
                             }
+                        }
 
-                            break;
-                        case (MY_CURSOR_MODE.BUILD):
-                            if (buildingPrefab != null)
-                            {
-                                constructionManager.placeBuilding(
-                                    grid, hoveredList.Select(selectable => ((Building)selectable).tiles[0]),
-                                    buildingPrefab, BuildingType.SHOP
-                                );
-                            }
+                        break;
+                    case (MY_CURSOR_MODE.BUILD):
+                        if (buildingPrefab != null)
+                        {
+                            constructionManager.placeBuilding(
+                                grid, ListOfHovered.Select(selectable => ((Building)selectable).tiles[0]),
+                                buildingPrefab, BuildingType.SHOP
+                            );
+                        }
 
-                            //    Building building = ((MonoBehaviour) (hoveredList[0])).GetComponent<Building>();
-                            //        if ( building != null ) {
-                            ////            currentTile = building.tiles[ 0 ];
-                            //           if ( currentTile.Building == null ||
-                            //                currentTile.BuildingHandler.buildingType == BuildingType.FLOOR ) {
-                            //              constructionManager.placeBuilding(
-                            //                 Mathf.FloorToInt(currentTile.x / grid.cellSize) + 50,
-                            //                  Mathf.FloorToInt(currentTile.y / grid.cellSize) + 50,
-                            //                 constructionManager.building);
-                            //         } else {
-                            //             Debug.Log("There is already a building here");
-                            //         }
-                            //       }
+                        //    Building building = ((MonoBehaviour) (hoveredList[0])).GetComponent<Building>();
+                        //        if ( building != null ) {
+                        ////            currentTile = building.tiles[ 0 ];
+                        //           if ( currentTile.Building == null ||
+                        //                currentTile.BuildingHandler.buildingType == BuildingType.FLOOR ) {
+                        //              constructionManager.placeBuilding(
+                        //                 Mathf.FloorToInt(currentTile.x / grid.cellSize) + 50,
+                        //                  Mathf.FloorToInt(currentTile.y / grid.cellSize) + 50,
+                        //                 constructionManager.building);
+                        //         } else {
+                        //             Debug.Log("There is already a building here");
+                        //         }
+                        //       }
 
-                            break;
-                    }
+                        break;
                 }
             }
         }

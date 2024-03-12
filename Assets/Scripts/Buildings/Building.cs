@@ -19,9 +19,10 @@ public class Building : MonoBehaviour, ISelectable
     public List<Tile> tiles = new();
     public virtual Vector2Int Size { get; } = new(2, 2);
 
+    
     public virtual void Start() {
         GetMaterial();
-    }
+   }
 
     virtual public void GetMaterial()
     {
@@ -32,10 +33,6 @@ public class Building : MonoBehaviour, ISelectable
     virtual public bool DestroyBuilding()
     {
         Destroy(gameObject);
-        foreach (var tile in tiles) {
-            tile.Building = null; //TODO ensure this cleans memory
-            tile.BuildingHandler = null;
-        }
         return true;
     }
 

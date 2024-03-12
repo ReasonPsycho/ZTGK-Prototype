@@ -19,6 +19,10 @@ public class UnitAI : MonoBehaviour
     private Vector2Int nextTile;
     private bool isMoving = false;
 
+
+    private int retries = 0;
+    private ConstructionManager constructionManager;
+    
     private float t = 0;
 
     public bool isGoingToMine = false;
@@ -29,7 +33,7 @@ public class UnitAI : MonoBehaviour
     protected bool isAttackOnCooldown = false;
     protected void Start()
     {
-
+        constructionManager = GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>();
         unit = GetComponentInParent<Unit>();
         path = new ArrayList();
     }
@@ -73,7 +77,7 @@ public class UnitAI : MonoBehaviour
 
         
 
-        if (isGoingToMine)
+        if (isGoingToMine )
         {
             Mine(miningTarget);
         }
@@ -118,7 +122,6 @@ public class UnitAI : MonoBehaviour
                 {
                     transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), t * 5);
                 }
-                //transform.rotation = Quaternion.Slerp(transform.rotation, tra, unit.rotationSpeed * Time.deltaTime);
             }
             else
             {
@@ -134,7 +137,7 @@ public class UnitAI : MonoBehaviour
             }
             else
             {
-                unit.grid.GetTile(miningTarget).Destroy();
+                constructionManager.destroyBuilding(unit.grid.GetTile(miningTarget).BuildingHandler);
                 isGoingToMine = false;
                 isMining = false;   
             }
@@ -339,12 +342,22 @@ public class UnitAI : MonoBehaviour
     #region Mining
     public void Mine(Vector2Int target)
     {
+        
         if (Vector3.Distance(unit.grid.GridToWorldPosition(target), transform.position) <= unit.reachRange * 2)
         {
             if (!isMining)
             {
-                miningTime = unit.grid.GetTile(target).Building.GetComponent<Mineable>().miningTime / unit.miningSpeed;
-                isMining = true;
+
+                Mineable mineable;
+                if ( unit.grid.GetTile(target).Building.TryGetComponent<Mineable>(out mineable))
+                {
+                    miningTime = mineable.miningTime / unit.miningSpeed;
+                    isMining = true;
+                }
+                else
+                {
+                    isGoingToMine = false;
+                }
             }
         }
     }

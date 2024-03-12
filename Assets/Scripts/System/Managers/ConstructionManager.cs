@@ -127,6 +127,33 @@ public class ConstructionManager : MonoBehaviour
         return true;
     }
 
+    public bool destroyBuilding(Building building)
+    {
+        List<Tile> tiles = building.tiles;
+        foreach (var tile in tiles)
+        {
+            tile.Destroy();
+            placeBuilding(
+                grid,
+                new List<Tile> { tile },
+                floor,
+                BuildingType.FLOOR
+            );
+        }
+
+        return true;
+    }
+    public bool placeFloor(Tile tile)
+    {
+        print("Flooor");
+        print(tile.Vacant);
+        if (!tile.Vacant) return false;
+
+        tile.Build(floor,
+            BuildingType.FLOOR);
+        return true;
+    }
+    
     /*
     public bool placeBuilding(int x, int y, GameObject building)
     {

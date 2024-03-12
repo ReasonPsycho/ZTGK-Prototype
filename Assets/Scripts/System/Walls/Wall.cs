@@ -132,8 +132,7 @@ public class Wall : Building
             ((Wall)westNeighbour.BuildingHandler).SetWall();
         }
 
-    
-        Destroy(gameObject);
+        base.DestroyBuilding();
         return true;
     }
 
