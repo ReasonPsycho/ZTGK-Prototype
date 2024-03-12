@@ -39,7 +39,7 @@ public class Unit : MonoBehaviour, ISelectable
 
 
     [Header("General")] public float MaxHealth = 100.0f;
-    [SerializeField]private float health;
+    [SerializeField] private float health;
 
     public float
         reachRange = 1.0f; // How close to the target we need to be to interact with it - e.g. mine, attack, etc.
@@ -50,61 +50,49 @@ public class Unit : MonoBehaviour, ISelectable
 
     [Header("Mining")] public float miningSpeed = 1.0f;
 
-    [Header("Combat")] 
-    public float attackSpeed = 1.0f;
+    [Header("Combat")] public float attackSpeed = 1.0f;
     public float attackDamage = 10.0f;
 
-    [Header("Equipment")]
-    public GameItem Item1;
+    [Header("Equipment")] public GameItem Item1;
     public GameItem Item2;
     public GameObject ItemGameObject1;
+
     public GameObject ItemGameObject2;
+
     // Accumulators to avoid checking both items every attack. Modified on Apply/Unapply, Equip/Unequip.
     public float FlatDamageBuff = 0;
     public float PercentDamageBuff = 0;
     public float Armor = 0;
-
-    private bool firstUpdate = true;
+    
 
     public void Start()
     {
+
         animator = transform.GetChild(0).GetComponent<Animator>();
-        grid = GameObject.Find("Grid").GetComponent<Grid>();
         health = MaxHealth;
-        prevTile = grid.GetTile(gridPosition);
-        
+
         material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
         orgColor = material.color;
         ItemGameObject1 = transform.Find("Body/Item1").gameObject;
         ItemGameObject2 = transform.Find("Body/Item2").gameObject;
+        grid = GameObject.Find("Grid").GetComponent<Grid>();
+        gridPosition = grid.WorldToGridPosition(transform.position);
+        prevTile = grid.GetTile(gridPosition);
     }
 
 
     private void Update()
     {
 
-       
-        
-        if (firstUpdate)
-        {
-            grid = GameObject.Find("Grid").GetComponent<Grid>();
-            firstUpdate = false;
-        }
-
-        gridPosition = grid.WorldToGridPosition(transform.position);
+       // gridPosition = grid.WorldToGridPosition(transform.position);
         currentTile = grid.GetTile(gridPosition);
         //print(prevTile.x + "  "+ prevTile.y);
-       // print(currentTile.x +"  " + prevTile.y);
+        // print(currentTile.x +"  " + prevTile.y);
         grid.GetTile(gridPosition).Vacant = false;
 
         if (prevTile != currentTile)
         {
-            //print("Tile changed");
-            if ( prevTile.Building == null || prevTile.BuildingHandler.buildingType == Buildings.BuildingType.FLOOR )
-            {
-                prevTile.Vacant = true;
-                //grid.GetTile(prevTile.Index).Vacant = true;
-            }
+            prevTile.Vacant = true;
         }
 
         prevTile = currentTile;
@@ -115,7 +103,7 @@ public class Unit : MonoBehaviour, ISelectable
             animator.SetBool("IsWalking", true);
             animator.SetBool("IsWorking", false);
         }
-        else if (state == UnitState.MINING)
+        else if (state == UnitState.MINING || state == UnitState.ATTACKING)
         {
             animator.SetBool("IsWorking", true);
             animator.SetBool("IsWalking", false);
@@ -129,10 +117,11 @@ public class Unit : MonoBehaviour, ISelectable
 
     public void TakeDmg(float dmg)
     {
-        if(!isFlashing)
+        if (!isFlashing)
         {
             StartCoroutine(flashRedOnDmgTaken());
         }
+
         health -= dmg;
         if (health <= 0)
         {
@@ -141,7 +130,7 @@ public class Unit : MonoBehaviour, ISelectable
     }
 
     private IEnumerator flashRedOnDmgTaken()
-    { 
+    {
         Color orgColor = material.color;
         material.color = Color.red;
         isFlashing = true;
@@ -193,7 +182,6 @@ public class Unit : MonoBehaviour, ISelectable
         }
 
         isSelected = true;
-        
     }
 
     public virtual void OnDeselect()
@@ -219,25 +207,30 @@ public class Unit : MonoBehaviour, ISelectable
     /// Tuple of boolean marking success or failure and GameItem that was unequipped in force mode, null otherwise.
     /// </returns>
     /// <returns></returns>
-    public (bool, GameItem) Equip(GameItem item, int slot = 1, bool force = false) {
+    public (bool, GameItem) Equip(GameItem item, int slot = 1, bool force = false)
+    {
         if (item == null) return (false, null);
-        
-        if ( slot == 1 && Item1 == null ) {
+
+        if (slot == 1 && Item1 == null)
+        {
             Item1 = item;
             Apply(Item1);
             ItemGameObject1.SetActive(true);
             return (true, null);
         }
 
-        if ( slot == 2 && Item2 == null ) {
+        if (slot == 2 && Item2 == null)
+        {
             Item2 = item;
             Apply(Item2);
             ItemGameObject2.SetActive(true);
             return (true, null);
         }
 
-        if ( force ) {
-            if ( slot == 1 ) {
+        if (force)
+        {
+            if (slot == 1)
+            {
                 var ret = Item1;
                 Item1 = item;
                 Unapply(ret);
@@ -247,7 +240,8 @@ public class Unit : MonoBehaviour, ISelectable
                 return (true, ret);
             }
 
-            if (  slot == 2) {
+            if (slot == 2)
+            {
                 var ret = Item2;
                 Item2 = item;
                 Unapply(ret);
@@ -266,17 +260,20 @@ public class Unit : MonoBehaviour, ISelectable
     /// </summary>
     /// <param name="slotMask">Slot to free. 1 for Item1, 2 for Item2, 3 for both.</param>
     /// <returns></returns>
-    public List<GameItem> Unequip(int slotMask) {
+    public List<GameItem> Unequip(int slotMask)
+    {
         List<GameItem> ret = new();
 
-        if ( (slotMask & 0b01) != 0 && Item1 != null ) {
+        if ((slotMask & 0b01) != 0 && Item1 != null)
+        {
             ret.Add(Item1);
             Unapply(Item1);
             ItemGameObject1.SetActive(false);
             Item1 = null;
         }
 
-        if ( (slotMask & 0b10) != 0 && Item2 != null ) {
+        if ((slotMask & 0b10) != 0 && Item2 != null)
+        {
             ret.Add(Item2);
             Unapply(Item2);
             ItemGameObject2.SetActive(false);
@@ -290,7 +287,8 @@ public class Unit : MonoBehaviour, ISelectable
     /// Apply item buffs to accumulator stats.
     /// </summary>
     /// <param name="item">Item to apply.</param>
-    public void Apply(GameItem item) {
+    public void Apply(GameItem item)
+    {
         if (item == null) return;
 
         MaxHealth += item.HealthBuff;
@@ -303,7 +301,8 @@ public class Unit : MonoBehaviour, ISelectable
     /// Remove applied buffs from accumulator stats.
     /// </summary>
     /// <param name="item">Item to unapply.</param>
-    public void Unapply(GameItem item) {
+    public void Unapply(GameItem item)
+    {
         if (item == null) return;
 
         MaxHealth -= item.HealthBuff;

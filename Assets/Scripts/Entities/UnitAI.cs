@@ -30,8 +30,8 @@ public class UnitAI : MonoBehaviour
 
     [SerializeField] private int pathLength;
 
-    protected bool isAttackOnCooldown = false;
-    protected void Start()
+    protected float isAttackOnCooldown = 0.0f;
+    protected virtual void Start()
     {
         constructionManager = GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>();
         unit = GetComponentInParent<Unit>();
@@ -369,20 +369,22 @@ public class UnitAI : MonoBehaviour
     public void Attack(GameObject target)
     {
         hasTarget = true;
-        if (Vector3.Distance(target.transform.position, transform.position) <= unit.reachRange)
+        if (Vector2.Distance(target.GetComponentInParent<Unit>().gridPosition, unit.gridPosition) <= unit.reachRange)
         {
             TurnTo(unit.grid.WorldToGridPosition(target.transform.position));
             unit.state = UnitState.ATTACKING;
-            if (!isAttackOnCooldown)
+            if (isAttackOnCooldown > 1.0f)
             {
-                StartCoroutine(attackCrt(target));
-                
+                target.GetComponentInParent<Unit>().TakeDmg(unit.attackDamage + unit.attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff);
+                isAttackOnCooldown = 0.0f;
+            }else
+            {
+                isAttackOnCooldown += Time.deltaTime;
             }
         }
         else
         {
             movementTarget = unit.grid.WorldToGridPosition(target.transform.position);
-            
         }
     }
 
@@ -412,16 +414,7 @@ public class UnitAI : MonoBehaviour
         }
         return closest;
     }
-
-
-    public IEnumerator attackCrt(GameObject target)
-    {
-        target.GetComponent<Unit>().TakeDmg(unit.attackDamage + unit.attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff);
-        isAttackOnCooldown = true;
-        yield return new WaitForSeconds(1.0f / unit.attackSpeed);
-        isAttackOnCooldown = false;
-    }
-
+    
     #endregion
 
     #region Equipment

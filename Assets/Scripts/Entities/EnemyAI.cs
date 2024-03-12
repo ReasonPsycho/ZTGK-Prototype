@@ -18,7 +18,7 @@ public class EnemyAI : UnitAI
 
     private float distanceToTarget;
 
-    private new void Start()
+    protected override void Start()
     {
         base.Start();
         state = EnemyState.ASLEEP;
@@ -72,11 +72,18 @@ public class EnemyAI : UnitAI
             }
             else
             {
-
-                if (combatTarget != null && !isAttackOnCooldown && Vector2Int.Distance(combatTarget.GetComponent<Unit>().gridPosition, unit.gridPosition) <= unit.reachRange)
+                if (combatTarget != null && Vector2Int.Distance(combatTarget.GetComponentInParent<Unit>().gridPosition, unit.gridPosition) <= unit.reachRange)
                 {
-                    StartCoroutine(attackCrt(combatTarget));
-                }
+                    TurnTo(unit.grid.WorldToGridPosition(combatTarget.transform.position));
+                    unit.state = UnitState.ATTACKING;
+                    if (isAttackOnCooldown > 1.0f)
+                    {
+                        combatTarget.GetComponentInParent<Unit>().TakeDmg(unit.attackDamage + unit.attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff);
+                        isAttackOnCooldown = 0.0f;
+                    }else
+                    {
+                        isAttackOnCooldown += Time.deltaTime;
+                    }                }
             }
         }
 

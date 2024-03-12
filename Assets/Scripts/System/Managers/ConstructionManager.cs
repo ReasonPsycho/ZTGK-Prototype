@@ -145,8 +145,6 @@ public class ConstructionManager : MonoBehaviour
     }
     public bool placeFloor(Tile tile)
     {
-        print("Flooor");
-        print(tile.Vacant);
         if (!tile.Vacant) return false;
 
         tile.Build(floor,
