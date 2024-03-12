@@ -14,11 +14,12 @@ public class UnitAI : MonoBehaviour
     public Vector2Int movementTarget;
     public Vector2Int miningTarget;
     public GameObject combatTarget;
-
     public bool hasTarget = false;
-
+    
+    private Vector2Int nextTile;
     private bool isMoving = false;
 
+    private float t = 0;
 
     public bool isGoingToMine = false;
     private bool isMining = false;
@@ -53,27 +54,11 @@ public class UnitAI : MonoBehaviour
             MoveOnPath();
         }
 
-        else
-        {
-            if (moving != null)
-            {
-                StopCoroutine(moving);
-                moving = null;
-            }
-            //StopAllCoroutines();
-        }
-
 
         if (hasTarget && Vector3.Distance(transform.position, unit.grid.GridToWorldPosition(movementTarget)) < 0.05f)
         {
             hasTarget = false;
             isMoving = false;
-            if (moving != null)
-            {
-                StopCoroutine(moving);
-                moving = null;
-            }
-
             unit.state = UnitState.IDLE;
         }
 
@@ -101,41 +86,35 @@ public class UnitAI : MonoBehaviour
             }
         }
 
+        if (isMoving)
+        {
+            Vector3 targetPos = unit.grid.GridToWorldPosition(nextTile);
+            targetPos.y = transform.position.y;
+            Vector3 startPos = unit.grid.GridToWorldPosition((Vector2Int)path[0]);
+            startPos.y = transform.position.y;
+            if(t <= 1)
+            {
+                unit.animator.SetFloat("motionTime", t);
+                t += Time.deltaTime * unit.tilesPerSecond;
+                transform.position = Vector3.Lerp(startPos, targetPos, t + 0.01f);
+
+                Vector3 dir = targetPos - transform.position;
+                dir.y = 0; // Keep the direction in the XZ plane
+                if (Vector3.Distance(Vector3.zero, dir) > 0.01f)
+                {
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), t * 5);
+                }
+                //transform.rotation = Quaternion.Slerp(transform.rotation, tra, unit.rotationSpeed * Time.deltaTime);
+            }
+            else
+            {
+                isMoving = false;
+            }
+        }
     }
 
     #region Movement
-
-
-    public void MoveUnit(Vector2Int target)
-    {
-        moving = StartCoroutine(MoveToCoroutine(target));
-    }
-
-    private IEnumerator MoveToCoroutine(Vector2Int target)
-    {
-        Vector3 targetPos = unit.grid.GridToWorldPosition(target);
-        targetPos.y = transform.position.y;
-        Vector3 startPos = unit.grid.GridToWorldPosition((Vector2Int)path[0]);
-        startPos.y = transform.position.y;
-        float t = 0;
-        while (t < 1)
-        {
-            unit.animator.SetFloat("motionTime", t);
-            t += Time.deltaTime * unit.tilesPerSecond;
-            transform.position = Vector3.Lerp(startPos, targetPos, t);
-
-            Vector3 dir = targetPos - transform.position;
-            dir.y = 0; // Keep the direction in the XZ plane
-            if (Vector3.Distance(Vector3.zero, dir) > 0.01f)
-            {
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), t * 5);
-            }
-            //transform.rotation = Quaternion.Slerp(transform.rotation, tra, unit.rotationSpeed * Time.deltaTime);
-            yield return null;
-        }
-
-        isMoving = false;
-    }
+    
 
     public void TurnTo(Vector2Int target)
     {
@@ -178,19 +157,23 @@ public class UnitAI : MonoBehaviour
 
     public void MoveOnPath()
     {
+        
         if (isMoving) return;
         isMoving = true;
-        Vector2Int nextTile = (Vector2Int)path[0];
+
+        nextTile = (Vector2Int)path[0];
         if (path.Count > 1)
             nextTile = (Vector2Int)path[1];
         else
             isMoving = false;
-        if (Vector3.Distance(transform.position, unit.grid.GridToWorldPosition(nextTile)) < 0.05f)
+        print(transform.position);
+        print(unit.grid.GridToWorldPosition(nextTile));
+        if (Vector2.Distance(new Vector2( transform.position.x,transform.position.z), new Vector2(unit.grid.GridToWorldPosition(nextTile).x,unit.grid.GridToWorldPosition(nextTile).z)) < 0.05f)
         {;
+            print("Yea");
+            t = 0;
             path.RemoveAt(0);
-            isMoving = false;
         }
-        MoveUnit(nextTile);
     }
 
 
