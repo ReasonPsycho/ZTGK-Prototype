@@ -44,6 +44,7 @@ public class Tile {
         BuildingHandler.DestroyBuilding();
         this.Building = null;
         this.BuildingHandler = null;
+        
         return true;
     }
 

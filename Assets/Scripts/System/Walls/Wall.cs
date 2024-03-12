@@ -132,8 +132,7 @@ public class Wall : Building
             ((Wall)westNeighbour.BuildingHandler).SetWall();
         }
 
-        tiles[0].Build(GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>().floor,
-            BuildingType.FLOOR);
+    
         Destroy(gameObject);
         return true;
     }

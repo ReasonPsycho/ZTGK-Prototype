@@ -15,7 +15,7 @@ public class UnitAI : MonoBehaviour
     public Vector2Int miningTarget;
     public GameObject combatTarget;
     public bool hasTarget = false;
-    
+    private float miningTime = 0;
     private Vector2Int nextTile;
     private bool isMoving = false;
 
@@ -51,16 +51,27 @@ public class UnitAI : MonoBehaviour
         if (path.Count != 0)
         {
             unit.state = UnitState.MOVING;
-            MoveOnPath();
+            if (isGoingToMine)
+            {
+                if (path.Count > 2)
+                {
+                    MoveOnPath();
+                }
+            }
+            else
+            {
+                MoveOnPath();
+            }
         }
-
-
-        if (hasTarget && Vector3.Distance(transform.position, unit.grid.GridToWorldPosition(movementTarget)) < 0.05f)
+        else
         {
+           
+            unit.state = UnitState.IDLE;
             hasTarget = false;
             isMoving = false;
-            unit.state = UnitState.IDLE;
         }
+
+        
 
         if (isGoingToMine)
         {
@@ -81,7 +92,10 @@ public class UnitAI : MonoBehaviour
             else
             {
                 hasTarget = false;
-                unit.state = UnitState.IDLE;
+                if (!isMoving)
+                {
+                    unit.state = UnitState.IDLE;
+                }
             }
         }
 
@@ -109,6 +123,20 @@ public class UnitAI : MonoBehaviour
             else
             {
                 isMoving = false;
+            }
+        }else if (isMining)
+        {
+            unit.state = UnitState.MINING;
+            unit.animator.SetFloat("motionTime", t);
+            if (miningTime > 0)
+            {
+                miningTime -= Time.deltaTime;
+            }
+            else
+            {
+                unit.grid.GetTile(miningTarget).Destroy();
+                isGoingToMine = false;
+                isMining = false;   
             }
         }
     }
@@ -311,30 +339,16 @@ public class UnitAI : MonoBehaviour
     #region Mining
     public void Mine(Vector2Int target)
     {
-        if (Vector3.Distance(unit.grid.GridToWorldPosition(target), transform.position) <= unit.reachRange)
+        if (Vector3.Distance(unit.grid.GridToWorldPosition(target), transform.position) <= unit.reachRange * 2)
         {
-
             if (!isMining)
             {
-                StartCoroutine(MineCoroutine(target));
+                miningTime = unit.grid.GetTile(target).Building.GetComponent<Mineable>().miningTime / unit.miningSpeed;
+                isMining = true;
             }
         }
     }
-
-    public IEnumerator MineCoroutine(Vector2Int target)
-    {
-        isMining = true;
-
-        float miningTime = unit.grid.GetTile(target).Building.GetComponent<Mineable>().miningTime / unit.miningSpeed;
-        while (miningTime > 0)
-        {
-            miningTime -= Time.deltaTime;
-            yield return null;
-        }
-        unit.grid.GetTile(target).Destroy();
-        isGoingToMine = false;
-        isMining = false;
-    }
+    
     #endregion
 
     #region Combat
