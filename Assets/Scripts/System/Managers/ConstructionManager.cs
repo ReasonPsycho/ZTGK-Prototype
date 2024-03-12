@@ -106,9 +106,9 @@ public class ConstructionManager : MonoBehaviour
         var obj = Instantiate(
             buildingPrefab,
             new Vector3(
-                avgX,
+                avgX - 0.5f * grid.cellSize,
                 0.0f + transform.position.y,
-                avgZ),
+                avgZ - 0.5f * grid.cellSize),
             Quaternion.identity,
             parentGrid.transform
         );
