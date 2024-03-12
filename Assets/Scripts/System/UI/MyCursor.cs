@@ -179,7 +179,7 @@ public class MyCursor : MonoBehaviour
                         switch (selectable.SelectionType)
                         {
                             case (SELECTION_TYPE.UNIT):
-
+                                // on exit from build mode clear its build-preview hover
                                 if (myMyCursorMode == MY_CURSOR_MODE.BUILD)
                                 {
                                     foreach (var currentHovered in ListOfHovered)
@@ -194,9 +194,25 @@ public class MyCursor : MonoBehaviour
                                 Cursor.SetCursor(unitCursor, Vector2.zero, CursorMode.Auto);
                                 break;
 
-                            case (SELECTION_TYPE.BUILDING):
-                                // myMyCursorMode = MY_CURSOR_MODE.BUILD;
+                            // return to default cursor on background click
+                            default:
+                                // on exit from build mode clear its build-preview hover
+                                if (myMyCursorMode == MY_CURSOR_MODE.BUILD)
+                                {
+                                    foreach (var currentHovered in ListOfHovered)
+                                    {
+                                        currentHovered.OnHoverExit();
+                                    }
+
+                                    ListOfHovered.Clear();
+                                }
+                                myMyCursorMode = MY_CURSOR_MODE.DEFAULT;
+
                                 break;
+
+                            // case (SELECTION_TYPE.BUILDING):
+                            //     // myMyCursorMode = MY_CURSOR_MODE.BUILD;
+                            //     break;
                         }
                     }
                 }

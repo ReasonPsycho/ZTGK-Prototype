@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Button : MonoBehaviour
@@ -13,6 +15,11 @@ public class Button : MonoBehaviour
             var cursor = GameObject.Find("CursorAbstractObject").GetComponent<MyCursor>();
                 cursor.MyCursorMode = MY_CURSOR_MODE.BUILD;
                 cursor.buildingPrefab = buildingPrefab;
+                cursor.ListOfSelected.Select(selectable => selectable.SelectionType != SELECTION_TYPE.UNIT ? selectable : null).NotNull().ToList().ForEach(
+                    selectable => {
+                        selectable.OnDeselect();
+                        cursor.ListOfSelected.Remove(selectable);
+                    });
             GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>().building = buildingPrefab;
         }
         else
