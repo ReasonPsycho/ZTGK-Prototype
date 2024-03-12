@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ConstructionManager : MonoBehaviour
@@ -15,40 +16,41 @@ public class ConstructionManager : MonoBehaviour
     public Grid grid;
 
     Animator buildingAnimator;
-    
+
 
     private void Start()
     {
-        wall = Resources.Load<GameObject>("WallPre");
 
         grid = GameObject.Find("Grid").GetComponent<Grid>();
- 
+
         for (int x = 0; x < grid.gridArray.GetLength(0); x++)
         {
             for (int z = 0; z < grid.gridArray.GetLength(1); z++)
             {
                 if (!(x > 40 && x < 60 && z > 40 && z < 60))
-                //if (x == 1 && z == 1)
+                    //if (x == 1 && z == 1)
                 {
-                    placeBuilding(
-                        grid,
-                        new List<Tile> {grid.gridArray[ x, z ]},
-                        wall,
-                        BuildingType.WALL
-                    );
+                    if (placeBuilding(
+                            grid,
+                            new List<Tile> { grid.gridArray[x, z] },
+                            wall,
+                            BuildingType.WALL
+                        ))
+                    {
+                        (grid.gridArray[x, z].BuildingHandler as Wall).GetWall();
+                    }
 
                     // grid.gridArray[x, z].Build(Instantiate(wall,
                     //     new Vector3(x * grid.cellSize + transform.position.x + grid.offsetX + grid.cellSize / 2.0f,
                     //         0.0f + transform.position.y,
                     //         z * grid.cellSize + transform.position.z + grid.offsetZ + grid.cellSize / 2.0f),
                     //     Quaternion.identity, grid.transform), BuildingType.WALL);
-
                 }
                 else
                 {
                     placeBuilding(
                         grid,
-                        new List<Tile> {grid.gridArray[ x, z ]},
+                        new List<Tile> { grid.gridArray[x, z] },
                         floor,
                         BuildingType.FLOOR
                     );
@@ -58,16 +60,16 @@ public class ConstructionManager : MonoBehaviour
                     //         0.0f + transform.position.y,
                     //         z * grid.cellSize + transform.position.z + grid.offsetZ + grid.cellSize / 2.0f),
                     //     Quaternion.identity, grid.transform), BuildingType.FLOOR);
-
                 }
             }
         }
-
+        
         for (int x = 0; x < grid.gridArray.GetLength(0); x++)
         {
             for (int z = 0; z < grid.gridArray.GetLength(1); z++)
             {
-                if (grid.gridArray[x, z].BuildingHandler != null && grid.gridArray[x, z].BuildingHandler.buildingType == BuildingType.WALL)
+                if (grid.gridArray[x, z].BuildingHandler != null &&
+                    grid.gridArray[x, z].BuildingHandler.buildingType == BuildingType.WALL)
                 {
                     Wall wallComponent = grid.gridArray[x, z].BuildingHandler as Wall;
                     wallComponent.SetWall();
@@ -85,15 +87,19 @@ public class ConstructionManager : MonoBehaviour
         }
     }
 
-    public bool placeBuilding(Grid parentGrid, IEnumerable<Tile> tiles, GameObject buildingPrefab, BuildingType type = BuildingType.ANY) {
-        foreach (var tile in tiles) {
-            if ( !tile.Vacant ) return false;
+    public bool placeBuilding(Grid parentGrid, IEnumerable<Tile> tiles, GameObject buildingPrefab,
+        BuildingType type = BuildingType.ANY)
+    {
+        foreach (var tile in tiles)
+        {
+            if (!tile.Vacant) return false;
         }
 
         float avgX = 0;
         float avgZ = 0;
-        foreach (var tile in tiles) {
-            if ( tile.BuildingHandler != null && tile.BuildingHandler.buildingType == BuildingType.FLOOR )
+        foreach (var tile in tiles)
+        {
+            if (tile.BuildingHandler != null && tile.BuildingHandler.buildingType == BuildingType.FLOOR)
                 tile.Destroy();
 
             avgX += tile.x;
@@ -113,7 +119,8 @@ public class ConstructionManager : MonoBehaviour
             parentGrid.transform
         );
 
-        foreach (var tile in tiles) {
+        foreach (var tile in tiles)
+        {
             tile.Build(obj, type);
         }
 

@@ -65,7 +65,6 @@ public class UnitAI : MonoBehaviour
         if (isGoingToMine)
         {
             Mine(miningTarget);
-
         }
 
 

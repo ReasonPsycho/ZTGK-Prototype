@@ -8,10 +8,10 @@ public class Building : MonoBehaviour, ISelectable
 {
     #region ISelectable
 
-    private Color orgColor;
-    protected Material material;
-    private bool isHovered = false;
-    private bool isSelected = false;
+    protected Color orgColor;
+    public Material material;
+    protected bool isHovered = false;
+    protected bool isSelected = false;
 
     #endregion
 
@@ -19,11 +19,16 @@ public class Building : MonoBehaviour, ISelectable
     public List<Tile> tiles = new();
     public virtual Vector2Int Size { get; } = new(2, 2);
 
-    private void Start() {
-        material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
-        orgColor = material.color;
+    public virtual void Start() {
+        GetMaterial();
     }
 
+    virtual public void GetMaterial()
+    {
+        material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
+        orgColor = material.color;   
+    }
+    
     virtual public bool DestroyBuilding()
     {
         Destroy(gameObject);

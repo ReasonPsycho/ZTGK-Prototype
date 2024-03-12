@@ -200,20 +200,23 @@ public class MyCursor : MonoBehaviour
                             switch (selected.SelectionType)
                             {
                                 case (SELECTION_TYPE.UNIT):
-                                    if (((MonoBehaviour)(hoveredList[0])).gameObject.GetComponentInParent<Mineable>())
-                                    {
-                                        selectedUnit.GetComponent<UnitAI>().movementTarget =
-                                            grid.WorldToGridPosition(hit.collider.transform.position);
-                                        selectedUnit.GetComponent<UnitAI>().miningTarget =
-                                            grid.WorldToGridPosition(hit.collider.transform.position);
-                                        selectedUnit.GetComponent<UnitAI>().hasTarget = true;
-                                        selectedUnit.GetComponent<UnitAI>().isGoingToMine = true;
-                                    }
-                                    else if (((MonoBehaviour)(hoveredList[0])).gameObject.GetComponentInParent<Unit>())
+
+                                    if (((MonoBehaviour)(hoveredList[0])).gameObject.GetComponentInParent<Unit>())
                                     {
                                         selectedUnit.GetComponent<UnitAI>().movementTarget =
                                             hit.collider.gameObject.GetComponentInParent<Unit>().gridPosition;
                                         selectedUnit.GetComponent<UnitAI>().hasTarget = true;
+                                    }
+                                    else
+                                    if (((MonoBehaviour)(hoveredList[0])).gameObject.GetComponentInParent<Mineable>())
+                                    {
+                                        Vector3 target = hit.point;
+                                        selectedUnit.GetComponent<UnitAI>().movementTarget =
+                                            grid.WorldToGridPosition(target);
+                                        selectedUnit.GetComponent<UnitAI>().miningTarget =
+                                            ((Wall)hoveredList[0]).tiles[0].Index;
+                                        selectedUnit.GetComponent<UnitAI>().hasTarget = true;
+                                        selectedUnit.GetComponent<UnitAI>().isGoingToMine = true;
                                     }
                                     else
                                     {
@@ -228,7 +231,8 @@ public class MyCursor : MonoBehaviour
                                     break;
 
                                 case (SELECTION_TYPE.BUILDING):
-                                    //IDK
+                                
+
                                     break;
                             }
 
