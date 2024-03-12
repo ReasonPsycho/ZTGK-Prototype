@@ -88,17 +88,13 @@ public class UnitAI : MonoBehaviour
 
         if (isMoving)
         {
-            print("Moving to next tile " + nextTile);
             Vector3 targetPos = unit.grid.GridToWorldPosition(nextTile);
-            print("TargetPos " + targetPos);
             targetPos.y = transform.position.y;
             //Vector3 startPos = unit.grid.GridToWorldPosition((Vector2Int)path[0]);
             Vector3 startPos = unit.transform.position;
             startPos.y = transform.position.y;
-            print("t??" + t);
             if(t <= 1.0f)
             {
-                print("t " + t);
                 unit.animator.SetFloat("motionTime", t);
                 t += Time.deltaTime * unit.tilesPerSecond;
                 transform.position = Vector3.Lerp(startPos, targetPos, t + 0.01f);
@@ -167,18 +163,15 @@ public class UnitAI : MonoBehaviour
         isMoving = true;
 
         nextTile = (Vector2Int)path[0];
-        print("NextTile [0]" + nextTile);
         if (path.Count > 1)
         {
             nextTile = (Vector2Int)path[1];
-            print("NextTile [1]" + nextTile);
         }
         else if (path.Count == 0)
             isMoving = false;
 
         if (Vector2.Distance(new Vector2( transform.position.x,transform.position.z), new Vector2(unit.grid.GridToWorldPosition(nextTile).x,unit.grid.GridToWorldPosition(nextTile).z)) < 1.5f)
         {
-            print("Yea");
             t = 0;
             path.RemoveAt(0);
         }
