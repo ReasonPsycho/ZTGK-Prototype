@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6728251902148509695}
   - component: {fileID: 6728251902148509694}
   - component: {fileID: 6728251902148509693}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: Decoration
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 6728251903359822459}
   - component: {fileID: 6728251903359822458}
   - component: {fileID: 3136376893378376739}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -240,7 +240,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6728251903560051765}
   - component: {fileID: -2916760343499544174}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: Building
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -275,4 +275,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf521ed6ba1c5064b8e2841bac349db3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  material: {fileID: 0}
   buildingType: 1

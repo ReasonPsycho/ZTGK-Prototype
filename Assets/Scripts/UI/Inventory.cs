@@ -25,12 +25,18 @@ public class Inventory : MonoBehaviour
         GameItems.Add(new GITidePodLauncher());
         GameItems.Add(new GITidePodLauncher());
 
-        foreach (var gameItem in GameItems)
-        {
-            GameObject tmp = Instantiate(ItemManagment.ItemPrefab, gridObject.transform);
-            tmp.name = gameItem.Name;
-            tmp.GetComponent<Item>().GameItem = gameItem;
-            tmp.GetComponent<Image>().sprite = gameItem.icon;
-        }
+        GameItems.ForEach(AddItem);
+    }
+
+    /// <summary>
+    /// For adding items after Inventory initialization as well.
+    /// Utility to set up the UI elements.
+    /// </summary>
+    /// <param name="gameItem"></param>
+    public void AddItem(GameItem gameItem) {
+        GameObject obj = Instantiate(ItemManagment.ItemPrefab, gridObject.transform);
+        obj.name = gameItem.Name;
+        obj.GetComponent<Item>().GameItem = gameItem;
+        obj.GetComponent<Image>().sprite = gameItem.icon;
     }
 }
