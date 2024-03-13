@@ -10,7 +10,7 @@ public class Equipment : MonoBehaviour
     public GameObject Item1;
     public GameObject Item2;
     public ItemManager ItemManagment;
-    private Unit selectedUnit;
+    private UnitAI selectedUnit;
 
     public MyCursor myCursor;
 
@@ -26,7 +26,7 @@ public class Equipment : MonoBehaviour
     {
         if (selectedUnit != null)
         {
-            Unit tmpUnit = myCursor.GetFirstSelectedUnit();
+            UnitAI tmpUnit = myCursor.GetFirstSelectedUnit();
             if (tmpUnit != null && tmpUnit != selectedUnit)
             {
                 OnDisable();
@@ -37,23 +37,23 @@ public class Equipment : MonoBehaviour
 
     private void OnEnable()
     {
-        selectedUnit = (Unit)myCursor.GetFirstSelectedUnit();
+        selectedUnit = (UnitAI)myCursor.GetFirstSelectedUnit();
         if (selectedUnit != null)
         {
-            if (selectedUnit.Item1 != null)
+            if (selectedUnit.unit.Item1 != null)
             {
                 GameObject tmp = Instantiate(ItemManagment.ItemPrefab, Item1.transform);
-                tmp.name = selectedUnit.Item1.Name;
-                tmp.GetComponent<Item>().GameItem = selectedUnit.Item1;
-                tmp.GetComponent<Image>().sprite = selectedUnit.Item1.icon;
+                tmp.name = selectedUnit.unit.Item1.Name;
+                tmp.GetComponent<Item>().GameItem = selectedUnit.unit.Item1;
+                tmp.GetComponent<Image>().sprite = selectedUnit.unit.Item1.icon;
             }
 
-            if (selectedUnit.Item2 != null)
+            if (selectedUnit.unit.Item2 != null)
             {
                 GameObject tmp = Instantiate(ItemManagment.ItemPrefab, Item2.transform);
-                tmp.name = selectedUnit.Item2.Name;
-                tmp.GetComponent<Item>().GameItem = selectedUnit.Item2;
-                tmp.GetComponent<Image>().sprite = selectedUnit.Item2.icon;
+                tmp.name = selectedUnit.unit.Item2.Name;
+                tmp.GetComponent<Item>().GameItem = selectedUnit.unit.Item2;
+                tmp.GetComponent<Image>().sprite = selectedUnit.unit.Item2.icon;
 
             }
         }
