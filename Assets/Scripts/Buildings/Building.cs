@@ -19,7 +19,7 @@ public class Building : MonoBehaviour, ISelectable
     public List<Tile> tiles = new();
     public virtual Vector2Int Size { get; } = new(2, 2);
 
-    
+
     public virtual void Start() {
         GetMaterial();
    }
@@ -27,11 +27,12 @@ public class Building : MonoBehaviour, ISelectable
     virtual public void GetMaterial()
     {
         material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
-        orgColor = material.color;   
+        orgColor = material.color;
     }
-    
+
     virtual public bool DestroyBuilding()
     {
+        BuildingHelper.Instance.RemoveOptions();
         Destroy(gameObject);
         return true;
     }
@@ -75,11 +76,14 @@ public class Building : MonoBehaviour, ISelectable
             material.color = Color.blue;
         }
 
-        isSelected = true;    }
+        BuildingHelper.Instance.AddOptions(this, buildingType);
+        isSelected = true;
+    }
 
     public virtual void OnDeselect()
     {
         material.color = orgColor;
+        BuildingHelper.Instance.RemoveOptions();
         isHovered = false;
         isSelected = false;
 
