@@ -2378,6 +2378,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1341939166}
   - component: {fileID: 1341939167}
+  - component: {fileID: 1341939168}
   m_Layer: 0
   m_Name: ConstructionManager
   m_TagString: Untagged
@@ -2417,6 +2418,23 @@ MonoBehaviour:
   wallSide: {fileID: 4074098458107090196, guid: 3ffd2c8d70d83cd48a8499b0a5831148, type: 3}
   floor: {fileID: 5846320558581305305, guid: e2756ed87e5c7dd4c9dc6bc775088d1f, type: 3}
   grid: {fileID: 1930105229}
+--- !u!114 &1341939168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1341939165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a39b9a9639ef4288842576525c04b3d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnedOptions: []
+  buttonPrefab: {fileID: 1902543462352527337, guid: bf55682383c8be24da04ed395e4495c2, type: 3}
+  menuGrid: {fileID: 1269156876}
+  inventory: {fileID: 1576663454}
+  unitPrefab: {fileID: 8874092110876813053, guid: 08261030035f5544294b3ff886cc8101, type: 3}
 --- !u!1 &1479368216 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2134136363448686330, guid: 26d7eafe62b14226830e9915dc41956a, type: 3}
