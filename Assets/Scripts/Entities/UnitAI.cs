@@ -14,7 +14,7 @@ public class UnitAI : MonoBehaviour, ISelectable
     [Header("Combat")]
     public float attackSpeed = 1.0f;
     public float attackDamage = 10.0f;
-    protected float isAttackOnCooldown = 0.0f;
+    protected float attackCooldown = 0.0f;
 
     [Header("Target")]
     public Vector2Int target;
@@ -24,9 +24,9 @@ public class UnitAI : MonoBehaviour, ISelectable
 
     [Header("Behavior flags")]
     public bool hasMiningTarget = false;
-    private bool isMining = false;
+    [SerializeField] private bool isMining = false;
 
-    private int retries = 0;
+
     private ConstructionManager constructionManager;
 
     #region ISelectable
@@ -57,6 +57,7 @@ public class UnitAI : MonoBehaviour, ISelectable
         HandleMining();
 
         HandleCombat();
+
     }
 
     #region ISelectable
@@ -65,7 +66,7 @@ public class UnitAI : MonoBehaviour, ISelectable
     {
         if (!isHovered)
         {
-            unit.material.color = Color.cyan;
+            unit.material.color = Color.blue;
             isHovered = true;
         }
     }
@@ -132,14 +133,15 @@ public class UnitAI : MonoBehaviour, ISelectable
         {
             unit.TurnTo(unit.grid.WorldToGridPosition(target.transform.position));
             unit.state = UnitState.ATTACKING;
-            if (isAttackOnCooldown > 1.0f)
+
+            if (attackCooldown > 1.0f)
             {
                 target.GetComponentInParent<Unit>().TakeDmg(attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff);
-                isAttackOnCooldown = 0.0f;
+                attackCooldown = 0.0f;
             }
             else
             {
-                isAttackOnCooldown += Time.deltaTime;
+                attackCooldown += Time.deltaTime;
             }
         }
         else
@@ -194,7 +196,6 @@ public class UnitAI : MonoBehaviour, ISelectable
         if (isMining)
         {
             unit.state = UnitState.MINING;
-            //unit.animator.SetFloat("motionTime", t);
             if (miningTime > 0)
             {
                 miningTime -= Time.deltaTime;
@@ -218,6 +219,10 @@ public class UnitAI : MonoBehaviour, ISelectable
         if (combatTarget != null)
         {
             Attack(combatTarget);
+        }
+        else if(!(unit.state == UnitState.MINING && isMining))
+        {
+            unit.state = UnitState.IDLE;
         }
     }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using GameItems;
 using GameItems.ConcreteItems;
 using Unity.VisualScripting;
@@ -127,6 +128,7 @@ public class Unit : MonoBehaviour
 
     private void Die()
     {
+        currentTile.Vacant = true;
         Destroy(gameObject);
     }
 
@@ -508,17 +510,16 @@ public class Unit : MonoBehaviour
 
         if (path.Count != 0)
         {
-            state = UnitState.MOVING;
             MoveOnPath();
         }
         else
         {
-            state = UnitState.IDLE;
             hasTarget = false;
             isMoving = false;
         }
         if (isMoving)
         {
+            state = UnitState.MOVING;
             Vector3 targetPos = grid.GridToWorldPosition(nextTile);
             targetPos.y = transform.position.y;
             Vector3 startPos = transform.position;
@@ -541,10 +542,7 @@ public class Unit : MonoBehaviour
                 isMoving = false;
             }
         }
-        else
-        {
-            state = UnitState.IDLE;
-        }
+
     }
 
     #endregion
