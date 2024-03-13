@@ -11,87 +11,66 @@ public enum EnemyState
 }
 
 
-public class EnemyAI : UnitAI
+public class EnemyAI : MonoBehaviour
 {
     public EnemyState state;
     public float wakeUpRange = 5.0f;
 
     private float distanceToTarget;
 
-    protected override void Start()
+    public Unit unit;
+
+
+
+
+    [Header("Combat")]
+    public float attackSpeed = 1.0f;
+    public float attackDamage = 10.0f;
+    protected bool isAttackOnCooldown = false;
+
+    [Header("Target")]
+    public Vector2Int target;
+    public GameObject combatTarget;
+    public float distanceToCombatTarget;
+
+    protected void Start()
     {
-        base.Start();
         state = EnemyState.ASLEEP;
+        unit = GetComponentInParent<Unit>();
+
     }
 
     private void Update()
     {
-        combatTarget = FindClosestEnemy(5.0f);
-        if (hasTarget)
-            Vector2Int.Distance(unit.gridPosition, target);
-
+        distanceToCombatTarget = float.MaxValue;
         if (CheckForPlayerUnit())
         {
-            state = EnemyState.CHASE;
-        }
-        else
-        {
-            state = EnemyState.ASLEEP;
-        }
-
-        if (state == EnemyState.CHASE)
-        {
-            if (hasTarget)
+            combatTarget = FindClosestPlayerUnit(wakeUpRange * 1.5f);
+            unit.hasTarget = true;
+            if (combatTarget != null)
             {
-                path = FindPathToTarget(FindNearestVacantTile(movementTarget));
+                distanceToCombatTarget = Vector3.Distance(combatTarget.transform.position, transform.position);
             }
         }
 
+        
 
-        if (path != null && path.Count > 0)
+        if (combatTarget != null && distanceToCombatTarget > unit.reachRange)
         {
-
+            state = EnemyState.CHASE;
+            unit.movementTarget = unit.FindNearestVacantTile(unit.grid.WorldToGridPosition(combatTarget.transform.position));
+           
         }
-        if (state == EnemyState.CHASE)
-        {
-            MoveOnPath();
-            combatTarget = FindClosestPlayerUnit(5.0f);
-        }
-
-        if (state == EnemyState.CHASE && distanceToTarget <= unit.reachRange)
+        else if(combatTarget != null && distanceToCombatTarget <= unit.reachRange)
         {
             state = EnemyState.ATTACK;
+            Attack(combatTarget);
         }
-
-        if (state == EnemyState.ATTACK)
-        {
-            combatTarget = FindClosestPlayerUnit(5.0f);
-            if (distanceToTarget > unit.reachRange)
-            {
-                state = EnemyState.CHASE;
-            }
-            else
-            {
-                if (combatTarget != null && Vector2Int.Distance(combatTarget.GetComponentInParent<Unit>().gridPosition, unit.gridPosition) <= unit.reachRange)
-                {
-                    TurnTo(unit.grid.WorldToGridPosition(combatTarget.transform.position));
-                    unit.state = UnitState.ATTACKING;
-                    if (isAttackOnCooldown > 1.0f)
-                    {
-                        combatTarget.GetComponentInParent<Unit>().TakeDmg(unit.attackDamage + unit.attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff);
-                        isAttackOnCooldown = 0.0f;
-                    }else
-                    {
-                        isAttackOnCooldown += Time.deltaTime;
-                    }                }
-            }
-        }
-
-        //if(hasTarget && path.Count == 0)
-        //{
-        //    hasTarget = false;
-        //}
+        
     }
+
+
+    #region Lookin for player
 
     private bool CheckForPlayerUnit()
     {
@@ -100,8 +79,8 @@ public class EnemyAI : UnitAI
         {
             if (hitCollider.gameObject.CompareTag("PlayerUnit"))
             {
-                movementTarget = unit.grid.WorldToGridPosition(hitCollider.transform.position);
-                hasTarget = true;
+                unit.movementTarget = unit.grid.WorldToGridPosition(hitCollider.transform.position);
+                unit.hasTarget = true;
                 return true;
             }
         }
@@ -135,16 +114,27 @@ public class EnemyAI : UnitAI
     }
 
 
+    #endregion
 
+    #region Combat
 
-
-
-
-
-
-    private void OnDrawGizmos()
+    public void Attack(GameObject target)
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, wakeUpRange);
+        unit.TurnTo(unit.grid.WorldToGridPosition(target.transform.position));
+        if (!isAttackOnCooldown)
+        {
+            target.GetComponentInParent<Unit>().TakeDmg(attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff);
+            isAttackOnCooldown = true;
+            StartCoroutine(AttackCooldown());
+        }
     }
+
+    public IEnumerator AttackCooldown()
+    {
+        yield return new WaitForSeconds(1.0f / attackSpeed);
+        isAttackOnCooldown = false;
+       
+    }
+
+    #endregion
 }

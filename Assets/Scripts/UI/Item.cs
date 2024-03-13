@@ -34,18 +34,18 @@ public class Item : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
         }
         else
         {
-            Unit selectedUnit = ItemManagment.MyCursor.GetFirstSelectedUnit();
+            UnitAI selectedUnit = ItemManagment.MyCursor.GetFirstSelectedUnit();
             if (selectedUnit != null)
             {
                 if (eqiupmentSlot.transform.childCount > 0)
                 {
-                    GameItem tmpItem = selectedUnit.Unequip(slot)[0];
+                    GameItem tmpItem = selectedUnit.unit.Unequip(slot)[0];
                     eqiupmentSlot.transform.GetChild(0).SetParent(transform.parent);
                     ItemManagment.Inventory.GameItems.Add(tmpItem);
                 }
 
                 ItemManagment.Inventory.GameItems.Remove(GameItem);
-                selectedUnit.Equip(GameItem, slot);
+                selectedUnit.unit.Equip(GameItem, slot);
                 transform.SetParent(eqiupmentSlot.transform);
             }
         }
@@ -54,26 +54,26 @@ public class Item : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
     void switchEqiupmentSlot(GameObject eqiupmentSlotFrom,GameObject eqiupmentSlotTo, int fromSlot,
         int toSlot) //YEah prob easier way to do it exist idk
     {
-        Unit selectedUnit = ItemManagment.MyCursor.GetFirstSelectedUnit();
+        UnitAI selectedUnit = ItemManagment.MyCursor.GetFirstSelectedUnit();
         if (selectedUnit != null)
         {
-            selectedUnit.Unequip(fromSlot);
-            List<GameItem> tmpItem = selectedUnit.Unequip(toSlot);
+            selectedUnit.unit.Unequip(fromSlot);
+            List<GameItem> tmpItem = selectedUnit.unit.Unequip(toSlot);
 
             if (tmpItem.Count != 0)
             {
                 eqiupmentSlotTo.transform.GetChild(0).SetParent(transform.parent);
-                selectedUnit.Equip(GameItem, fromSlot);
+                selectedUnit.unit.Equip(GameItem, fromSlot);
             }
 
             transform.SetParent(eqiupmentSlotTo.transform);
-            selectedUnit.Equip(GameItem, toSlot);
+            selectedUnit.unit.Equip(GameItem, toSlot);
         }
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Unit selectedUnit = (Unit)ItemManagment.MyCursor.GetFirstSelectedUnit();
+        UnitAI selectedUnit = (UnitAI)ItemManagment.MyCursor.GetFirstSelectedUnit();
         if (RectTransformUtility.RectangleContainsScreenPoint(ItemManagment.inventoryGrid.GetComponent<RectTransform>(),
                 Input.mousePosition))
         {
@@ -83,13 +83,13 @@ public class Item : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
             }
             else
             {
-                if (GameItem == selectedUnit.Item1)
+                if (GameItem == selectedUnit.unit.Item1)
                 {
-                    selectedUnit.Unequip(1);
+                    selectedUnit.unit.Unequip(1);
                 }
                 else
                 {
-                    selectedUnit.Unequip(2);
+                    selectedUnit.unit.Unequip(2);
                 }
 
                 transform.SetParent(ItemManagment.inventoryGrid.transform);
@@ -98,9 +98,9 @@ public class Item : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
         else if (RectTransformUtility.RectangleContainsScreenPoint(ItemManagment.Item1.GetComponent<RectTransform>(),
                      Input.mousePosition))
         {
-            if (GameItem != selectedUnit.Item1)
+            if (GameItem != selectedUnit.unit.Item1)
             {
-                if (GameItem != selectedUnit.Item2)
+                if (GameItem != selectedUnit.unit.Item2)
                 {
                     addItemToEqiupmentSlot(ItemManagment.Item1, 1);
                 }
@@ -114,9 +114,9 @@ public class Item : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDrag
         else if (RectTransformUtility.RectangleContainsScreenPoint(ItemManagment.Item2.GetComponent<RectTransform>(),
                      Input.mousePosition))
         {
-            if (GameItem != selectedUnit.Item2)
+            if (GameItem != selectedUnit.unit.Item2)
             {
-                if (GameItem != selectedUnit.Item1)
+                if (GameItem != selectedUnit.unit.Item1)
                 {
                     addItemToEqiupmentSlot(ItemManagment.Item2, 2);
                 }

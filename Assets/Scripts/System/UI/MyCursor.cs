@@ -216,33 +216,35 @@ public class MyCursor : MonoBehaviour
                         {
                             if (selected.SelectionType == SELECTION_TYPE.UNIT)
                             {
-                                UnitAI selectedUnit = ((Unit)selected).GetComponent<UnitAI>();
-                                    
-                                if (((MonoBehaviour)(ListOfHovered[0])).gameObject.GetComponentInParent<Unit>())
+                                UnitAI selectedUnit = ((UnitAI)selected).GetComponent<UnitAI>();
+                                   
+                                if (((MonoBehaviour)(ListOfHovered[0])).gameObject.GetComponentInParent<EnemyAI>())
                                 {
-                                    selectedUnit.GetComponent<UnitAI>().movementTarget =
+                                    selectedUnit.unit.movementTarget =
                                         hit.collider.gameObject.GetComponentInParent<Unit>().gridPosition;
-                                    selectedUnit.GetComponent<UnitAI>().hasTarget = true;
+                                    selectedUnit.unit.hasTarget = true;
+                                    selectedUnit.GetComponent<UnitAI>().combatTarget = hit.collider.gameObject;
                                 }
                                 else if (((MonoBehaviour)(ListOfHovered[0])).gameObject
                                          .GetComponentInParent<Mineable>())
                                 {
                                     Vector3 target = hit.point;
-                                    selectedUnit.GetComponent<UnitAI>().movementTarget =
-                                        grid.WorldToGridPosition(target);
+                                    selectedUnit.unit.movementTarget =
+                                        selectedUnit.unit.FindNearestVacantTile(selectedUnit.unit.grid.WorldToGridPosition(target));
                                     selectedUnit.GetComponent<UnitAI>().miningTarget =
                                         ((Wall)ListOfHovered[0]).tiles[0].Index;
-                                    selectedUnit.GetComponent<UnitAI>().hasTarget = true;
-                                    selectedUnit.GetComponent<UnitAI>().isGoingToMine = true;
+                                    selectedUnit.unit.hasTarget = true;
+                                    selectedUnit.GetComponent<UnitAI>().hasMiningTarget = true;
                                 }
                                 else
                                 {
                                     Vector3 target = hit.point;
                                     target.y = 0;
-                                    selectedUnit.GetComponent<UnitAI>().movementTarget =
+                                    selectedUnit.unit.movementTarget =
                                         grid.WorldToGridPosition(target);
-                                    selectedUnit.GetComponent<UnitAI>().hasTarget = true;
+                                    selectedUnit.unit.hasTarget = true;
                                     selectedUnit.GetComponent<UnitAI>().combatTarget = null;
+                                    selectedUnit.GetComponent<UnitAI>().hasMiningTarget = false;
                                 }
                             }
                         }
@@ -281,11 +283,11 @@ public class MyCursor : MonoBehaviour
         }
     }
 
-    public  Unit GetFirstSelectedUnit()
+    public  UnitAI GetFirstSelectedUnit()
     {
         if (ListOfSelected.Count != 0 && ListOfSelected[0].SelectionType == SELECTION_TYPE.UNIT)
         {
-            return (Unit)ListOfSelected[0];
+            return (UnitAI)ListOfSelected[0];
         }
         else
         {

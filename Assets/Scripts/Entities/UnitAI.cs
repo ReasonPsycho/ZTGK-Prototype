@@ -1,390 +1,152 @@
+using Palmmedia.ReportGenerator.Core.Reporting.Builders;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitAI : MonoBehaviour
+public class UnitAI : MonoBehaviour, ISelectable
 {
-    protected Unit unit;
+    public Unit unit;
 
+    [Header("Mining")]
+    public float miningSpeed = 1.0f;
+    private float miningTime = 0;
 
-    [Header("PathFinding")]
-    protected ArrayList path;
-    private Coroutine moving;
+    [Header("Combat")]
+    public float attackSpeed = 1.0f;
+    public float attackDamage = 10.0f;
+    protected float isAttackOnCooldown = 0.0f;
+
+    [Header("Target")]
     public Vector2Int target;
-    public Vector2Int movementTarget;
     public Vector2Int miningTarget;
     public GameObject combatTarget;
-    public bool hasTarget = false;
-    private float miningTime = 0;
-    private Vector2Int nextTile;
-    private bool isMoving = false;
 
+
+    [Header("Behavior flags")]
+    public bool hasMiningTarget = false;
+    private bool isMining = false;
 
     private int retries = 0;
     private ConstructionManager constructionManager;
-    
-    private float t = 0;
 
-    public bool isGoingToMine = false;
-    private bool isMining = false;
+    #region ISelectable
 
-    [SerializeField] private int pathLength;
+    public SELECTION_TYPE SelectionType
+    {
+        get { return SELECTION_TYPE.UNIT; }
+    }
 
-    protected float isAttackOnCooldown = 0.0f;
+    private Color orgColor;
+    private Material material;
+    private bool isHovered = false;
+
+    #endregion
+
+
+
     protected virtual void Start()
     {
         constructionManager = GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>();
         unit = GetComponentInParent<Unit>();
-        path = new ArrayList();
+        material = unit.material;
+        orgColor = material.color;
+
     }
 
     private void Update()
     {
-        pathLength = path.Count;
-        if (hasTarget)
-        {
-            path.Clear();
-            path = FindPathToTarget(movementTarget);
-        }
+        HandleMining();
 
-        if (hasTarget && path.Count < 1)
-        {
-            movementTarget = FindNearestVacantTile(movementTarget);
-        }
-
-        if (path.Count != 0)
-        {
-            unit.state = UnitState.MOVING;
-            if (isGoingToMine)
-            {
-                if (path.Count > 2)
-                {
-                    MoveOnPath();
-                }
-            }
-            else
-            {
-                MoveOnPath();
-            }
-        }
-        else
-        {
-           
-            unit.state = UnitState.IDLE;
-            hasTarget = false;
-            isMoving = false;
-        }
-
-        
-
-        if (isGoingToMine )
-        {
-            Mine(miningTarget);
-        }
-
-
-        if (unit.type == UnitType.ALLY)
-        {
-            if (!unit.IsSelected)
-            {
-                combatTarget = FindClosestEnemy(5.0f);
-            }
-            if (combatTarget != null)
-            {
-                Attack(combatTarget);
-            }
-            else
-            {
-                hasTarget = false;
-                if (!isMoving)
-                {
-                    unit.state = UnitState.IDLE;
-                }
-            }
-        }
-
-        if (isMoving)
-        {
-            Vector3 targetPos = unit.grid.GridToWorldPosition(nextTile);
-            targetPos.y = transform.position.y;
-            //Vector3 startPos = unit.grid.GridToWorldPosition((Vector2Int)path[0]);
-            Vector3 startPos = unit.transform.position;
-            startPos.y = transform.position.y;
-            if(t <= 1.0f)
-            {
-                unit.animator.SetFloat("motionTime", t);
-                t += Time.deltaTime * unit.tilesPerSecond;
-                transform.position = Vector3.Lerp(startPos, targetPos, t + 0.01f);
-
-                Vector3 dir = targetPos - transform.position;
-                dir.y = 0; // Keep the direction in the XZ plane
-                if (Vector3.Distance(Vector3.zero, dir) > 0.01f)
-                {
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), t * 5);
-                }
-            }
-            else
-            {
-                isMoving = false;
-            }
-        }else if (isMining)
-        {
-            unit.state = UnitState.MINING;
-            unit.animator.SetFloat("motionTime", t);
-            if (miningTime > 0)
-            {
-                miningTime -= Time.deltaTime;
-            }
-            else
-            {
-                constructionManager.destroyBuilding(unit.grid.GetTile(miningTarget).BuildingHandler);
-                isGoingToMine = false;
-                isMining = false;   
-            }
-        }
+        HandleCombat();
     }
 
-    #region Movement
-    
+    #region ISelectable
 
-    public void TurnTo(Vector2Int target)
+    public void OnHoverEnter()
     {
-        Vector3 targetPos = unit.grid.GridToWorldPosition(target);
-        targetPos.y = transform.position.y;
-        Vector3 dir = targetPos - transform.position;
-        dir.y = 0; // Keep the direction in the XZ plane
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), unit.rotationSpeed * Time.deltaTime);
-    }
-
-
-
-    public Vector2Int FindNearestVacantTile(Vector2Int target)
-    {
-        Vector2Int[] directions = new Vector2Int[] { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-        Queue<Vector2Int> queue = new Queue<Vector2Int>();
-        queue.Enqueue(target);
-        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
-        visited.Add(target);
-        while (queue.Count > 0)
+        if (!isHovered)
         {
-            Vector2Int current = queue.Dequeue();
-            if (unit.grid.GetTile(current).Vacant || current == unit.grid.WorldToGridPosition(transform.position))
-            {
-                return current;
-            }
-            foreach (Vector2Int dir in directions)
-            {
-                Vector2Int next = current + dir;
-                if (unit.grid.GetTile(next) != null && !visited.Contains(next))
-                {
-                    queue.Enqueue(next);
-                    visited.Add(next);
-                }
-            }
-        }
-        return target;
-
-    }
-
-    public void MoveOnPath()
-    {
-        
-        if (isMoving) return;
-        isMoving = true;
-
-        nextTile = (Vector2Int)path[0];
-        if (path.Count > 1)
-        {
-            nextTile = (Vector2Int)path[1];
-        }
-        else if (path.Count == 0)
-            isMoving = false;
-
-        if (Vector2.Distance(new Vector2( transform.position.x,transform.position.z), new Vector2(unit.grid.GridToWorldPosition(nextTile).x,unit.grid.GridToWorldPosition(nextTile).z)) < 1.5f)
-        {
-            t = 0;
-            path.RemoveAt(0);
+            unit.material.color = Color.cyan;
+            isHovered = true;
         }
     }
 
-
-    public ArrayList FindPathToTarget(Vector2Int target)
+    public void OnHoverExit()
     {
-        ArrayList result = new ArrayList();
-
-        // Get the current unit position
-        Vector2Int startPosition = unit.grid.WorldToGridPosition(transform.position);
-
-        // Perform A* pathfinding
-        List<Vector2Int> waypoints = AStarSearch(startPosition, target);
-
-        // If a path is found, store it in the path ArrayList
-        if (waypoints != null)
+        if (!unit.IsSelected)
         {
-            foreach (Vector2Int waypoint in waypoints)
-            {
-                result.Add(waypoint);
-            }
-        }
-        return result;
-    }
-
-
-    #region A* Pathfinding
-    private List<Vector2Int> AStarSearch(Vector2Int start, Vector2Int target)
-    {
-        HashSet<Vector2Int> openSet = new HashSet<Vector2Int>();
-        HashSet<Vector2Int> closedSet = new HashSet<Vector2Int>();
-        Dictionary<Vector2Int, Vector2Int> cameFrom = new Dictionary<Vector2Int, Vector2Int>();
-        Dictionary<Vector2Int, float> gScore = new Dictionary<Vector2Int, float>();
-        Dictionary<Vector2Int, float> fScore = new Dictionary<Vector2Int, float>();
-
-        openSet.Add(start);
-        gScore[start] = 0;
-        fScore[start] = Vector2Int.Distance(start, target);
-
-        while (openSet.Count > 0)
-        {
-            Vector2Int current = GetLowestFScoreNode(openSet, fScore);
-            if (current == target)
-            {
-                return ReconstructPath(cameFrom, current);
-            }
-
-            openSet.Remove(current);
-            closedSet.Add(current);
-
-            foreach (Vector2Int neighbor in GetNeighbors(current))
-            {
-                if (closedSet.Contains(neighbor))
-                    continue;
-
-                float tentativeGScore = gScore[current] + Vector2Int.Distance(current, neighbor);
-                if (!openSet.Contains(neighbor) || tentativeGScore < gScore[neighbor])
-                {
-                    cameFrom[neighbor] = current;
-                    gScore[neighbor] = tentativeGScore;
-                    fScore[neighbor] = gScore[neighbor] + Vector2Int.Distance(neighbor, target);
-                    if (!openSet.Contains(neighbor) && unit.grid.GetTile(neighbor).Vacant)
-                        openSet.Add(neighbor);
-                }
-            }
+            unit.material.color = orgColor;
         }
 
-        // No path found
-        return null;
+        isHovered = false;
     }
 
-    #region A* Helper Functions
-    private Vector2Int GetLowestFScoreNode(HashSet<Vector2Int> openSet, Dictionary<Vector2Int, float> fScore)
+    public virtual void OnSelect()
     {
-        Vector2Int lowestNode = Vector2Int.zero;
-        float lowestFScore = Mathf.Infinity;
-
-        foreach (Vector2Int node in openSet)
+        if (!unit.IsSelected)
         {
-            if (fScore.ContainsKey(node) && fScore[node] < lowestFScore)
-            {
-                lowestNode = node;
-                lowestFScore = fScore[node];
-            }
+            unit.material.color = Color.blue;
         }
+        unit.IsSelected = true;
 
-        return lowestNode;
     }
 
-    private List<Vector2Int> ReconstructPath(Dictionary<Vector2Int, Vector2Int> cameFrom, Vector2Int current)
+    public virtual void OnDeselect()
     {
-        List<Vector2Int> path = new List<Vector2Int>();
-        path.Add(current);
-
-        while (cameFrom.ContainsKey(current))
-        {
-            current = cameFrom[current];
-            path.Insert(0, current);
-        }
-
-        return path;
+        unit.material.color = orgColor;
+        isHovered = false;
+        unit.IsSelected = false;
     }
-
-    private List<Vector2Int> GetNeighbors(Vector2Int current)
-    {
-        List<Vector2Int> neighbors = new List<Vector2Int>();
-
-        neighbors.Add(new Vector2Int(current.x + 1, current.y)); // Right
-        neighbors.Add(new Vector2Int(current.x - 1, current.y)); // Left
-        neighbors.Add(new Vector2Int(current.x, current.y + 1)); // Up
-        neighbors.Add(new Vector2Int(current.x, current.y - 1)); // Down
-
-
-        if (unit.grid.GetTile(new Vector2Int(current.x + 1, current.y)).Vacant && unit.grid.GetTile(new Vector2Int(current.x, current.y + 1)).Vacant)
-            neighbors.Add(new Vector2Int(current.x + 1, current.y + 1)); // Top Right
-
-        if (unit.grid.GetTile(new Vector2Int(current.x - 1, current.y)).Vacant && unit.grid.GetTile(new Vector2Int(current.x, current.y + 1)).Vacant)
-            neighbors.Add(new Vector2Int(current.x - 1, current.y + 1)); // Top Left
-
-        if (unit.grid.GetTile(new Vector2Int(current.x + 1, current.y)).Vacant && unit.grid.GetTile(new Vector2Int(current.x, current.y - 1)).Vacant)
-            neighbors.Add(new Vector2Int(current.x + 1, current.y - 1)); // Bottom Right
-
-        if (unit.grid.GetTile(new Vector2Int(current.x - 1, current.y)).Vacant && unit.grid.GetTile(new Vector2Int(current.x, current.y - 1)).Vacant)
-            neighbors.Add(new Vector2Int(current.x - 1, current.y - 1)); // Bottom Left
-
-
-        return neighbors;
-    }
-    #endregion
-    #endregion
-
-
 
     #endregion
 
     #region Mining
     public void Mine(Vector2Int target)
     {
-        
-        if (Vector3.Distance(unit.grid.GridToWorldPosition(target), transform.position) <= unit.reachRange * 2)
+
+        if (Vector3.Distance(unit.grid.GridToWorldPosition(target), transform.position) <= unit.reachRange * 2f)
         {
             if (!isMining)
             {
-
                 Mineable mineable;
-                if ( unit.grid.GetTile(target).Building.TryGetComponent<Mineable>(out mineable))
+                if (unit.grid.GetTile(target).Building.TryGetComponent<Mineable>(out mineable))
                 {
-                    miningTime = mineable.miningTime / unit.miningSpeed;
+                    unit.TurnTo(target);
+                    miningTime = mineable.miningTime / miningSpeed;
                     isMining = true;
                 }
                 else
                 {
-                    isGoingToMine = false;
+                    hasMiningTarget = false;
                 }
             }
         }
     }
-    
+
     #endregion
 
     #region Combat
 
     public void Attack(GameObject target)
     {
-        hasTarget = true;
+        unit.hasTarget = true;
         if (Vector2.Distance(target.GetComponentInParent<Unit>().gridPosition, unit.gridPosition) <= unit.reachRange)
         {
-            TurnTo(unit.grid.WorldToGridPosition(target.transform.position));
+            unit.TurnTo(unit.grid.WorldToGridPosition(target.transform.position));
             unit.state = UnitState.ATTACKING;
             if (isAttackOnCooldown > 1.0f)
             {
-                target.GetComponentInParent<Unit>().TakeDmg(unit.attackDamage + unit.attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff);
+                target.GetComponentInParent<Unit>().TakeDmg(attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff);
                 isAttackOnCooldown = 0.0f;
-            }else
+            }
+            else
             {
                 isAttackOnCooldown += Time.deltaTime;
             }
         }
         else
         {
-            movementTarget = unit.grid.WorldToGridPosition(target.transform.position);
+            unit.movementTarget = unit.FindNearestVacantTile(unit.grid.WorldToGridPosition(target.transform.position));
         }
     }
 
@@ -400,7 +162,7 @@ public class UnitAI : MonoBehaviour
             if (enemyAI != null && enemyAI.state != EnemyState.ASLEEP)
             {
                 float diff = Vector3.Distance(enemy.transform.position, position);
-                if(diff > range)
+                if (diff > range)
                 {
                     continue;
                 }
@@ -414,11 +176,52 @@ public class UnitAI : MonoBehaviour
         }
         return closest;
     }
-    
+
     #endregion
 
     #region Equipment
 
     #endregion
 
+    #region Misc
+    //all these functions are made only in order to make the code more readable and easier to understand
+    //and are only to be used in the Update function
+
+    private void HandleMining()
+    {
+        if (hasMiningTarget)
+        {
+            Mine(miningTarget);
+        }
+        if (isMining)
+        {
+            unit.state = UnitState.MINING;
+            //unit.animator.SetFloat("motionTime", t);
+            if (miningTime > 0)
+            {
+                miningTime -= Time.deltaTime;
+            }
+            else
+            {
+                constructionManager.destroyBuilding(unit.grid.GetTile(miningTarget).BuildingHandler);
+                hasMiningTarget = false;
+                isMining = false;
+            }
+        }
+
+    }
+
+    private void HandleCombat()
+    {
+        if (!unit.IsSelected)
+        {
+            combatTarget = FindClosestEnemy(5.0f);
+        }
+        if (combatTarget != null)
+        {
+            Attack(combatTarget);
+        }
+    }
+
+    #endregion
 }

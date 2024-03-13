@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2185536167748927808}
   - component: {fileID: 4491057444260848202}
-  - component: {fileID: 3321118542130583961}
   - component: {fileID: 5870469139649258654}
   m_Layer: 0
   m_Name: Enemy
@@ -54,38 +53,22 @@ MonoBehaviour:
   animator: {fileID: 0}
   gridPosition: {x: 0, y: 0}
   facingAngle: 0
+  movementTarget: {x: 0, y: 0}
+  nextTile: {x: 0, y: 0}
+  pathLength: 0
   MaxHealth: 100
   health: 0
   reachRange: 1.5
   tilesPerSecond: 3
   rotationSpeed: 1
-  miningSpeed: 1
-  attackSpeed: 1
-  attackDamage: 10
+  isMoving: 0
+  hasTarget: 0
   ItemGameObject1: {fileID: 0}
   ItemGameObject2: {fileID: 0}
   FlatDamageBuff: 0
   PercentDamageBuff: 0
   Armor: 0
---- !u!114 &3321118542130583961
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2185536167748927809}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00d2ef3be306d234d8e333b99589614b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {x: 0, y: 0}
-  movementTarget: {x: 0, y: 0}
-  miningTarget: {x: 0, y: 0}
-  combatTarget: {fileID: 0}
-  hasTarget: 0
-  isGoingToMine: 0
-  pathLength: 0
+  material: {fileID: 0}
 --- !u!114 &5870469139649258654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,15 +81,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b84852d06d75a0647bcf446e56063138, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {x: 0, y: 0}
-  movementTarget: {x: 0, y: 0}
-  miningTarget: {x: 0, y: 0}
-  combatTarget: {fileID: 0}
-  hasTarget: 0
-  isGoingToMine: 0
-  pathLength: 0
   state: 0
   wakeUpRange: 5
+  unit: {fileID: 0}
+  attackSpeed: 1
+  attackDamage: 10
+  target: {x: 0, y: 0}
+  combatTarget: {fileID: 0}
+  distanceToCombatTarget: 0
 --- !u!1 &2224335917959058930
 GameObject:
   m_ObjectHideFlags: 0
@@ -562,7 +544,7 @@ GameObject:
   - component: {fileID: 721839930000924353}
   m_Layer: 0
   m_Name: Body
-  m_TagString: PlayerUnit
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
