@@ -58,6 +58,10 @@ public class Unit : MonoBehaviour
     public float Armor = 0;
     public Material material;
 
+    public void Awake()
+    {
+        material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
+    }
 
     public void Start()
     {
@@ -71,7 +75,6 @@ public class Unit : MonoBehaviour
         gridPosition = grid.WorldToGridPosition(transform.position);
         prevTile = grid.GetTile(gridPosition);
         path = new ArrayList();
-        material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
 
     }
 

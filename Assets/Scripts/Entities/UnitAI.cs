@@ -44,13 +44,12 @@ public class UnitAI : MonoBehaviour, ISelectable
 
 
 
-    protected virtual void Start()
+    protected  void Start()
     {
         constructionManager = GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>();
         unit = GetComponentInParent<Unit>();
         material = unit.material;
         orgColor = material.color;
-
     }
 
     private void Update()
@@ -81,17 +80,16 @@ public class UnitAI : MonoBehaviour, ISelectable
         isHovered = false;
     }
 
-    public virtual void OnSelect()
+    public void OnSelect()
     {
         if (!unit.IsSelected)
         {
             unit.material.color = Color.blue;
         }
         unit.IsSelected = true;
-
     }
 
-    public virtual void OnDeselect()
+    public void OnDeselect()
     {
         unit.material.color = orgColor;
         isHovered = false;
