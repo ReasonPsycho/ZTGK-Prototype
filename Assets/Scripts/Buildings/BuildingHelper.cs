@@ -54,7 +54,7 @@ namespace Buildings {
                         if ( spawnTile == null ) return false;
                         Instantiate(
                             unitPrefab,
-                            new Vector3(spawnTile.x, spawnTile.grid.transform.position.y, spawnTile.y),
+                            new Vector3(spawnTile.x, 0.4f, spawnTile.y),
                             Quaternion.identity
                         ).GetComponent<Unit>().type = UnitType.ALLY;
 
