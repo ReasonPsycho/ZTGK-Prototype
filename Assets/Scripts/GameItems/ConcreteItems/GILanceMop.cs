@@ -6,6 +6,10 @@ namespace GameItems.ConcreteItems {
             Name = "Lance Mop";
             Description = "Standard mop on a long stick. Originally intended for use by cavalry soldiers, but in these trying times, we will use anything.";
             icon = Resources.Load<Sprite>("axe-icon");
+            FlatDamageBuff = 2;
+            PercentDamageBuff = 0.1f;
+            FlatAttackSpeedBuff = 0.5f;
+            FlatAttackRangeBuff = 1;
 
             AttackProperties = new GameItemAttackProperties() {
                 TargettingRange = 2,
@@ -13,6 +17,7 @@ namespace GameItems.ConcreteItems {
                 Rect_Length = 2,
                 Rect_Width = 1,
                 BaseDamage = 8
+
             };
 
             ItemAbility ability = new ItemAbility() {

@@ -57,6 +57,8 @@ public class Unit : MonoBehaviour
     public float FlatDamageBuff = 0;        // Accumulators to avoid checking both items every attack.
     public float PercentDamageBuff = 0;     // Modified on Apply/Unapply, Equip/Unequip.
     public float Armor = 0;
+    public float FlatAttackSpeedBuff = 0;
+    public float FlatAttackRangeBuff = 0;
     public Material material;
 
     public void Awake()
@@ -231,11 +233,12 @@ public class Unit : MonoBehaviour
     public void Apply(GameItem item)
     {
         if (item == null) return;
-
         MaxHealth += item.HealthBuff;
         FlatDamageBuff += item.FlatDamageBuff;
         PercentDamageBuff += item.PercentDamageBuff;
         Armor += item.ArmorBuff;
+        FlatAttackSpeedBuff += item.FlatAttackSpeedBuff;
+        FlatAttackRangeBuff += item.FlatAttackRangeBuff;
     }
 
     /// <summary>
@@ -250,6 +253,8 @@ public class Unit : MonoBehaviour
         FlatDamageBuff -= item.FlatDamageBuff;
         PercentDamageBuff -= item.PercentDamageBuff;
         Armor -= item.ArmorBuff;
+        FlatAttackSpeedBuff -= item.FlatAttackSpeedBuff;
+        FlatAttackRangeBuff -= item.FlatAttackRangeBuff;
     }
 
     #endregion

@@ -16,6 +16,8 @@ namespace GameItems {
         public float ArmorBuff = 0;
         public float FlatDamageBuff = 0;
         public float PercentDamageBuff = 0;
+        public float FlatAttackSpeedBuff = 0;
+        public float FlatAttackRangeBuff = 0;
         public GameItemAttackProperties AttackProperties = null;
         public List<ItemAbility> Abilities = new();
     }

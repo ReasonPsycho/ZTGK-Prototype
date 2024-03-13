@@ -15,6 +15,7 @@ public class UnitAI : MonoBehaviour, ISelectable
     public float attackSpeed = 1.0f;
     public float attackDamage = 10.0f;
     protected float attackCooldown = 0.0f;
+    public float attackRange = 1.5f;
 
     [Header("Target")]
     public Vector2Int target;
@@ -129,7 +130,7 @@ public class UnitAI : MonoBehaviour, ISelectable
     public void Attack(GameObject target)
     {
         unit.hasTarget = true;
-        if (Vector2.Distance(target.GetComponentInParent<Unit>().gridPosition, unit.gridPosition) <= unit.reachRange)
+        if (Vector2.Distance(target.GetComponentInParent<Unit>().gridPosition, unit.gridPosition) <= attackRange + unit.FlatAttackRangeBuff)
         {
             unit.TurnTo(unit.grid.WorldToGridPosition(target.transform.position));
             unit.state = UnitState.ATTACKING;
@@ -141,7 +142,7 @@ public class UnitAI : MonoBehaviour, ISelectable
             }
             else
             {
-                attackCooldown += Time.deltaTime;
+                attackCooldown += Time.deltaTime * attackSpeed;
             }
         }
         else
@@ -216,6 +217,10 @@ public class UnitAI : MonoBehaviour, ISelectable
         {
             combatTarget = FindClosestEnemy(5.0f);
         }
+        else
+        {
+            combatTarget = null;
+        }   
         if (combatTarget != null)
         {
             Attack(combatTarget);

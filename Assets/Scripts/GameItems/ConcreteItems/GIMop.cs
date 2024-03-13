@@ -11,6 +11,10 @@ namespace GameItems.ConcreteItems {
                 EffectiveArea = GameItemAttackProperties.Area.SINGLE_UNIT,
                 BaseDamage = 10
             };
+            FlatDamageBuff = 1;
+            PercentDamageBuff = 0.1f;
+            FlatAttackSpeedBuff = 1.0f;
+            FlatAttackRangeBuff = 3;
 
             ItemAbility ability = new() {
                 Name = "Extra Foam",
