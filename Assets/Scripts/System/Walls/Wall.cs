@@ -5,23 +5,17 @@ using Buildings;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
+
 
 public class Wall : Building
 {
     public float x;
     public float z;
+    public UnityEvent OnStartCompleted;
 
     //  NORTH -> Z+ | SOUTH -> Z- | EAST -> X+ | WEST -> X- | TOP -> Y+
-
-    #region ISelectable
-
-    private Color orgColor;
-    private Material material;
-    private bool isHovered = false;
-    private bool isSelected = false;
-
-    #endregion
-
+    
     public GameObject wallSidePrefab;
 
     public GameObject northSide; // rot. X 90
@@ -31,15 +25,17 @@ public class Wall : Building
     public GameObject topSide; // rot.  0
 
 
-    public void Start()
+    public override void Start()
     {
+        base.Start();
         buildingType = BuildingType.WALL;
         wallSidePrefab = GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>().wallSide;
     }
 
 
-    public GameObject SetWall()
-    {
+    public GameObject SetWall() {
+        var tile = tiles[ 0 ];
+        
         topSide = Instantiate(wallSidePrefab,
             new Vector3(transform.position.x, tile.grid.cellSize, transform.position.z), Quaternion.identity,
             this.transform); //instantiates the top side of the wall as a child of the wall object
@@ -81,10 +77,6 @@ public class Wall : Building
                     transform.position.z - tile.grid.cellSize / 2.0f), Quaternion.Euler(-90, 0, 0), this.transform);
         }
 
-        material = new Material(Shader.Find("Standard"));
-        material.name = "Wall side material";
-        orgColor = material.color;
-
         ApplyNewMaterial();
         return this.gameObject;
     }
@@ -97,7 +89,7 @@ public class Wall : Building
             {
                 if (material != null)
                 {
-                    childRenderer.material = material;
+                    childRenderer.material = this.material;
                 }
                 else
                 {
@@ -108,8 +100,9 @@ public class Wall : Building
     }
 
 
-    public override bool DestroyBuilding()
-    {
+    public override bool DestroyBuilding() {
+        var tile = tiles[ 0 ];
+
         Tile northNeighbour = tile.grid.GetTile(new Vector2Int(tile.Index.x + 1, tile.Index.y));
         Tile southNeighbour = tile.grid.GetTile(new Vector2Int(tile.Index.x - 1, tile.Index.y));
         Tile eastNeighbour = tile.grid.GetTile(new Vector2Int(tile.Index.x, tile.Index.y + 1));
@@ -139,49 +132,19 @@ public class Wall : Building
             ((Wall)westNeighbour.BuildingHandler).SetWall();
         }
 
-        Destroy(gameObject);
+        base.DestroyBuilding();
         return true;
     }
 
-
-    #region ISelectable
-
-    public override void OnHoverEnter()
+    public  override void GetMaterial()
     {
-        if (!isHovered)
-        {
-            material.color = Color.cyan;
-            isHovered = true;
-        }
-    }
-
-    public override void OnHoverExit()
-    {
-        if (!isSelected)
-        {
-            material.color = orgColor;
-        }
-
-        isHovered = false;
-    }
-
-    public override void OnSelect()
-    {
-        if (!isSelected)
-        {
-            material.color = Color.blue;
-        }
-
-        isSelected = true;
-    }
-
-    public override void OnDeselect()
-    {
-        material.color = orgColor;
-        isSelected = false;
-        isSelected = false;
 
     }
 
-    #endregion
+    public void GetWall()
+    {
+        material = new Material(Shader.Find("Standard"));
+        material.name = "Wall side material";
+        orgColor = material.color;
+    }
 }

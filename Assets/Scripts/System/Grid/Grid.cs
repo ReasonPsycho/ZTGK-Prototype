@@ -32,16 +32,10 @@ public class Grid : MonoBehaviour
 
                 Vector3 from = new Vector3(x * cellSize + transform.position.x + offsetX, 0.0f + transform.position.y,
                     y * cellSize + transform.position.z + offsetZ);
-                Debug.DrawLine(from, from + new Vector3(cellSize, 0, 0), Color.red, 100f);
-
-                Debug.DrawLine(from, from + new Vector3(0, 0, cellSize), Color.red, 100f);
+      //          Debug.DrawLine(from, from + new Vector3(cellSize, 0, 0), Color.red, 100f);
+      //          Debug.DrawLine(from, from + new Vector3(0, 0, cellSize), Color.red, 100f);
             }
         }
-
-    }
-
-    private void Update()
-    {
 
     }
     

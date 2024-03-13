@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum EnemyState
@@ -11,74 +10,39 @@ public enum EnemyState
 }
 
 
-public class EnemyAI : UnitAI
+public class EnemyAI : MonoBehaviour
 {
     public EnemyState state;
     public float wakeUpRange = 5.0f;
 
-    private float distanceToTarget;
+    [Unity.Collections.ReadOnly] public Unit unit;
 
-    private new void Start()
+    [Header("Combat")]
+    public float attackSpeed = 1.0f;
+    public float attackDamage = 10.0f;
+    private bool isAttackOnCooldown = false;
+
+    [Header("Target")]
+    public Vector2Int target;
+    public GameObject combatTarget;
+    public float distanceToCombatTarget;
+
+    private void Start()
     {
-        base.Start();
         state = EnemyState.ASLEEP;
+        unit = GetComponentInParent<Unit>();
+
     }
 
     private void Update()
     {
-        if(hasTarget)
-            Vector2Int.Distance(unit.gridPosition, target);
-
-        if (CheckForPlayerUnit())
-        {
-            state = EnemyState.CHASE;
-        }
-        else
-        {
-            state = EnemyState.ASLEEP;
-        }
-
-        if (state == EnemyState.CHASE)
-        {
-            if (hasTarget)
-            {
-                path = FindPathToTarget(FindNearestVacantTile(movementTarget));
-            }
-        }
-
-
-        if (path != null && path.Count > 0)
-        {
-            
-        }
-        if (state == EnemyState.CHASE)
-        {
-            MoveOnPath();
-        }
-
-        if(state == EnemyState.CHASE && distanceToTarget <= unit.reachRange)
-        {
-            state = EnemyState.ATTACK;
-        }
-
-        if(state == EnemyState.ATTACK)
-        {
-            if (distanceToTarget > unit.reachRange)
-            {
-                state = EnemyState.CHASE;
-            }
-            else
-            {
-                //Attack
-                //print("BOOM BOOM ATTACK UNIT BOOM BOOM ");
-            }
-        }
-
-        //if(hasTarget && path.Count == 0)
-        //{
-        //    hasTarget = false;
-        //}
+        HandleTargetSelection();
+        
+        HandleCombat();
     }
+
+
+    #region Lookin for player
 
     private bool CheckForPlayerUnit()
     {
@@ -87,8 +51,8 @@ public class EnemyAI : UnitAI
         {
             if (hitCollider.gameObject.CompareTag("PlayerUnit"))
             {
-                movementTarget = unit.grid.WorldToGridPosition(hitCollider.transform.position);
-                hasTarget = true;
+                unit.movementTarget = unit.grid.WorldToGridPosition(hitCollider.transform.position);
+                unit.hasTarget = true;
                 return true;
             }
         }
@@ -96,16 +60,90 @@ public class EnemyAI : UnitAI
         return false;
     }
 
-
-
-
-
-
-
-
-    private void OnDrawGizmos()
+    private GameObject FindClosestPlayerUnit(float range)
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, wakeUpRange);
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("PlayerUnit");
+        GameObject closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+        foreach (GameObject enemy in enemies)
+        {
+
+            float diff = Vector3.Distance(enemy.transform.position, position);
+            if (diff > range)
+            {
+                continue;
+            }
+
+            if (diff < distance)
+            {
+                closest = enemy;
+                distance = diff;
+            }
+
+        }
+        return closest;
     }
+
+
+    #endregion
+
+    #region Combat
+
+    public void Attack(GameObject target)
+    {
+        unit.TurnTo(unit.grid.WorldToGridPosition(target.transform.position));
+        unit.transform.Rotate(Vector3.up, 180); //idk why enemy used his back to hit the player XD
+        if (!isAttackOnCooldown)
+        {
+            target.GetComponentInParent<Unit>().TakeDmg(attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff);
+            isAttackOnCooldown = true;
+            StartCoroutine(AttackCooldown());
+        }
+    }
+
+    public IEnumerator AttackCooldown()
+    {
+        yield return new WaitForSeconds(1.0f / attackSpeed);
+        isAttackOnCooldown = false;
+       
+    }
+
+    #endregion
+
+
+    #region Misc
+    //all these functions are made only in order to make the code more readable and easier to understand
+    //and are only to be used in the Update function
+
+    private void HandleTargetSelection()
+    {
+        distanceToCombatTarget = float.MaxValue;
+        if (CheckForPlayerUnit())
+        {
+            combatTarget = FindClosestPlayerUnit(wakeUpRange * 1.5f);
+            unit.hasTarget = true;
+            if (combatTarget != null)
+            {
+                distanceToCombatTarget = Vector3.Distance(combatTarget.transform.position, transform.position);
+            }
+        }
+    }
+
+    private void HandleCombat()
+    {
+        if (combatTarget != null && distanceToCombatTarget > unit.reachRange)
+        {
+            state = EnemyState.CHASE;
+            unit.movementTarget = unit.FindNearestVacantTile(unit.grid.WorldToGridPosition(combatTarget.transform.position));
+
+        }
+        else if (combatTarget != null && distanceToCombatTarget <= unit.reachRange)
+        {
+            state = EnemyState.ATTACK;
+            Attack(combatTarget);
+        }
+    }
+
+    #endregion
 }
