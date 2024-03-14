@@ -268,16 +268,6 @@ public class Unit : MonoBehaviour
    
         if (isMoving)
         {
-            if (lastMovementTarget != movementTarget)
-            {
-                if (currentTile != grid.GetTile(nextTile))
-                {
-                    grid.GetTile(nextTile).Vacant = true;
-                    prevTile.Vacant = true;
-                }
-            }
-            lastMovementTarget = movementTarget;
-            
             state = UnitState.MOVING;
             Vector3 targetPos = grid.GridToWorldPosition(nextTile);
             targetPos.y = transform.position.y;
@@ -306,6 +296,14 @@ public class Unit : MonoBehaviour
         {
             if (path.Count >= 1)
             {
+                if (t != 0)
+                {
+                    if (currentTile != grid.GetTile(nextTile))
+                    {
+                        grid.GetTile(nextTile).Vacant = true;
+                        prevTile.Vacant = true;
+                    }
+                }
                 prevTile.Vacant = true;
                 prevTile = currentTile;
                 currentTile = grid.GetTile(nextTile);
@@ -320,9 +318,10 @@ public class Unit : MonoBehaviour
                     isMoving = false;
                     currentTile.Vacant = false;
                     path.Clear();
-                    hasTarget = false;
                     return;
                 }
+
+                t = 0.01f;
                 grid.GetTile(nextTile).Vacant = false;
                 path.RemoveAt(0);
                 isMoving = true;
@@ -552,13 +551,15 @@ public class Unit : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (hasTarget && path.Count == 0)
+        if (hasTarget)
         {
-            FindPathToTarget(movementTarget, movementTargetDistance, out path);
+            if (path.Count == 0)
+            {
+                FindPathToTarget(movementTarget, movementTargetDistance, out path);
+            }
+            MoveOnPath();
         }
-
-        MoveOnPath();
-    }
+      }
 
     #endregion
 }
