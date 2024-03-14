@@ -62,6 +62,8 @@ public class Unit : MonoBehaviour
     public float FlatDamageBuff = 0; // Accumulators to avoid checking both items every attack.
     public float PercentDamageBuff = 0; // Modified on Apply/Unapply, Equip/Unequip.
     public float Armor = 0;
+    public float Kockback = 0;
+    public float AOE = 0;
     public Material material;
 
     public void Awake()
@@ -98,7 +100,7 @@ public class Unit : MonoBehaviour
 
     #region Health
 
-    public void TakeDmg(float dmg)
+    public void TakeDmg(float dmg, float knockback, Unit dealer, float aoe)
     {
         if (!isFlashing)
         {
@@ -109,6 +111,46 @@ public class Unit : MonoBehaviour
         if (health <= 0)
         {
             Die();
+        }
+
+
+        if (knockback > 0)
+        {
+            Vector2Int dir =gridPosition - dealer.gridPosition ;
+            print(dir);
+            dir = new Vector2Int(Mathf.Clamp(dir.x, -1, 1), Mathf.Clamp(dir.y, -1, 1));
+            dir *= (int)knockback;
+            print(dir);
+            Vector2Int newTileIndex = gridPosition + dir;
+            Tile newTile = grid.GetTile(newTileIndex);
+            print(newTile.Index);
+            if (newTile != null && newTile.Vacant)
+            {
+                currentTile.Vacant = true;
+                newTile.Vacant = false;
+                currentTile = newTile;
+                transform.position = new Vector3(currentTile.x, transform.position.y, currentTile.y);
+            }
+        }
+
+        if (AOE > 0)
+        {
+            foreach (var neighbor in  GetNeighbors(gridPosition))
+            {
+                print(GetNeighbors(gridPosition));
+
+                GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+                foreach (var enemy in enemies)
+                {
+                    print(enemies.Length);
+                    EnemyAI ai = enemy.GetComponentInParent<EnemyAI>();
+                    if (ai.unit.gridPosition == neighbor)
+                    {
+                        Debug.LogError("AOE");
+                        ai.unit.TakeDmg(dmg, knockback, dealer, aoe-1);
+                    }
+                }
+            }
         }
     }
 
@@ -239,10 +281,12 @@ public class Unit : MonoBehaviour
 
         MaxHealth += item.HealthBuff;
         health = MaxHealth;
-        FlatDamageBuff += item.FlatDamageBuff;
+        FlatDamageBuff += item.AttackProperties.BaseDamage;
         PercentDamageBuff += item.PercentDamageBuff;
         Armor += item.ArmorBuff;
         reachRange += item.AttackProperties.TargettingRange;
+        Kockback += item.KnockBack;
+        AOE += item.AOE;
     }
 
     /// <summary>
@@ -254,9 +298,13 @@ public class Unit : MonoBehaviour
         if (item == null) return;
 
         MaxHealth -= item.HealthBuff;
-        FlatDamageBuff -= item.FlatDamageBuff;
+        health = MaxHealth;
+        FlatDamageBuff -= item.AttackProperties.BaseDamage;
         PercentDamageBuff -= item.PercentDamageBuff;
         Armor -= item.ArmorBuff;
+        reachRange -= item.AttackProperties.TargettingRange;
+        Kockback -= item.KnockBack;
+        AOE -= item.AOE;
     }
 
     #endregion
@@ -266,7 +314,7 @@ public class Unit : MonoBehaviour
     public void MoveOnPath()
     {
         pathLength = path.Count;
-   
+
         if (isMoving)
         {
             state = UnitState.MOVING;
@@ -302,20 +350,18 @@ public class Unit : MonoBehaviour
                     if (currentTile != grid.GetTile(nextTile))
                     {
                         grid.GetTile(nextTile).Vacant = true;
-                        prevTile.Vacant = true;
                         path.Clear();
                         return;
                     }
                 }
-                prevTile.Vacant = true;
-                prevTile = currentTile;
+
+                currentTile.Vacant = true;
                 currentTile = grid.GetTile(nextTile);
                 currentTile.Vacant = false;
                 nextTile = (Vector2Int)path[0];
-                
+
                 if (!grid.GetTile(nextTile).Vacant && nextTile != currentTile.Index)
                 {
-                    print(nextTile);
                     nextTile = currentTile.Index;
                     isMoving = false;
                     currentTile.Vacant = false;
@@ -328,7 +374,6 @@ public class Unit : MonoBehaviour
                 path.RemoveAt(0);
                 isMoving = true;
             }
-           
         }
     }
 
@@ -559,10 +604,20 @@ public class Unit : MonoBehaviour
             {
                 FindPathToTarget(movementTarget, movementTargetDistance, out path);
             }
-            
+
             MoveOnPath();
         }
-      }
+
+        if (gridPosition == movementTarget && nextTile != currentTile.Index)
+        {
+            print("LOL");
+            currentTile.Vacant = true;
+            grid.GetTile(nextTile).Vacant = true;
+            currentTile = grid.GetTile(movementTarget);
+            nextTile = movementTarget;
+            currentTile.Vacant = false;
+        }
+    }
 
     #endregion
 }

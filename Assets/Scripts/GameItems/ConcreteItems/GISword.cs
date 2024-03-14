@@ -1,20 +1,17 @@
 ﻿using UnityEngine;
 
 namespace GameItems.ConcreteItems {
-    public class GIWashingPowder : GameItem {
-        public GIWashingPowder() {
-            Name = "Washing Powder";
-            Description = "Adds a bit of dmg and a knockback";
-            icon = Resources.Load<Sprite>("powder-svgrepo-com");
+    public class GISword : GameItem {
+        public GISword() {
+            Name = "Foam sword";
+            Description = "Major damage";
+            icon = Resources.Load<Sprite>("sword-svgrepo-com");
             AttackProperties = new GameItemAttackProperties {
+                TargettingRange = 0f,
                 EffectiveArea = GameItemAttackProperties.Area.SINGLE_UNIT,
-                BaseDamage = 5
+                BaseDamage = 20
             };
-            KnockBack = 1f;
-            //HealthBuff = 400;
-            //ArmorBuff = 50;
-       
-            
+
             ItemAbility ability = new() {
                 Name = "Extra Foam",
                 Description = "Introduces an extra strong washing solution and causes a small area-of-effect foam burst, dealing half damage to enemies around the target.",

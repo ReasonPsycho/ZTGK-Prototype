@@ -30,6 +30,7 @@ public class MyCursor : MonoBehaviour
 
     public GameObject Inventory;
     public GameObject Equipment;
+    public GameObject Behaviour;
 
     public Texture2D unitCursor;
     public Texture2D buildingCursor;
@@ -293,16 +294,19 @@ public class MyCursor : MonoBehaviour
                 //      Cursor.SetCursor(unitCursor, Vector2.zero, CursorMode.Auto);
                 Inventory.SetActive(true);
                 Equipment.SetActive(true);
+                Behaviour.SetActive(true);
                 break;
             case MY_CURSOR_MODE.BUILD:
                 Cursor.SetCursor(buildingCursor, Vector2.zero, CursorMode.Auto);
                 Inventory.SetActive(false);
                 Equipment.SetActive(false);
+                Behaviour.SetActive(false);
                 break;
             default:
                 Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                 Inventory.SetActive(false);
                 Equipment.SetActive(false);
+                Behaviour.SetActive(false);
                 break;
         }
     }

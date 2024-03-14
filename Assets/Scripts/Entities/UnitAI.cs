@@ -11,7 +11,8 @@ public class UnitAI : MonoBehaviour, ISelectable
     public float miningSpeed = 1.0f;
     private float miningTime = 0;
 
-    [Header("Combat")]
+    [Header("Combat")] 
+    public UnitBehaviour Behaviour = UnitBehaviour.AUTO_ATTCK;
     public float attackSpeed = 1.0f;
     public float attackDamage = 10.0f;
     protected float attackCooldown = 0.0f;
@@ -133,15 +134,14 @@ public class UnitAI : MonoBehaviour, ISelectable
     public void Attack(GameObject target)
     {
         unit.hasTarget = true;
-        if (Vector2Int.Distance(target.GetComponentInParent<Unit>().gridPosition, unit.gridPosition) <= unit.reachRange)
+        if (Vector2Int.Distance(target.GetComponentInParent<Unit>().gridPosition, unit.gridPosition) <= unit.reachRange * 1.5f)
         {
             unit.hasReachedTarget = true;
             unit.TurnTo(unit.grid.WorldToGridPosition(target.transform.position));
             unit.state = UnitState.ATTACKING;
-
             if (attackCooldown > 1.0f)
             {
-                target.GetComponentInParent<Unit>().TakeDmg(attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff);
+                target.GetComponentInParent<Unit>().TakeDmg(attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff, unit.Kockback, unit, unit.AOE);
                 attackCooldown = 0.0f;
             }
             else
@@ -151,8 +151,11 @@ public class UnitAI : MonoBehaviour, ISelectable
         }
         else
         {
-            unit.hasReachedTarget = false;
-            unit.movementTarget = target.GetComponentInParent<Unit>().gridPosition;
+            if (Behaviour == UnitBehaviour.AUTO_ATTCK)
+            {
+                unit.hasReachedTarget = false;
+                unit.movementTarget = target.GetComponentInParent<Unit>().gridPosition;
+            }
         }
     }
 
@@ -217,7 +220,6 @@ public class UnitAI : MonoBehaviour, ISelectable
     {
         if (!unit.IsSelected)
         {
-            
             combatTarget = FindClosestEnemy(5.0f);
         }
         if (combatTarget != null)

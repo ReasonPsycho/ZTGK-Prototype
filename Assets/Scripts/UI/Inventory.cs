@@ -10,7 +10,6 @@ public class Inventory : MonoBehaviour
 {
     // Start is called before the first frame update
     public List<GameItem> GameItems = new();
-
     public GameObject gridObject;
     public ItemManager ItemManagment;
 
@@ -22,6 +21,14 @@ public class Inventory : MonoBehaviour
         GameItems.Add(new GIBow());
         GameItems.Add(new GIShield());
         GameItems.Add(new GIShield());
+        GameItems.Add(new GISword());
+        GameItems.Add(new GISword());
+        GameItems.Add(new GIWashingPowder());
+        GameItems.Add(new GIWashingPowder());
+        GameItems.Add(new GILasso());
+        GameItems.Add(new GILasso());
+        GameItems.Add(new GIBucket());
+        GameItems.Add(new GIBucket());
   
 
         GameItems.ForEach(AddItem);

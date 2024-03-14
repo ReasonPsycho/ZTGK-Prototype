@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 
 namespace GameItems.ConcreteItems {
-    public class GIWashingPowder : GameItem {
-        public GIWashingPowder() {
-            Name = "Washing Powder";
-            Description = "Adds a bit of dmg and a knockback";
-            icon = Resources.Load<Sprite>("powder-svgrepo-com");
+    public class GILasso : GameItem {
+        public GILasso() {
+            Name = "Lasso";
+            Description = "A little bit of dame and pull";
+            icon = Resources.Load<Sprite>("lasso-svgrepo-com");
             AttackProperties = new GameItemAttackProperties {
                 EffectiveArea = GameItemAttackProperties.Area.SINGLE_UNIT,
                 BaseDamage = 5
             };
-            KnockBack = 1f;
+            KnockBack = -1f;
             //HealthBuff = 400;
             //ArmorBuff = 50;
        

@@ -27,6 +27,8 @@ public class EnemyAI : MonoBehaviour
     public GameObject combatTarget;
     public float distanceToCombatTarget;
 
+    public float attackCooldown= 0;
+    
     private void Start()
     {
         state = EnemyState.ASLEEP;
@@ -93,21 +95,17 @@ public class EnemyAI : MonoBehaviour
 
     public void Attack(GameObject target)
     {
+        unit.state = UnitState.ATTACKING;
         unit.TurnTo(unit.grid.WorldToGridPosition(target.transform.position));
-        unit.transform.Rotate(Vector3.up, 180); //idk why enemy used his back to hit the player XD
-        if (!isAttackOnCooldown)
+        if (attackCooldown > 1.0f)
         {
-            target.GetComponentInParent<Unit>().TakeDmg(attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff);
-            isAttackOnCooldown = true;
-            StartCoroutine(AttackCooldown());
+            target.GetComponentInParent<Unit>().TakeDmg(attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff, 0, unit, 0);
+            attackCooldown = 0.0f;
         }
-    }
-
-    public IEnumerator AttackCooldown()
-    {
-        yield return new WaitForSeconds(1.0f / attackSpeed);
-        isAttackOnCooldown = false;
-       
+        else
+        {
+            attackCooldown += Time.deltaTime;
+        }
     }
 
     #endregion
