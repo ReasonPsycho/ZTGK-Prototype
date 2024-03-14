@@ -18,12 +18,11 @@ public class Inventory : MonoBehaviour
     {  
         ItemManagment = GameObject.Find("Item Managment").GetComponent<ItemManager>();
         gridObject = transform.Find("Inventory Grid").gameObject;
-        GameItems.Add(new GIMop());
-        GameItems.Add(new GIMop());
-        GameItems.Add(new GILanceMop());
-        GameItems.Add(new GILanceMop());
-        GameItems.Add(new GITidePodLauncher());
-        GameItems.Add(new GITidePodLauncher());
+        GameItems.Add(new GIBow());
+        GameItems.Add(new GIBow());
+        GameItems.Add(new GIShield());
+        GameItems.Add(new GIShield());
+  
 
         GameItems.ForEach(AddItem);
     }

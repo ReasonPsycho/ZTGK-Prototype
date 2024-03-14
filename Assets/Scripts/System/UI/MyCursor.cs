@@ -237,7 +237,9 @@ public class MyCursor : MonoBehaviour
                                 if (((MonoBehaviour)(ListOfHovered[0])).gameObject.GetComponentInParent<EnemyAI>())
                                 {
                                     selectedUnit.unit.movementTarget =
-                                        hit.collider.gameObject.GetComponentInParent<Unit>().gridPosition;
+                                        hit.collider.gameObject.GetComponentInParent<Unit>().gridPosition;  
+                                    selectedUnit.unit.movementTargetDistance =
+                                        hit.collider.gameObject.GetComponentInParent<Unit>().reachRange;
                                     selectedUnit.unit.hasTarget = true;
                                     selectedUnit.GetComponent<UnitAI>().combatTarget = hit.collider.gameObject;
                                 }
@@ -247,6 +249,8 @@ public class MyCursor : MonoBehaviour
                                     Vector3 target = hit.point;
                                     selectedUnit.unit.movementTarget =
                                         selectedUnit.unit.FindNearestVacantTile(selectedUnit.unit.grid.WorldToGridPosition(target));
+                                    selectedUnit.unit.movementTargetDistance =
+                                      0.0f;
                                     selectedUnit.GetComponent<UnitAI>().miningTarget =
                                         ((Wall)ListOfHovered[0]).tiles[0].Index;
                                     selectedUnit.unit.hasTarget = true;
@@ -258,6 +262,7 @@ public class MyCursor : MonoBehaviour
                                     target.y = 0;
                                     selectedUnit.unit.movementTarget =
                                         grid.WorldToGridPosition(target);
+                                    selectedUnit.unit.movementTargetDistance = 0.0f;
                                     selectedUnit.unit.hasTarget = true;
                                     selectedUnit.GetComponent<UnitAI>().combatTarget = null;
                                     selectedUnit.GetComponent<UnitAI>().hasMiningTarget = false;

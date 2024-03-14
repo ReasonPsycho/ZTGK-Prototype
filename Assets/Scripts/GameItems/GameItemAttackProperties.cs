@@ -17,6 +17,7 @@ namespace GameItems {
         public float TargettingRange;
         //  type
         public Area EffectiveArea;
+
         // damage
         public float BaseDamage;
         public bool AOEFalloff;

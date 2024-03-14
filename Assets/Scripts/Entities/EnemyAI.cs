@@ -14,7 +14,7 @@ public class EnemyAI : MonoBehaviour
 {
     public EnemyState state;
     public float wakeUpRange = 5.0f;
-
+    public bool isAwake = false;
     [Unity.Collections.ReadOnly] public Unit unit;
 
     [Header("Combat")]
@@ -51,8 +51,7 @@ public class EnemyAI : MonoBehaviour
         {
             if (hitCollider.gameObject.CompareTag("PlayerUnit"))
             {
-                unit.movementTarget = unit.grid.WorldToGridPosition(hitCollider.transform.position);
-                unit.hasTarget = true;
+                unit.movementTarget =  hitCollider.GetComponentInParent<Unit>().gridPosition;
                 return true;
             }
         }
@@ -69,7 +68,8 @@ public class EnemyAI : MonoBehaviour
         foreach (GameObject enemy in enemies)
         {
 
-            float diff = Vector3.Distance(enemy.transform.position, position);
+            float diff = Vector2Int.Distance(enemy.GetComponentInParent<Unit>().gridPosition, unit.gridPosition);
+            
             if (diff > range)
             {
                 continue;
@@ -80,6 +80,7 @@ public class EnemyAI : MonoBehaviour
                 closest = enemy;
                 distance = diff;
             }
+
 
         }
         return closest;
@@ -121,13 +122,22 @@ public class EnemyAI : MonoBehaviour
         distanceToCombatTarget = float.MaxValue;
         if (CheckForPlayerUnit())
         {
-            combatTarget = FindClosestPlayerUnit(wakeUpRange * 1.5f);
-            unit.hasTarget = true;
-            if (combatTarget != null)
+            if (!unit.hasTarget)
             {
-                distanceToCombatTarget = Vector3.Distance(combatTarget.transform.position, transform.position);
+                combatTarget = FindClosestPlayerUnit(wakeUpRange * 1.5f);
             }
         }
+        
+        if (combatTarget != null)
+        {
+            distanceToCombatTarget = Vector2Int.Distance(combatTarget.GetComponentInParent<Unit>().gridPosition, unit.gridPosition);
+            unit.hasTarget = true;
+        }
+        else
+        {
+            unit.hasTarget = false;
+        }
+        
     }
 
     private void HandleCombat()
@@ -135,13 +145,18 @@ public class EnemyAI : MonoBehaviour
         if (combatTarget != null && distanceToCombatTarget > unit.reachRange)
         {
             state = EnemyState.CHASE;
-            unit.movementTarget = unit.FindNearestVacantTile(unit.grid.WorldToGridPosition(combatTarget.transform.position));
-
+            unit.movementTarget = unit.FindNearestVacantTile(combatTarget.GetComponentInParent<Unit>().gridPosition);
         }
         else if (combatTarget != null && distanceToCombatTarget <= unit.reachRange)
         {
+            unit.path.Clear();
             state = EnemyState.ATTACK;
             Attack(combatTarget);
+        }
+
+        if (combatTarget != null &&  unit.path.Count == 0)
+        {
+           unit.path.Clear();
         }
     }
 

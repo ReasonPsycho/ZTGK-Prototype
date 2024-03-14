@@ -61,27 +61,6 @@ namespace Buildings {
                         return true;
                     }
                 ),
-                new BuildingAction(
-                    "Add Mop",
-                    _ => {
-                        inventory.AddItem(new GIMop());
-                        return true;
-                    }
-                ),
-                new BuildingAction(
-                    "Add Lance-Mop",
-                    _ => {
-                        inventory.AddItem(new GILanceMop());
-                        return true;
-                    }
-                ),
-                new BuildingAction(
-                    "Add TidePod Launcher",
-                    _ => {
-                        inventory.AddItem(new GITidePodLauncher());
-                        return true;
-                    }
-                )
             };
 
             BuildingActions[ BuildingType.ANY ] = any;

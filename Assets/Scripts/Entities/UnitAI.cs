@@ -57,7 +57,6 @@ public class UnitAI : MonoBehaviour, ISelectable
         HandleMining();
 
         HandleCombat();
-
     }
 
     #region ISelectable
@@ -103,7 +102,7 @@ public class UnitAI : MonoBehaviour, ISelectable
     public void Mine(Vector2Int target)
     {
 
-        if (Vector3.Distance(unit.grid.GridToWorldPosition(target), transform.position) <= unit.reachRange * 2f)
+        if (Vector2Int.Distance(target, unit.gridPosition) <= 1.5f)
         {
             if (!isMining)
             {
@@ -129,7 +128,7 @@ public class UnitAI : MonoBehaviour, ISelectable
     public void Attack(GameObject target)
     {
         unit.hasTarget = true;
-        if (Vector2.Distance(target.GetComponentInParent<Unit>().gridPosition, unit.gridPosition) <= unit.reachRange)
+        if (Vector2Int.Distance(target.GetComponentInParent<Unit>().gridPosition, unit.gridPosition) <= unit.reachRange)
         {
             unit.TurnTo(unit.grid.WorldToGridPosition(target.transform.position));
             unit.state = UnitState.ATTACKING;
@@ -146,7 +145,7 @@ public class UnitAI : MonoBehaviour, ISelectable
         }
         else
         {
-            unit.movementTarget = unit.FindNearestVacantTile(unit.grid.WorldToGridPosition(target.transform.position));
+            unit.movementTarget = target.GetComponentInParent<Unit>().gridPosition;
         }
     }
 
@@ -178,10 +177,7 @@ public class UnitAI : MonoBehaviour, ISelectable
     }
 
     #endregion
-
-    #region Equipment
-
-    #endregion
+    
 
     #region Misc
     //all these functions are made only in order to make the code more readable and easier to understand
@@ -214,10 +210,12 @@ public class UnitAI : MonoBehaviour, ISelectable
     {
         if (!unit.IsSelected)
         {
+            
             combatTarget = FindClosestEnemy(5.0f);
         }
         if (combatTarget != null)
         {
+            unit.movementTargetDistance = unit.reachRange;
             Attack(combatTarget);
         }
         else if(!(unit.state == UnitState.MINING && isMining))
