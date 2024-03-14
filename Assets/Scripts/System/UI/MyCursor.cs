@@ -241,6 +241,7 @@ public class MyCursor : MonoBehaviour
                                     selectedUnit.unit.movementTargetDistance =
                                         hit.collider.gameObject.GetComponentInParent<Unit>().reachRange;
                                     selectedUnit.unit.hasTarget = true;
+                                    selectedUnit.unit.hasReachedTarget = false;
                                     selectedUnit.GetComponent<UnitAI>().combatTarget = hit.collider.gameObject;
                                 }
                                 else if (((MonoBehaviour)(ListOfHovered[0])).gameObject
@@ -254,6 +255,7 @@ public class MyCursor : MonoBehaviour
                                     selectedUnit.GetComponent<UnitAI>().miningTarget =
                                         ((Wall)ListOfHovered[0]).tiles[0].Index;
                                     selectedUnit.unit.hasTarget = true;
+                                    selectedUnit.unit.hasReachedTarget = false;
                                     selectedUnit.GetComponent<UnitAI>().hasMiningTarget = true;
                                 }
                                 else
@@ -264,6 +266,7 @@ public class MyCursor : MonoBehaviour
                                         grid.WorldToGridPosition(target);
                                     selectedUnit.unit.movementTargetDistance = 0.0f;
                                     selectedUnit.unit.hasTarget = true;
+                                    selectedUnit.unit.hasReachedTarget = false;
                                     selectedUnit.GetComponent<UnitAI>().combatTarget = null;
                                     selectedUnit.GetComponent<UnitAI>().hasMiningTarget = false;
                                 }

@@ -102,8 +102,9 @@ public class UnitAI : MonoBehaviour, ISelectable
     public void Mine(Vector2Int target)
     {
 
-        if (Vector2Int.Distance(target, unit.gridPosition) <= 1.5f)
+        if (Vector2Int.Distance(target, unit.gridPosition) <= 2f)
         {
+            unit.hasReachedTarget = true;
             if (!isMining)
             {
                 Mineable mineable;
@@ -119,6 +120,10 @@ public class UnitAI : MonoBehaviour, ISelectable
                 }
             }
         }
+        else
+        {
+            unit.hasReachedTarget = false;
+        }
     }
 
     #endregion
@@ -130,6 +135,7 @@ public class UnitAI : MonoBehaviour, ISelectable
         unit.hasTarget = true;
         if (Vector2Int.Distance(target.GetComponentInParent<Unit>().gridPosition, unit.gridPosition) <= unit.reachRange)
         {
+            unit.hasReachedTarget = true;
             unit.TurnTo(unit.grid.WorldToGridPosition(target.transform.position));
             unit.state = UnitState.ATTACKING;
 
@@ -145,6 +151,7 @@ public class UnitAI : MonoBehaviour, ISelectable
         }
         else
         {
+            unit.hasReachedTarget = false;
             unit.movementTarget = target.GetComponentInParent<Unit>().gridPosition;
         }
     }

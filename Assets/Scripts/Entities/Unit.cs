@@ -48,6 +48,7 @@ public class Unit : MonoBehaviour
     public float rotationSpeed = 3.0f;
     public bool isMoving = false;
     public bool hasTarget = false;
+    public bool hasReachedTarget = false;
 
 
     [Header("Equipment")] public GameItem Item1;
@@ -302,6 +303,8 @@ public class Unit : MonoBehaviour
                     {
                         grid.GetTile(nextTile).Vacant = true;
                         prevTile.Vacant = true;
+                        path.Clear();
+                        return;
                     }
                 }
                 prevTile.Vacant = true;
@@ -313,7 +316,6 @@ public class Unit : MonoBehaviour
                 if (!grid.GetTile(nextTile).Vacant && nextTile != currentTile.Index)
                 {
                     print(nextTile);
-                    Debug.LogWarning("teeeee");
                     nextTile = currentTile.Index;
                     isMoving = false;
                     currentTile.Vacant = false;
@@ -551,12 +553,13 @@ public class Unit : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (hasTarget)
+        if (hasTarget && !hasReachedTarget)
         {
             if (path.Count == 0)
             {
                 FindPathToTarget(movementTarget, movementTargetDistance, out path);
             }
+            
             MoveOnPath();
         }
       }
