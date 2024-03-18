@@ -223,7 +223,7 @@ public class UnitAI : MonoBehaviour, ISelectable
         {
             combatTarget = FindClosestEnemy(5.0f);
         }
-        else if (combatTarget != null)
+        else if (combatTarget != null || !unit.forceMove)
         {
             unit.movementTargetDistance = unit.reachRange;
             Attack(combatTarget);

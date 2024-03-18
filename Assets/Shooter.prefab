@@ -26,8 +26,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2185536167748927809}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.3, z: 0}
-  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
+  m_LocalPosition: {x: 0, y: 0.15, z: 0}
+  m_LocalScale: {x: 0.4, y: 0.6, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6889008415280147339}
@@ -65,6 +65,7 @@ MonoBehaviour:
   rotationSpeed: 2
   isMoving: 0
   hasTarget: 0
+  forceMove: 0
   hasReachedTarget: 0
   ItemGameObject1: {fileID: 0}
   ItemGameObject2: {fileID: 0}
@@ -87,7 +88,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  wakeUpRange: 5
+  wakeUpRange: 1
   isAwake: 0
   unit: {fileID: 0}
   attackSpeed: 1

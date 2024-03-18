@@ -58,11 +58,14 @@ MonoBehaviour:
   pathLength: 0
   MaxHealth: 500
   health: 0
+  healthBuff: 0
   reachRange: 1
+  attackSpeed: 1
   tilesPerSecond: 5
   rotationSpeed: 1
   isMoving: 0
   hasTarget: 0
+  forceMove: 0
   hasReachedTarget: 0
   ItemGameObject1: {fileID: 0}
   ItemGameObject2: {fileID: 0}
@@ -85,7 +88,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  wakeUpRange: 10
+  wakeUpRange: 20
   isAwake: 0
   unit: {fileID: 0}
   attackSpeed: 1

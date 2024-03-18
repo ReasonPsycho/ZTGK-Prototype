@@ -51,6 +51,7 @@ public class Unit : MonoBehaviour
     public float rotationSpeed = 3.0f;
     public bool isMoving = false;
     public bool hasTarget = false;
+    public bool forceMove = false;
     public bool hasReachedTarget = false;
 
 
@@ -436,17 +437,18 @@ public class Unit : MonoBehaviour
             Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), rotationSpeed * Time.deltaTime);
     }
 
-    public Vector2Int FindNearestVacantTile(Vector2Int target)
+    public Vector2Int FindNearestVacantTile(Vector2Int target,Vector2Int origin)
     {
         Vector2Int[] directions = new Vector2Int[]
             { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-        Queue<Vector2Int> queue = new Queue<Vector2Int>();
-        queue.Enqueue(target);
+        List<Vector2Int> list = new List<Vector2Int>();
+        list.Add(target);
         HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
         visited.Add(target);
-        while (queue.Count > 0)
+        while (list.Count > 0)
         {
-            Vector2Int current = queue.Dequeue();
+            Vector2Int current = list[0];
+            list.RemoveAt(0);
             if (grid.GetTile(current).Vacant || current == grid.WorldToGridPosition(transform.position))
             {
                 return current;
@@ -457,10 +459,11 @@ public class Unit : MonoBehaviour
                 Vector2Int next = current + dir;
                 if (grid.GetTile(next) != null && !visited.Contains(next))
                 {
-                    queue.Enqueue(next);
+                    list.Add(next);
                     visited.Add(next);
                 }
             }
+            list.Sort((v1, v2) => Vector2Int.Distance(v1,origin).CompareTo( Vector2Int.Distance(v2,origin)));
         }
 
         return target;
@@ -614,7 +617,12 @@ public class Unit : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (hasTarget && !hasReachedTarget)
+        if (path.Count == 0)
+        {
+            forceMove = false;
+        }
+        
+        if (forceMove || hasTarget && (!hasReachedTarget))
         {
             if (path.Count == 0)
             {

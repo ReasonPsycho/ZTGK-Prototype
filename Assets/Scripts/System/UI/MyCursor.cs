@@ -251,12 +251,13 @@ public class MyCursor : MonoBehaviour
                                 {
                                     Vector3 target = hit.point;
                                     selectedUnit.unit.movementTarget =
-                                        selectedUnit.unit.FindNearestVacantTile(selectedUnit.unit.grid.WorldToGridPosition(target));
+                                        selectedUnit.unit.FindNearestVacantTile(selectedUnit.unit.grid.WorldToGridPosition(target),selectedUnit.unit.gridPosition);
                                     selectedUnit.unit.movementTargetDistance =
                                       0.0f;
                                     selectedUnit.GetComponent<UnitAI>().miningTarget =
                                         ((Building)ListOfHovered[0]).tiles[0].Index;
                                     selectedUnit.unit.hasTarget = true;
+                                    selectedUnit.unit.forceMove = true;
                                     selectedUnit.unit.hasReachedTarget = false;
                                     selectedUnit.GetComponent<UnitAI>().hasMiningTarget = true;
                                 }
@@ -268,9 +269,12 @@ public class MyCursor : MonoBehaviour
                                         grid.WorldToGridPosition(target);
                                     selectedUnit.unit.movementTargetDistance = 0.0f;
                                     selectedUnit.unit.hasTarget = true;
+                                    selectedUnit.unit.forceMove = true;
                                     selectedUnit.unit.hasReachedTarget = false;
                                     selectedUnit.GetComponent<UnitAI>().combatTarget = null;
                                     selectedUnit.GetComponent<UnitAI>().hasMiningTarget = false;
+                                    selectedUnit.GetComponent<Unit>().forceMove = true;
+                                    
                                 }
                             }
                         }

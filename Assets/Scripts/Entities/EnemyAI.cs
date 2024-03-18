@@ -158,7 +158,7 @@ public class EnemyAI : MonoBehaviour , ISelectable
         if (combatTarget != null && distanceToCombatTarget > unit.reachRange)
         {
             state = EnemyState.CHASE;
-            unit.movementTarget = unit.FindNearestVacantTile(combatTarget.GetComponentInParent<Unit>().gridPosition);
+            unit.movementTarget = unit.FindNearestVacantTile(combatTarget.GetComponentInParent<Unit>().gridPosition,unit.gridPosition);
         }
         else if (combatTarget != null && distanceToCombatTarget <= unit.reachRange)
         {

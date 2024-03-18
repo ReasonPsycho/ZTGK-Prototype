@@ -42,7 +42,6 @@ public class Chest : Building
     public override bool DestroyBuilding()
     {
         inventory.AddItem(items[Random.Range(0, items.Count - 1)]);
-        inventory.AddItem(items[Random.Range(0, items.Count - 1)]);
         base.DestroyBuilding();
         return true;
     }
