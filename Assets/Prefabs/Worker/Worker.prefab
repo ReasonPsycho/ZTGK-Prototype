@@ -148,23 +148,29 @@ MonoBehaviour:
   IsSelected: 0
   grid: {fileID: 0}
   animator: {fileID: 8874092111476919691}
-  gridPosition: {x: 48, y: 54}
   facingAngle: 0
   movementTarget: {x: 0, y: 0}
+  movementTargetDistance: 0
   nextTile: {x: 0, y: 0}
   pathLength: 0
   MaxHealth: 100
   health: 100
+  healthBuff: 0
   reachRange: 1.5
+  attackSpeed: 1
   tilesPerSecond: 4
   rotationSpeed: 1
   isMoving: 0
   hasTarget: 0
+  forceMove: 0
+  hasReachedTarget: 0
   ItemGameObject1: {fileID: 0}
   ItemGameObject2: {fileID: 0}
   FlatDamageBuff: 0
   PercentDamageBuff: 0
   Armor: 0
+  Kockback: 0
+  AOE: 0
   material: {fileID: 2100000, guid: db4367735ed481d4686ac34828da57b7, type: 2}
 --- !u!114 &5432878154017488421
 MonoBehaviour:
@@ -180,12 +186,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unit: {fileID: 0}
   miningSpeed: 1
+  Behaviour: 0
   attackSpeed: 1
   attackDamage: 10
   target: {x: 0, y: 0}
   miningTarget: {x: 0, y: 0}
   combatTarget: {fileID: 0}
+  waterGunProjectilePrefab: {fileID: 6861988388047610471, guid: 8471885abcf01e049a4daef1cc69f919, type: 3}
   hasMiningTarget: 0
+  isMining: 0
 --- !u!1 &8874092111476919689
 GameObject:
   m_ObjectHideFlags: 0
