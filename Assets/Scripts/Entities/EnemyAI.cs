@@ -27,7 +27,10 @@ public class EnemyAI : MonoBehaviour , ISelectable
     public GameObject combatTarget;
     public float distanceToCombatTarget;
 
-    public float attackCooldown= 0;
+    public float attackCooldown = 0;
+
+    [Header("Projectile Prefab")]
+    public GameObject dirtGunProjectilePrefab;
 
     #region ISelectable
 
@@ -114,13 +117,45 @@ public class EnemyAI : MonoBehaviour , ISelectable
         unit.TurnTo(unit.grid.WorldToGridPosition(target.transform.position));
         if (attackCooldown > 1.0f)
         {
-            target.GetComponentInParent<Unit>().TakeDmg(attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff, 0, unit, 0);
+            if (unit.reachRange < 5)
+            {
+                target.GetComponentInParent<Unit>().TakeDmg(attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff, 0, unit, 0);
+            }
+            else
+            {
+                RangedAttack(target, dirtGunProjectilePrefab);
+            }
             attackCooldown = 0.0f;
         }
         else
         {
             attackCooldown += Time.deltaTime;
         }
+    }
+
+
+    public void RangedAttack(GameObject target, GameObject projectilePrefab)
+    {
+        if (projectilePrefab == null)
+        {
+            Debug.LogError("Projectile prefab is null");
+            return;
+        }
+        //instantiate projectile in front of the unit
+        GameObject projectile = Instantiate(projectilePrefab, transform.position + transform.forward * 0.7f, Quaternion.identity);
+
+        if (projectile != null)
+        {
+            Projectile pr = projectile.GetComponent<Projectile>();
+
+            pr.target = target;
+            pr.dmg = attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff;
+            pr.dealer = unit;
+            pr.aoe = unit.AOE;
+            pr.knockback = unit.Kockback;
+        }
+
+        return;
     }
 
     #endregion
@@ -145,10 +180,12 @@ public class EnemyAI : MonoBehaviour , ISelectable
         {
             distanceToCombatTarget = Vector2Int.Distance(combatTarget.GetComponentInParent<Unit>().gridPosition, unit.gridPosition);
             unit.hasTarget = true;
+            unit.state = UnitState.MOVING;
         }
         else
         {
             unit.hasTarget = false;
+            unit.state = UnitState.IDLE;
         }
         
     }
@@ -158,12 +195,14 @@ public class EnemyAI : MonoBehaviour , ISelectable
         if (combatTarget != null && distanceToCombatTarget > unit.reachRange)
         {
             state = EnemyState.CHASE;
+            unit.state = UnitState.MOVING;
             unit.movementTarget = unit.FindNearestVacantTile(combatTarget.GetComponentInParent<Unit>().gridPosition,unit.gridPosition);
         }
         else if (combatTarget != null && distanceToCombatTarget <= unit.reachRange)
         {
             unit.path.Clear();
             state = EnemyState.ATTACK;
+            unit.state = UnitState.ATTACKING;
             Attack(combatTarget);
         }
 

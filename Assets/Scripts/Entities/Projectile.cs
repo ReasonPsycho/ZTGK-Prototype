@@ -39,37 +39,59 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("PlayerUnit"))
+        //if ally unit shots, ignore other ally units
+        if (dealer.type == UnitType.ALLY && other.CompareTag("PlayerUnit"))
         {
-            print("Projectile hit player unit");
             return;
         }
-        print("Trigger -> Projectile hit: " + other.name);
+
+        //if enemy unit shots, ignore other enemy units
+        else if (dealer.type == UnitType.ENEMY && other.CompareTag("Enemy"))
+        {
+            return;
+        }
+ 
+
         curentCollider = other;
         ps.Play();
         GetComponent<MeshRenderer>().enabled = false;
 
-        if (other.CompareTag("Enemy"))
+        if (dealer.type == UnitType.ALLY &&  other.CompareTag("Enemy"))
         {
             other.GetComponentInParent<EnemyAI>().unit.TakeDmg(dmg, knockback, dealer, aoe);
+        }
+
+        else if (dealer.type == UnitType.ENEMY && other.CompareTag("PlayerUnit"))
+        {
+            other.GetComponentInParent<UnitAI>().unit.TakeDmg(dmg, knockback, dealer, aoe);
         }
         StartCoroutine(WaitAndDestroy());
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.CompareTag("PlayerUnit"))
+        //if ally unit shots, ignore other ally units
+        if (dealer.type == UnitType.ALLY && collision.collider.CompareTag("PlayerUnit"))
         {
-            print("Projectile hit player unit");
             return;
         }
-        print("Collision -> Projectile hit: " + collision.collider.name);
+
+        //if enemy unit shots, ignore other enemy units
+        else if (dealer.type == UnitType.ENEMY && collision.collider.CompareTag("Enemy"))
+        {
+            return;
+        }
+
         curentCollider = collision.collider;
         ps.Play();
         GetComponent<MeshRenderer>().enabled = false;
         if (collision.collider.CompareTag("Enemy"))
         {
             collision.collider.GetComponentInParent<EnemyAI>().unit.TakeDmg(dmg, knockback, dealer, aoe);
+        }
+        else if (dealer.type == UnitType.ENEMY && collision.collider.CompareTag("PlayerUnit"))
+        {
+            collision.collider.GetComponentInParent<UnitAI>().unit.TakeDmg(dmg, knockback, dealer, aoe);
         }
 
         StartCoroutine(WaitAndDestroy());

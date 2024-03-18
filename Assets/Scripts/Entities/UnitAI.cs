@@ -1,7 +1,4 @@
 using GameItems;
-using Palmmedia.ReportGenerator.Core.Reporting.Builders;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitAI : MonoBehaviour, ISelectable
