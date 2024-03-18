@@ -63,11 +63,14 @@ MonoBehaviour:
   rotationSpeed: 1
   isMoving: 0
   hasTarget: 0
+  hasReachedTarget: 0
   ItemGameObject1: {fileID: 0}
   ItemGameObject2: {fileID: 0}
   FlatDamageBuff: 0
   PercentDamageBuff: 0
   Armor: 0
+  Kockback: 0
+  AOE: 0
   material: {fileID: 0}
 --- !u!114 &5870469139649258654
 MonoBehaviour:
@@ -82,7 +85,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  wakeUpRange: 5
+  wakeUpRange: 10
   isAwake: 0
   unit: {fileID: 0}
   attackSpeed: 1
@@ -90,6 +93,7 @@ MonoBehaviour:
   target: {x: 0, y: 0}
   combatTarget: {fileID: 0}
   distanceToCombatTarget: 0
+  attackCooldown: 0
 --- !u!1 &2224335917959058930
 GameObject:
   m_ObjectHideFlags: 0

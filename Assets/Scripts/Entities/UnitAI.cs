@@ -103,7 +103,7 @@ public class UnitAI : MonoBehaviour, ISelectable
     public void Mine(Vector2Int target)
     {
 
-        if (Vector2Int.Distance(target, unit.gridPosition) <= 2f)
+        if (Vector2Int.Distance(target, unit.gridPosition) <= 1.5f)
         {
             unit.hasReachedTarget = true;
             if (!isMining)
@@ -151,7 +151,7 @@ public class UnitAI : MonoBehaviour, ISelectable
         }
         else
         {
-            if (Behaviour == UnitBehaviour.AUTO_ATTCK)
+            if (Behaviour == UnitBehaviour.AUTO_ATTCK && !unit.IsSelected)
             {
                 unit.hasReachedTarget = false;
                 unit.movementTarget = target.GetComponentInParent<Unit>().gridPosition;
@@ -218,11 +218,12 @@ public class UnitAI : MonoBehaviour, ISelectable
 
     private void HandleCombat()
     {
-        if (!unit.IsSelected)
+
+        if (combatTarget == null)
         {
             combatTarget = FindClosestEnemy(5.0f);
         }
-        if (combatTarget != null)
+        else if (combatTarget != null)
         {
             unit.movementTargetDistance = unit.reachRange;
             Attack(combatTarget);

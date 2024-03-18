@@ -10,7 +10,7 @@ public enum EnemyState
 }
 
 
-public class EnemyAI : MonoBehaviour
+public class EnemyAI : MonoBehaviour , ISelectable
 {
     public EnemyState state;
     public float wakeUpRange = 5.0f;
@@ -28,12 +28,27 @@ public class EnemyAI : MonoBehaviour
     public float distanceToCombatTarget;
 
     public float attackCooldown= 0;
+
+    #region ISelectable
+
+    public SELECTION_TYPE SelectionType
+    {
+        get { return SELECTION_TYPE.UNIT; }
+    }
+
+    private Color orgColor;
+    private Material material;
+    private bool isHovered = false;
+
+    #endregion
+
     
     private void Start()
     {
         state = EnemyState.ASLEEP;
         unit = GetComponentInParent<Unit>();
-
+        material = unit.material;
+        orgColor = material.color;
     }
 
     private void Update()
@@ -159,4 +174,45 @@ public class EnemyAI : MonoBehaviour
     }
 
     #endregion
+    #region ISelectable
+
+    
+    
+    public void OnHoverEnter()
+    {
+        if (!isHovered)
+        {
+            unit.material.color = Color.magenta;
+            isHovered = true;
+        }
+    }
+
+    public void OnHoverExit()
+    {
+        if (!unit.IsSelected)
+        {
+            unit.material.color = orgColor;
+        }
+
+        isHovered = false;
+    }
+
+    public void OnSelect()
+    {
+        if (!unit.IsSelected)
+        {
+            unit.material.color = Color.black;
+        }
+        unit.IsSelected = true;
+    }
+
+    public void OnDeselect()
+    {
+        unit.material.color = orgColor;
+        isHovered = false;
+        unit.IsSelected = false;
+    }
+
+    #endregion
+
 }

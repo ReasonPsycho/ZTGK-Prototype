@@ -17,20 +17,7 @@ public class Inventory : MonoBehaviour
     {  
         ItemManagment = GameObject.Find("Item Managment").GetComponent<ItemManager>();
         gridObject = transform.Find("Inventory Grid").gameObject;
-        GameItems.Add(new GIBow());
-        GameItems.Add(new GIBow());
-        GameItems.Add(new GIShield());
-        GameItems.Add(new GIShield());
-        GameItems.Add(new GISword());
-        GameItems.Add(new GISword());
-        GameItems.Add(new GIWashingPowder());
-        GameItems.Add(new GIWashingPowder());
-        GameItems.Add(new GILasso());
-        GameItems.Add(new GILasso());
-        GameItems.Add(new GIBucket());
-        GameItems.Add(new GIBucket());
-  
-
+      
         GameItems.ForEach(AddItem);
     }
 

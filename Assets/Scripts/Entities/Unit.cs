@@ -41,7 +41,10 @@ public class Unit : MonoBehaviour
 
     [Header("General")] public float MaxHealth = 100.0f;
     [SerializeField] private float health;
+    [SerializeField] private float healthBuff;
+    
     public float reachRange = 1.0f;
+    public float attackSpeed = 1.0f;
 
 
     [Header("Movement")] public float tilesPerSecond = 3.0f;
@@ -56,7 +59,11 @@ public class Unit : MonoBehaviour
     public GameObject ItemGameObject1;
     public GameObject ItemGameObject2;
 
-
+    private Color orgItemColor;
+    
+    private Vector3 orgScale;
+    private float orgY;
+    private Vector3 orgItemScale;
     private bool isFlashing = false;
 
     public float FlatDamageBuff = 0; // Accumulators to avoid checking both items every attack.
@@ -76,8 +83,13 @@ public class Unit : MonoBehaviour
         animator = transform.GetChild(0).GetComponent<Animator>();
         health = MaxHealth;
 
+        
         ItemGameObject1 = transform.Find("Body/Item1").gameObject;
         ItemGameObject2 = transform.Find("Body/Item2").gameObject;
+        orgScale = transform.localScale;
+        orgY = transform.position.y;
+        orgItemScale = ItemGameObject1.transform.localScale;
+        orgItemColor = ItemGameObject1.GetComponent<MeshRenderer>().material.color;
         grid = GameObject.Find("Grid").GetComponent<Grid>();
         currentTile = grid.GetTile(grid.WorldToGridPosition(transform.position));
         nextTile = gridPosition;
@@ -278,16 +290,17 @@ public class Unit : MonoBehaviour
     public void Apply(GameItem item)
     {
         if (item == null) return;
-
         MaxHealth += item.HealthBuff;
         health = MaxHealth;
+        healthBuff += item.HealthBuff;
         FlatDamageBuff += item.AttackProperties.BaseDamage;
         PercentDamageBuff += item.PercentDamageBuff;
         Armor += item.ArmorBuff;
         reachRange += item.AttackProperties.TargettingRange;
         Kockback += item.KnockBack;
         AOE += item.AOE;
-    }
+        RecalculateScale();
+ }
 
     /// <summary>
     /// Remove applied buffs from accumulator stats.
@@ -299,14 +312,32 @@ public class Unit : MonoBehaviour
 
         MaxHealth -= item.HealthBuff;
         health = MaxHealth;
+        healthBuff -= item.HealthBuff;
         FlatDamageBuff -= item.AttackProperties.BaseDamage;
         PercentDamageBuff -= item.PercentDamageBuff;
         Armor -= item.ArmorBuff;
         reachRange -= item.AttackProperties.TargettingRange;
         Kockback -= item.KnockBack;
         AOE -= item.AOE;
+        RecalculateScale();
     }
 
+    public void RecalculateScale()
+    {
+        float attackScale = FlatDamageBuff * 1 + PercentDamageBuff;
+        float attackRangeScale = reachRange ;
+        float attackSpeedScale = attackSpeed ;
+        transform.localScale = orgScale + Vector3.one * healthBuff / 4000 + new Vector3(0,reachRange,0)/20;
+        transform.position = new Vector3(transform.position.x, (orgY*transform.localScale.y/orgScale.y), transform.position.z);
+        Vector3 itemScale = new Vector3(attackScale ,attackRangeScale, attackSpeedScale)/200 + orgItemScale;
+        ItemGameObject1.transform.localScale = itemScale;
+        ItemGameObject2.transform.localScale = itemScale;   
+        Color itemColor = new Color((Kockback > 0.0f ? 1.0f : 0.0f), (Kockback < 0.0f ? 1.0f : 0.0f), (AOE < 0.0f ? 1.0f : 0.0f));
+        itemColor = Color.Lerp(itemColor, orgItemColor, 0.5f);
+        ItemGameObject1.GetComponent<MeshRenderer>().material.color = itemColor;
+        ItemGameObject2.GetComponent<MeshRenderer>().material.color = itemColor;
+    }
+    
     #endregion
 
     #region Movement
@@ -338,6 +369,8 @@ public class Unit : MonoBehaviour
             {
                 t = 0;
                 isMoving = false;
+                currentTile.Vacant = true;
+                currentTile = grid.GetTile(nextTile);
             }
         }
 
@@ -345,31 +378,14 @@ public class Unit : MonoBehaviour
         {
             if (path.Count >= 1)
             {
-                if (t != 0)
-                {
-                    if (currentTile != grid.GetTile(nextTile))
-                    {
-                        grid.GetTile(nextTile).Vacant = true;
-                        path.Clear();
-                        return;
-                    }
-                }
-
-                currentTile.Vacant = true;
-                currentTile = grid.GetTile(nextTile);
-                currentTile.Vacant = false;
                 nextTile = (Vector2Int)path[0];
-
                 if (!grid.GetTile(nextTile).Vacant && nextTile != currentTile.Index)
                 {
                     nextTile = currentTile.Index;
-                    isMoving = false;
-                    currentTile.Vacant = false;
                     path.Clear();
                     return;
                 }
 
-                t = 0.01f;
                 grid.GetTile(nextTile).Vacant = false;
                 path.RemoveAt(0);
                 isMoving = true;
