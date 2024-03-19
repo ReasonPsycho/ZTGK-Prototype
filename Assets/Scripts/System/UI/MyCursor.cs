@@ -26,6 +26,7 @@ public class MyCursor : MonoBehaviour
 
     // public List<Tile> buildList = new();
     public GameObject buildingPrefab;
+    public int buildingRotation = 0;
 
 
     public GameObject Inventory;
@@ -45,6 +46,12 @@ public class MyCursor : MonoBehaviour
 
     private void Update()
     {
+        if ( myMyCursorMode == MY_CURSOR_MODE.BUILD && Input.mouseScrollDelta != Vector2.zero ) {
+            var scroll = Input.mouseScrollDelta.y;
+            if (scroll > 0) BuildingRotation.cycleUp(ref buildingRotation);
+            else BuildingRotation.cycleDown(ref buildingRotation);
+        }
+
         //highlight the cell the mouse is over
         Vector3 mousePos = Input.mousePosition;
         if (mousePos.x >= 0 && mousePos.x <= Screen.width && mousePos.y >= 0 && mousePos.y <= Screen.height)
@@ -75,17 +82,18 @@ public class MyCursor : MonoBehaviour
 
                         var sign_row = up ? -1 : 1;
                         var sign_col = right ? -1 : 1;
+
                         var lasttilex = hitTile.Index.x;
                         var lasttiley = hitTile.Index.y;
 
-                        for (int y = 0; y < building.Size.y; y++) {
+                        for (int y = 0; y < (BuildingRotation.isNormal(buildingRotation) ? building.Size.y : building.Size.x); y++) {
                             sign_row *= -1;
                             var tiley = lasttiley + sign_row * y;
                             if ( tiley < 0 || tiley >= grid.height ) {
                                 sign_row *= -1;
                                 tiley = lasttiley + sign_row * y;
                             }
-                            for (int x = 0; x < building.Size.x; x++) {
+                            for (int x = 0; x < (BuildingRotation.isNormal(buildingRotation) ? building.Size.x : building.Size.y); x++) {
                                 sign_col *= -1;
                                 var tilex = lasttilex + sign_col * x;
                                 if ( tilex < 0 || tilex >= grid.width ) {
@@ -95,7 +103,7 @@ public class MyCursor : MonoBehaviour
 
                                 lasttilex = tilex;
                                 lasttiley = tiley;
-                                highlightTiles.Add( grid.GetTile( new Vector2Int( tilex, tiley ) ) );
+                                highlightTiles.Add(grid.GetTile(new Vector2Int( tilex, tiley )));
                             }
 
                             lasttilex = hitTile.Index.x;
