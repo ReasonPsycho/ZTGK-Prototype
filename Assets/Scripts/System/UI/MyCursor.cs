@@ -65,52 +65,34 @@ public class MyCursor : MonoBehaviour
                     {
                         var building = buildingPrefab.GetComponent<Building>();
                         var hitTile = grid.GetTile(grid.WorldToGridPosition(hit.point));
-                        List<List<Tile>> sortedRows = new();
                         List<Tile> highlightTiles = new();
 
+                        #region Find build tiles
+                        //v2
+                        var dist = new Vector2(hitTile.x + 0.5f, hitTile.y + 0.5f) - new Vector2(hit.point.x, hit.point.z);
+                        var right = dist.x >= 0;
+                        var up = dist.y >= 0;
 
-                        //todo check for grid edges or built tiles
-                        for (int y = hitTile.Index.y - building.Size.y;
-                             y < hitTile.Index.y + building.Size.y + 1;
-                             y++)
-                        {
-                            List<Tile> sortedRow = new();
-
-                            for (int x = hitTile.Index.x - building.Size.x;
-                                 x < hitTile.Index.x + building.Size.x + 1;
-                                 x++)
-                            {
-                                sortedRow.Add(grid.GetTile(new Vector2Int(x, y)));
+                        var sign_row = up ? -1 : 1;
+                        var sign_col = right ? -1 : 1;
+                        for (int y = 0; y < building.Size.y; y++) {
+                            sign_row *= -1;
+                            var tiley = hitTile.Index.y + sign_row * y;
+                            if ( tiley < 0 || tiley >= grid.height ) {
+                                sign_row *= -1;
+                                tiley = hitTile.Index.y + sign_row * y;
                             }
-
-                            sortedRow.Sort((tile, tile1) =>
-                            {
-                                var dist = Vector2.Distance(new Vector2(tile.x, tile.y),
-                                    new Vector2(hit.point.x, hit.point.y));
-                                var dist1 = Vector2.Distance(new Vector2(tile1.x, tile1.y),
-                                    new Vector2(hit.point.x, hit.point.y));
-
-                                return (int)(dist - dist1);
-                            });
-                            sortedRows.Add(sortedRow.GetRange(0, building.Size.x));
+                            for (int x = 0; x < building.Size.x; x++) {
+                                sign_col *= -1;
+                                var tilex = hitTile.Index.x + sign_col * x;
+                                if ( tilex < 0 || tilex >= grid.width ) {
+                                    sign_col *= -1;
+                                    tilex = hitTile.Index.x + sign_col * x;
+                                }
+                                highlightTiles.Add( grid.GetTile( new Vector2Int( tilex, tiley ) ) );
+                            }
                         }
-
-                        sortedRows.Sort((row, row1) =>
-                        {
-                            var dist = Vector2.Distance(new Vector2(row[0].x, row[0].y),
-                                new Vector2(hit.point.x, hit.point.y));
-                            var dist1 = Vector2.Distance(new Vector2(row1[0].x, row1[0].y),
-                                new Vector2(hit.point.x, hit.point.y));
-
-                            return (int)(dist - dist1);
-                        });
-
-                        for (int i = 0; i < building.Size.y; i++)
-                        {
-                            highlightTiles.AddRange(sortedRows[i]);
-                        }
-
-                        // hoveredList.AddRange(highlightTiles.Select(tile => tile.Building.GetComponent<ISelectable>()));
+                        #endregion
 
                         foreach (var currentHover in ListOfHovered)
                         {
