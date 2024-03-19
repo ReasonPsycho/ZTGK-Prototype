@@ -97,6 +97,7 @@ MonoBehaviour:
   combatTarget: {fileID: 0}
   distanceToCombatTarget: 0
   attackCooldown: 0
+  dirtGunProjectilePrefab: {fileID: 6861988388047610471, guid: 052f0b487f2297640ab6aebdf8788753, type: 3}
 --- !u!1 &2224335917959058930
 GameObject:
   m_ObjectHideFlags: 0

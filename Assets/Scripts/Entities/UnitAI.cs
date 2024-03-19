@@ -1,6 +1,4 @@
-using Palmmedia.ReportGenerator.Core.Reporting.Builders;
-using System.Collections;
-using System.Collections.Generic;
+using GameItems;
 using UnityEngine;
 
 public class UnitAI : MonoBehaviour, ISelectable
@@ -22,6 +20,9 @@ public class UnitAI : MonoBehaviour, ISelectable
     public Vector2Int miningTarget;
     public GameObject combatTarget;
 
+
+    [Header("ProjectilePrefabs")]
+    public GameObject waterGunProjectilePrefab;
 
     [Header("Behavior flags")]
     public bool hasMiningTarget = false;
@@ -139,6 +140,8 @@ public class UnitAI : MonoBehaviour, ISelectable
     public void Attack(GameObject target)
     {
         unit.hasTarget = true;
+
+       
         if (Vector2Int.Distance(target.GetComponentInParent<Unit>().gridPosition, unit.gridPosition) <= unit.reachRange * 1.5f)
         {
             unit.hasReachedTarget = true;
@@ -146,7 +149,31 @@ public class UnitAI : MonoBehaviour, ISelectable
             unit.state = UnitState.ATTACKING;
             if (attackCooldown > 1.0f)
             {
-                target.GetComponentInParent<Unit>().TakeDmg(attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff, unit.Kockback, unit, unit.AOE);
+                //RANGED ATTACK
+                if (unit.Item1 != null || unit.Item2 != null)
+                {
+                    GameItem item;
+                    if (unit.Item1 != null)
+                    {
+                        item = unit.Item1;
+                    }
+                    else
+                    {
+                        item = unit.Item2;
+                    }
+                    if (item.Name == "Water Gun")
+                    {
+
+                        RangedAttack(target, waterGunProjectilePrefab);
+                    }
+                }
+                
+                //MELEE ATTACK
+                else
+                {
+                    target.GetComponentInParent<Unit>().TakeDmg(attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff, unit.Kockback, unit, unit.AOE);
+                }
+                    
                 attackCooldown = 0.0f;
             }
             else
@@ -162,6 +189,33 @@ public class UnitAI : MonoBehaviour, ISelectable
                 unit.movementTarget = target.GetComponentInParent<Unit>().gridPosition;
             }
         }
+    }
+
+
+    public void RangedAttack(GameObject target, GameObject projectilePrefab)
+    {
+        if(projectilePrefab == null)
+        {
+            Debug.LogError("Projectile prefab is null");
+            return;
+        }
+        //instantiate projectile in front of the unit
+        GameObject projectile = Instantiate(projectilePrefab, transform.position + transform.forward * 0.7f, Quaternion.identity);
+        
+        if (projectile != null)
+        {
+            Projectile pr = projectile.GetComponent<Projectile>();
+
+            pr.target = target;
+            pr.dmg = attackDamage + attackDamage * unit.PercentDamageBuff + unit.FlatDamageBuff;
+            pr.dealer = unit;
+            pr.aoe = unit.AOE;
+            pr.knockback = unit.Kockback;
+
+      
+        }
+
+        return;
     }
 
     public GameObject FindClosestEnemy(float range)

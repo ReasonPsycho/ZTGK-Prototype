@@ -634,7 +634,6 @@ public class Unit : MonoBehaviour
 
         if (gridPosition == movementTarget && nextTile != currentTile.Index)
         {
-            print("LOL");
             currentTile.Vacant = true;
             grid.GetTile(nextTile).Vacant = true;
             currentTile = grid.GetTile(movementTarget);

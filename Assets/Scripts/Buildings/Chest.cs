@@ -26,11 +26,11 @@ public class Chest : Building
         buildingType = BuildingType.CHEST;
         inventory = GameObject.Find("Item Managment").gameObject.GetComponent<ItemManager>().Inventory;
         items.Add(new GIBow());
-        items.Add(new GIShield());
-        items.Add(new GISword());
-        items.Add(new GIWashingPowder());
-        items.Add(new GILasso());
-        items.Add(new GIBucket());
+        //items.Add(new GIShield());
+        //items.Add(new GISword());
+        //items.Add(new GIWashingPowder());
+        //items.Add(new GILasso());
+        //items.Add(new GIBucket());
     }
 
     public override void GetMaterial()

@@ -123,7 +123,6 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private void Start()
     {
         grid = GameObject.Find("Grid").GetComponent<Grid>();
-        print(grid);
         map = map.Replace("\n", "");
         for (int x = 0; x < grid.gridArray.GetLength(0); x++)
         {
