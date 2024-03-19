@@ -40,7 +40,7 @@ public class Unit : MonoBehaviour
 
 
     [Header("General")] public float MaxHealth = 100.0f;
-    [SerializeField] private float health;
+    [SerializeField] public float health;
     [SerializeField] private float healthBuff;
     
     public float reachRange = 1.0f;

@@ -56,6 +56,11 @@ public class EnemyAI : MonoBehaviour , ISelectable
         HandleTargetSelection();
         
         HandleCombat();
+        
+        if (!unit.IsSelected && !isHovered)
+        {
+            UpdateColor();
+        }
     }
 
 
@@ -176,7 +181,10 @@ public class EnemyAI : MonoBehaviour , ISelectable
     #endregion
     #region ISelectable
 
-    
+    private void UpdateColor()
+    {
+        material.color = Color.Lerp(Color.white, orgColor, unit.health / unit.MaxHealth);
+    }
     
     public void OnHoverEnter()
     {

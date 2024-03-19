@@ -58,6 +58,11 @@ public class UnitAI : MonoBehaviour, ISelectable
         HandleMining();
 
         HandleCombat();
+
+        if (!unit.IsSelected && !isHovered)
+        {
+            UpdateColor();
+        }
     }
 
     #region ISelectable
@@ -234,5 +239,10 @@ public class UnitAI : MonoBehaviour, ISelectable
         }
     }
 
+    private void UpdateColor()
+    {
+        material.color = Color.Lerp(Color.gray, orgColor, unit.health / unit.MaxHealth);
+    }
+    
     #endregion
 }
