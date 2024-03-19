@@ -75,22 +75,30 @@ public class MyCursor : MonoBehaviour
 
                         var sign_row = up ? -1 : 1;
                         var sign_col = right ? -1 : 1;
+                        var lasttilex = hitTile.Index.x;
+                        var lasttiley = hitTile.Index.y;
+
                         for (int y = 0; y < building.Size.y; y++) {
                             sign_row *= -1;
-                            var tiley = hitTile.Index.y + sign_row * y;
+                            var tiley = lasttiley + sign_row * y;
                             if ( tiley < 0 || tiley >= grid.height ) {
                                 sign_row *= -1;
-                                tiley = hitTile.Index.y + sign_row * y;
+                                tiley = lasttiley + sign_row * y;
                             }
                             for (int x = 0; x < building.Size.x; x++) {
                                 sign_col *= -1;
-                                var tilex = hitTile.Index.x + sign_col * x;
+                                var tilex = lasttilex + sign_col * x;
                                 if ( tilex < 0 || tilex >= grid.width ) {
                                     sign_col *= -1;
-                                    tilex = hitTile.Index.x + sign_col * x;
+                                    tilex = lasttilex + sign_col * x;
                                 }
+
+                                lasttilex = tilex;
+                                lasttiley = tiley;
                                 highlightTiles.Add( grid.GetTile( new Vector2Int( tilex, tiley ) ) );
                             }
+
+                            lasttilex = hitTile.Index.x;
                         }
                         #endregion
 
