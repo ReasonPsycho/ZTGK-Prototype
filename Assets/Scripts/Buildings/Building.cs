@@ -17,7 +17,7 @@ public class Building : MonoBehaviour, ISelectable
 
     public BuildingType buildingType = BuildingType.ANY;
     public List<Tile> tiles = new();
-    public virtual Vector2Int Size { get; } = new(7, 4);
+    public virtual Vector2Int Size { get; } = new(2, 2);
 
 
     public virtual void Start() {
