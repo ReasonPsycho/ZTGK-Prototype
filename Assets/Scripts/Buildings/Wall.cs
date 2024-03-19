@@ -5,22 +5,17 @@ using Buildings;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
+
 
 public class Wall : Building
 {
     public float x;
     public float z;
+    public UnityEvent OnStartCompleted;
 
     //  NORTH -> Z+ | SOUTH -> Z- | EAST -> X+ | WEST -> X- | TOP -> Y+
-
-    #region ISelectable
-
-    private Color orgColor;
-    private bool isHovered = false;
-    private bool isSelected = false;
-
-    #endregion
-
+    
     public GameObject wallSidePrefab;
 
     public GameObject northSide; // rot. X 90
@@ -30,8 +25,9 @@ public class Wall : Building
     public GameObject topSide; // rot.  0
 
 
-    public void Start()
+    public override void Start()
     {
+        base.Start();
         buildingType = BuildingType.WALL;
         wallSidePrefab = GameObject.Find("ConstructionManager").GetComponent<ConstructionManager>().wallSide;
     }
@@ -81,10 +77,6 @@ public class Wall : Building
                     transform.position.z - tile.grid.cellSize / 2.0f), Quaternion.Euler(-90, 0, 0), this.transform);
         }
 
-        material = new Material(Shader.Find("Standard"));
-        material.name = "Wall side material";
-        orgColor = material.color;
-
         ApplyNewMaterial();
         return this.gameObject;
     }
@@ -97,7 +89,7 @@ public class Wall : Building
             {
                 if (material != null)
                 {
-                    childRenderer.material = material;
+                    childRenderer.material = this.material;
                 }
                 else
                 {
@@ -140,49 +132,19 @@ public class Wall : Building
             ((Wall)westNeighbour.BuildingHandler).SetWall();
         }
 
-        Destroy(gameObject);
+        base.DestroyBuilding();
         return true;
     }
 
-
-    #region ISelectable
-
-    public override void OnHoverEnter()
+    public  override void GetMaterial()
     {
-        if (!isHovered)
-        {
-            material.color = Color.cyan;
-            isHovered = true;
-        }
-    }
-
-    public override void OnHoverExit()
-    {
-        if (!isSelected)
-        {
-            material.color = orgColor;
-        }
-
-        isHovered = false;
-    }
-
-    public override void OnSelect()
-    {
-        if (!isSelected)
-        {
-            material.color = Color.blue;
-        }
-
-        isSelected = true;
-    }
-
-    public override void OnDeselect()
-    {
-        material.color = orgColor;
-        isSelected = false;
-        isSelected = false;
 
     }
 
-    #endregion
+    public void GetWall()
+    {
+        material = new Material(Shader.Find("Standard"));
+        material.name = "Wall side material";
+        orgColor = material.color;
+    }
 }

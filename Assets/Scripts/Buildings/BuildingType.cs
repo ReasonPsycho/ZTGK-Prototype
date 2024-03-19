@@ -5,6 +5,7 @@
         WASHING_MACHINE,
         TREASURY,
         WALL,
-        FLOOR
+        FLOOR,
+        CHEST,
     }
 }

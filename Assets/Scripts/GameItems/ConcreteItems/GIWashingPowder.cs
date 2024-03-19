@@ -1,17 +1,20 @@
 ﻿using UnityEngine;
 
 namespace GameItems.ConcreteItems {
-    public class GIMop : GameItem {
-        public GIMop() {
-            Name = "Mop";
-            Description = "Basic cleaning utility, equipped to every soldier sponge upon their enlistment.";
-            icon = Resources.Load<Sprite>("axe-icon");
+    public class GIWashingPowder : GameItem {
+        public GIWashingPowder() {
+            Name = "Washing Powder";
+            Description = "Adds a bit of dmg and a knockback";
+            icon = Resources.Load<Sprite>("powder-svgrepo-com");
             AttackProperties = new GameItemAttackProperties {
-                TargettingRange = 1,
                 EffectiveArea = GameItemAttackProperties.Area.SINGLE_UNIT,
-                BaseDamage = 10
+                BaseDamage = 5
             };
-
+            KnockBack = 1f;
+            //HealthBuff = 400;
+            //ArmorBuff = 50;
+       
+            
             ItemAbility ability = new() {
                 Name = "Extra Foam",
                 Description = "Introduces an extra strong washing solution and causes a small area-of-effect foam burst, dealing half damage to enemies around the target.",

@@ -13,6 +13,7 @@ public class Tile {
     public GameObject Building;
     public Building BuildingHandler;
     public Grid grid;
+    private ConstructionManager constructionManager;
     
     public bool Build(GameObject building) {
         if ( !Vacant ) return false;
@@ -44,6 +45,7 @@ public class Tile {
         BuildingHandler.DestroyBuilding();
         this.Building = null;
         this.BuildingHandler = null;
+        
         return true;
     }
 

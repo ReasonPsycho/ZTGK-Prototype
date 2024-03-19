@@ -8,10 +8,10 @@ public class Building : MonoBehaviour, ISelectable
 {
     #region ISelectable
 
-    private Color orgColor;
-    protected Material material;
-    private bool isHovered = false;
-    private bool isSelected = false;
+    protected Color orgColor;
+    public Material material;
+    protected bool isHovered = false;
+    protected bool isSelected = false;
 
     #endregion
 
@@ -19,18 +19,21 @@ public class Building : MonoBehaviour, ISelectable
     public List<Tile> tiles = new();
     public virtual Vector2Int Size { get; } = new(2, 2);
 
-    private void Start() {
+
+    public virtual void Start() {
+        GetMaterial();
+   }
+
+    virtual public void GetMaterial()
+    {
         material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
         orgColor = material.color;
     }
 
     virtual public bool DestroyBuilding()
     {
+        BuildingHelper.Instance.RemoveOptions();
         Destroy(gameObject);
-        foreach (var tile in tiles) {
-            tile.Building = null; //TODO ensure this cleans memory
-            tile.BuildingHandler = null;
-        }
         return true;
     }
 
@@ -73,11 +76,14 @@ public class Building : MonoBehaviour, ISelectable
             material.color = Color.blue;
         }
 
-        isSelected = true;    }
+        BuildingHelper.Instance.AddOptions(this, buildingType);
+        isSelected = true;
+    }
 
     public virtual void OnDeselect()
     {
         material.color = orgColor;
+        BuildingHelper.Instance.RemoveOptions();
         isHovered = false;
         isSelected = false;
 
