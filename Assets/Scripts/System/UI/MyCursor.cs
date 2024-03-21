@@ -35,6 +35,7 @@ public class MyCursor : MonoBehaviour
 
     public Texture2D unitCursor;
     public Texture2D buildingCursor;
+    public Texture2D defaultCursor;
 
     private ISelectable startOfDrag;
     private void Start()
@@ -190,7 +191,7 @@ public class MyCursor : MonoBehaviour
                                 }
 
                                 myMyCursorMode = MY_CURSOR_MODE.UNIT;
-                                Cursor.SetCursor(unitCursor, Vector2.zero, CursorMode.Auto);
+                                Cursor.SetCursor(unitCursor, new Vector2(unitCursor.width/2.0f, unitCursor.height/2.0f), CursorMode.Auto);
                                 break;
 
                             // return to default cursor on background click
@@ -306,7 +307,7 @@ public class MyCursor : MonoBehaviour
                 Behaviour.SetActive(false);
                 break;
             default:
-                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.Auto);
                 Inventory.SetActive(false);
                 Equipment.SetActive(false);
                 Behaviour.SetActive(false);

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using GameItems.ConcreteItems;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Buildings {
     public class BuildingHelper : MonoBehaviour {
@@ -11,6 +13,7 @@ namespace Buildings {
         [Header("Required")]
         public GameObject buttonPrefab;
         public GameObject menuGrid;
+        public ConstructionManager constructionManager;
 
         [Header("Action-specific")]
         public Inventory inventory;
@@ -29,7 +32,8 @@ namespace Buildings {
             List<BuildingAction> any = new() {
                 new BuildingAction(
                     "Destroy",
-                    tile => tile.Destroy()
+                    tile => constructionManager.destroyBuilding(tile.BuildingHandler),// tile.Destroy()
+                null
                 )
             };
 
@@ -59,8 +63,57 @@ namespace Buildings {
                         ).GetComponent<Unit>().type = UnitType.ALLY;
 
                         return true;
-                    }
+                    },
+                    Resources.Load<Sprite>("cross-arrows-icon")
                 ),
+                new BuildingAction(
+                    "Add Bow",
+                    tile => {
+                        inventory.AddItem(new GIBow());
+                        return true;
+                    },
+                    Resources.Load<Sprite>("bow-and-arrow-svgrepo-com")
+                ),
+                new BuildingAction(
+                    "Add Bucket",
+                    tile => {
+                        inventory.AddItem(new GIBucket());
+                        return true;
+                    },
+                    Resources.Load<Sprite>("bucket-1-svgrepo-com")
+                ),
+                new BuildingAction(
+                    "Add Lasso",
+                    tile => {
+                        inventory.AddItem(new GILasso());
+                        return true;
+                    },
+                    Resources.Load<Sprite>("lasso-svgrepo-com")
+                ),
+                new BuildingAction(
+                    "Add Shield",
+                    tile => {
+                        inventory.AddItem(new GIShield());
+                        return true;
+                    },
+                    Resources.Load<Sprite>("shield-alt-1-svgrepo-com")
+                ),
+                new BuildingAction(
+                    "Add Sword",
+                    tile => {
+                        inventory.AddItem(new GISword());
+                        return true;
+                    },
+                    Resources.Load<Sprite>("sword-svgrepo-com")
+                ),
+                new BuildingAction(
+                    "Add Washing Powder",
+                    tile => {
+                        inventory.AddItem(new GIWashingPowder());
+                        return true;
+                    },
+                    Resources.Load<Sprite>("powder-svgrepo-com")
+                )
             };
 
             BuildingActions[ BuildingType.ANY ] = any;
@@ -76,10 +129,13 @@ namespace Buildings {
         /// <param name="sender"></param>
         /// <param name="buildingType"></param>
         public void AddOptions(Building sender, BuildingType buildingType) {
+            menuGrid.transform.parent.gameObject.SetActive(true);
+
             // add options for type
             if ( BuildingActions.ContainsKey(buildingType) )
                 foreach (var action in BuildingActions[ buildingType ]) {
                     var obj = Instantiate(buttonPrefab, menuGrid.transform);
+                    if ( action.icon != null ) obj.GetComponent<Image>().sprite = action.icon;
                     var exec = obj.GetComponent<BuildingActionExec>();
                     exec.targetBuilding = sender;
                     exec.action = action;
@@ -90,6 +146,7 @@ namespace Buildings {
             if ( buildingType != BuildingType.ANY ) {
                 foreach (var action in BuildingActions[ BuildingType.ANY ]) {
                     var obj = Instantiate(buttonPrefab, menuGrid.transform);
+                    if ( action.icon != null ) obj.GetComponent<Image>().sprite = action.icon;
                     var exec = obj.GetComponent<BuildingActionExec>();
                     exec.targetBuilding = sender;
                     exec.action = action;
@@ -107,6 +164,8 @@ namespace Buildings {
             foreach (var obj in spawnedOptions) {
                 Destroy(obj);
             }
+
+            menuGrid.transform.parent.gameObject.SetActive(false);
         }
     }
 }
